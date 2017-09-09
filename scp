@@ -1,0 +1,5 @@
+scp -r 
+
+scp Logs.py alucloud230@lab.cursocloudaws.net:/home/alucloud230/codigo
+
+pass:  7aYzdy8U
