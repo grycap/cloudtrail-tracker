@@ -1,7 +1,9 @@
 
-from boto.dynamodb2.table import Table
-from boto.dynamodb2.items import Item
+from boto3 import resource
+import boto3
+import json
 import my_parser
+import decimal
 
 class UseDynamoDB:
     
@@ -9,7 +11,7 @@ class UseDynamoDB:
         self.name = name
     
     def guardar_evento(self, name_table, event=my_parser.Event('')):
-        eventos = Table(name_table)
+        eventos = resource.Table(name_table)
 
         # Creamos evento nuevo
         # datos = {
@@ -24,6 +26,9 @@ class UseDynamoDB:
             print('Event request: {0}'.format(e))
         
             datos = e
-            evento = Item(eventos, data=datos)
-        
-            evento.save()
+            #evento = Item(eventos, data=datos)
+            response = eventos.put_item(
+                Item=datos
+            )
+            print("PutItem succeeded:")
+            print(json.dumps(response, indent=4))

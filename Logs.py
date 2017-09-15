@@ -2,28 +2,33 @@ from __future__ import print_function
 from to_dynamo import UseDynamoDB
 from my_parser import Event
 import os
-import boto
+import boto3
 import uuid
 
 
 def guardar_eventos():
 
+    bucket_name = 'alucloud230'
+
     table_name = 'EventoCloudTrail_230'
-    conn = boto.connect_s3()
+    s3_client = boto3.client('s3')
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket(bucket_name)
     
-    bucket = conn.get_bucket('alucloud230')
+    #bucket = conn.get_bucket('alucloud230')
     LOCAL_PATH = "./examples/"
-    for l in bucket.list():
-        print(l.name.encode('utf-8'))
+    for l in bucket.objects.all():
+        print(l)
         keyString = str(l.key)
-        
+        print(keyString)
         # check if file exists locally, if not: download it
         
         if not os.path.exists(LOCAL_PATH + keyString):
             file_path = LOCAL_PATH + keyString
             print("\nGuardando evento %s " % file_path)
-            l.get_contents_to_filename(file_path)
-            
+            #l.get_contents_to_filename(file_path)
+            s3_client.download_file('alucloud230', keyString, keyString)
+
             event = Event(file_path)
             db = UseDynamoDB("prueba")
             db.guardar_evento(table_name,event)
