@@ -12,8 +12,27 @@ import gzip
 import json
 import os
 import re
-from flatten_json import flatten_json
-from pandas.io.json import json_normalize
+
+
+def flatten_json(y):
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '_')
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + str(i) + '_')
+                i += 1
+        else:
+            if (x == "" or x == None):
+                x = " "
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
 
 """Clase para un solo archivo de eventos"""
 class Event:
