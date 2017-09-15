@@ -12,6 +12,8 @@ import gzip
 import json
 import os
 import re
+from flatten_json import flatten_json
+from pandas.io.json import json_normalize
 
 """Clase para un solo archivo de eventos"""
 class Event:
@@ -33,31 +35,11 @@ class Event:
                 yield self.build_event(trail_item)
 
     def build_event(self, source):
-    
-        # convert time string to datetime at UTC
-        event_time_utc = (
-            datetime.strptime(
-                source['eventTime'],
-                Parser.CLOUDTRAIL_EVENT_DATETIME_FORMAT
-            )
-        )
-    
-        # Recogida de datos aqui
-        eventID = source['eventID']
-    
-        # extract the data we care about from the CloudTrail item into dict
-        return {
-            'eventID': eventID,
-            'request': self.strip_data(source['requestParameters']),
-            'response': self.strip_data(source['responseElements']),
-            'account_id': str(source['recipientAccountId']),
-            'region': str(source['awsRegion']),
-            'event_name': str(source['eventName']),
-            #'event_time': event_time_utc,
-            #TODO poner un formato de tiempo valido para dynamoDB
-    
-            # 'principalId': str(principalID)
-        }
+        # print("\n\n %s source" % source)
+        flat = flatten_json(source)
+        # f = json_normalize(flat)
+        # print("\n %s flatten" % f)
+        return flat
 
     """Pasa los datos largos (listas, dicts, elementos simples..)
     a un solo objeto del mismo tipo"""

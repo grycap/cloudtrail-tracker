@@ -4,6 +4,7 @@ from my_parser import Event
 import os
 import boto3
 import uuid
+import botocore
 
 
 def guardar_eventos():
@@ -18,20 +19,27 @@ def guardar_eventos():
     #bucket = conn.get_bucket('alucloud230')
     LOCAL_PATH = "./examples/"
     for l in bucket.objects.all():
-        print(l)
+        
         keyString = str(l.key)
-        print(keyString)
+        print(LOCAL_PATH + keyString)
         # check if file exists locally, if not: download it
         
         if not os.path.exists(LOCAL_PATH + keyString):
             file_path = LOCAL_PATH + keyString
             print("\nGuardando evento %s " % file_path)
             #l.get_contents_to_filename(file_path)
-            s3_client.download_file('alucloud230', keyString, keyString)
-
+            try:
+                s3.Bucket(bucket_name).download_file(keyString, LOCAL_PATH + keyString)
+            except botocore.exceptions.ClientError as e:
+                if e.response['Error']['Code'] == "404":
+                    print("The object does not exist.")
+                else:
+                    raise
+            
             event = Event(file_path)
             db = UseDynamoDB("prueba")
             db.guardar_evento(table_name,event)
+            os.remove(LOCAL_PATH + keyString)
 
 
 def handler(event, context):
