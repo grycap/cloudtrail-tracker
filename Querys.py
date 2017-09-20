@@ -62,18 +62,20 @@ def query_table(table_name, filter_key=None, filter_value=None):
 """Return a dict :   {'UserX': 'number of actions/events', ...} """
 def users_list(table_name='EventoCloudTrail_230'):
     users_itemName = 'userIdentity_userName'
-    # user = scan_table(table_name, 'userIdentity_accountId', user_id)
+
+    pe = users_itemName #what we want to search
+
     table = dynamodb_resource.Table(table_name)
 
     users = dict()
 
-    response = table.scan()
+    response = table.scan(ProjectionExpression=pe,)
     data = response['Items']
 
     search_in_events(users,data,users_itemName)
     # print(users)
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,)
         data= response['Items']
         search_in_events(users, data, users_itemName)
         # print(users)
