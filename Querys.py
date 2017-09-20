@@ -1,8 +1,11 @@
+"""limits: http://docs.aws.amazon.com/es_es/amazondynamodb/latest/developerguide/HowItWorks.ProvisionedThroughput.html"""
+
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
+table_name='EventoCloudTrail_230'
 
 def get_table_metadata(table_name):
     """
@@ -60,7 +63,7 @@ def query_table(table_name, filter_key=None, filter_value=None):
 
 
 """Return a dict :   {'UserX': 'number of actions/events', ...} """
-def users_list(table_name='EventoCloudTrail_230'):
+def users_list():
     users_itemName = 'userIdentity_userName'
 
     pe = users_itemName #what we want to search
@@ -99,25 +102,58 @@ def search_in_events(result=dict(), events=list(), attrib=''):
 
     return result
 
+"""YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
+def format_time(time):
+    if len(time) == 10:
+        time = time + "T00:00:00Z"
+
+    if len(time) != 20:
+        raise Exception("Error on time format!")
+
+    return time
+
+"""all actions between time1 and time2
+time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ,
+Return, userIdentity_userName, eventName, Evntsource, eventTime """
+def actions_between_time(time1, time2):
+
+    time1 = format_time(time1)
+    time2 = format_time(time2)
+
+    users_itemName = 'userIdentity_userName'
+    eventName = 'eventName'
+    eventSource = 'eventSource'
+    eventTime = 'eventTime'
+
+    pe = users_itemName + ", " + eventName + ", " + eventSource + ", " + eventTime
+    #filter expression
+    fe = Key(eventTime).between(time1, time2);
+
+    table = dynamodb_resource.Table(table_name)
+    response = table.scan(
+        ProjectionExpression = pe,
+        # ScanFilter=Key('eventTime').between(time1, time2)
+        FilterExpression=fe,
+    )
+    events = response['Items']
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,)
+        events.extend(response['Items'])
+
+        # print(users)
+
+    return events
+
+
+
+
 def main():
     # table_name = 'EventoCloudTrail_230'
     info = get_table_metadata('EventoCloudTrail_230')
     print(info)
-    # exec_query('EventoCloudTrail_230','eventID','e662c7ab-b815-4d0d-967b-21a6cc47af78')
-    # q = query_table('EventoCloudTrail_230','eventID','7589e218-be95-48bc-b8c8-435e519eaa2b')
-    # print("Results from query %s " % q)
-    #
-    # scan = scan_table('EventoCloudTrail_230','eventID','7589e218-be95-48bc-b8c8-435e519eaa2b')
-    # print("Results from scan %s " % scan)
-    # print("count %d " % scan.get('Count'))
-    #
-    # user_id = '974349055189'
-    # user = scan_table(table_name,'userIdentity_accountId',user_id)
-    # print("User %s info \n %s \n Count %s" % (user_id, user, user.get('Count')))
-
-    users_l = users_list()
-    print("List of users %s" % users_l)
-    print("List of users %s" % users_l.get('Count'))
+    a = actions_between_time('2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
+    print(a)
+    print(len(a))
 
 if (__name__ == '__main__'):
     main()
