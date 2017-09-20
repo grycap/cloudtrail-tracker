@@ -58,17 +58,44 @@ def query_table(table_name, filter_key=None, filter_value=None):
 
     return response
 
+
+"""Return a dict :   {'UserX': 'number of actions/events', ...} """
 def users_list(table_name='EventoCloudTrail_230'):
-    users_item = 'userIdentity_userName'
-    users_item = 'userIdentity_accountId'
+    users_itemName = 'userIdentity_userName'
     # user = scan_table(table_name, 'userIdentity_accountId', user_id)
     table = dynamodb_resource.Table(table_name)
 
-    filtering_exp = Key(users_item).eq('974349055189')
-    response = table.scan(ScanIndexForward=False)
-    # response = table.query(KeyConditionExpression=filtering_exp, ScanIndexForward=False)
+    users = dict()
 
-    return response
+    response = table.scan()
+    data = response['Items']
+
+    search_in_events(users,data,users_itemName)
+    # print(users)
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        data= response['Items']
+        search_in_events(users, data, users_itemName)
+        # print(users)
+
+    print("- Users- \n %s " % users)
+    exit()
+
+    return data
+
+"""Search atrib in list of events"""
+def search_in_events(result=dict(), events=list(), attrib=''):
+
+    for e in events:
+        u = e.get(attrib, None)
+        if u is None:
+            pass
+            #Events without that atrib
+        else:
+            nums = result.get(u,0)
+            result[u] = nums + 1
+
+    return result
 
 def main():
     # table_name = 'EventoCloudTrail_230'
@@ -88,6 +115,7 @@ def main():
 
     users_l = users_list()
     print("List of users %s" % users_l)
+    print("List of users %s" % users_l.get('Count'))
 
 if (__name__ == '__main__'):
     main()
