@@ -28,6 +28,8 @@ def read_table_item(table_name, pk_name, pk_value):
     table = dynamodb_resource.Table(table_name)
     response = table.get_item(Key={pk_name: pk_value})
 
+
+
     return response
 
 def scan_table(table_name, filter_key=None, filter_value=None):
@@ -40,10 +42,26 @@ def scan_table(table_name, filter_key=None, filter_value=None):
     if filter_key and filter_value:
         filtering_exp = Key(filter_key).eq(filter_value)
         response = table.scan(FilterExpression=filtering_exp)
+
+        events = response['Items']
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],FilterExpression=filtering_exp)
+            events.extend(response['Items'])
+
+            # print(users)
     else:
         response = table.scan()
 
-    return response
+        events = response['Items']
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+            events.extend(response['Items'])
+
+            # print(users)
+
+
+
+    return events
 
 
 def query_table(table_name, filter_key=None, filter_value=None):
@@ -151,9 +169,14 @@ def main():
     # table_name = 'EventoCloudTrail_230'
     info = get_table_metadata('EventoCloudTrail_230')
     print(info)
-    a = actions_between_time('2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
-    print(a)
-    print(len(a))
+    # a = actions_between_time('2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
+    # print(a)
+    # print(len(a))
+    all = scan_table(table_name)
+
+    # print(all)
+    # print(len(all))
+
 
 if (__name__ == '__main__'):
     main()
