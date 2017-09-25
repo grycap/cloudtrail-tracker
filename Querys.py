@@ -2,6 +2,7 @@
 
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
+import time
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
@@ -122,6 +123,7 @@ def search_in_events(result=dict(), events=list(), attrib=''):
 
 """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
 def format_time(time):
+    if(time is None): return None
     if len(time) == 10:
         time = time + "T00:00:00Z"
 
@@ -155,13 +157,61 @@ def actions_between_time(time1, time2):
     )
     events = response['Items']
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,)
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,FilterExpression=fe,)
         events.extend(response['Items'])
 
         # print(users)
 
     return events
 
+"""List of services used by an user between two times"""
+def used_services(user, time1 = None, time2 = None):
+    time1 = format_time(time1)
+    time2 = format_time(time2)
+
+    users_itemName = 'userIdentity_userName'
+    eventName = 'eventName'
+    eventSource = 'eventSource'
+    eventTime = 'eventTime'
+
+    pe = users_itemName + ", " + eventName + ", " + eventSource + ", " + eventTime
+    # filter expression
+    fe2 = Key(users_itemName).eq(user);
+    if time1 and time2:
+
+        fe = Key(eventTime).between(time1, time2);
+
+        table = dynamodb_resource.Table(table_name)
+        response = table.scan(
+            ProjectionExpression=pe,
+            # ScanFilter=Key('eventTime').between(time1, time2)
+            FilterExpression=fe & fe2,
+        )
+        events = response['Items']
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], ProjectionExpression=pe, FilterExpression=fe & fe2,)
+            events.extend(response['Items'])
+    else:
+        fe2 = Key(users_itemName).eq(user);
+        table = dynamodb_resource.Table(table_name)
+        response = table.scan(
+            ProjectionExpression=pe,
+            # ScanFilter=Key('eventTime').between(time1, time2)
+            FilterExpression=fe2,
+        )
+        events = response['Items']
+        while 'LastEvaluatedKey' in response:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], ProjectionExpression=pe,
+                                  FilterExpression=fe2 )
+            events.extend(response['Items'])
+
+        # print(users)
+
+    return events
+
+"""Count events between to time from an user"""
+def user_count_event(user, event, time1, time2):
+    event_search = 'eventName'
 
 
 
@@ -172,8 +222,18 @@ def main():
     # a = actions_between_time('2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
     # print(a)
     # print(len(a))
-    all = scan_table(table_name)
 
+    # start_time = time.time()
+    # all = scan_table(table_name)
+    # elapsed_time = time.time() - start_time
+    # print("Time elapsed for all items %f " % elapsed_time)
+
+    start_time = time.time()
+    user_list = used_services("gmolto",'2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
+    elapsed_time = time.time() - start_time
+    print("Time elapsed for  items %f " % elapsed_time)
+
+    print(user_list)
     # print(all)
     # print(len(all))
 
