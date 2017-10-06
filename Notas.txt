@@ -1,3 +1,8 @@
 Sin un índice global las consultas se relentizan mucho. Hay que usar scan, lo que implica que coge toda la tabla tod oel rato.
 Al usar un índice global (nombre del usuario, userIdentity_userName), ordenado por fecha (eventTime)lo cual nos va a permitir usar query sobre
 el nombre del usuario y filtrar por el tiempo.
+Faltaria buscar el group-by, de momento no encuentro nada.
+
+
+
+Pruebo Athena:
