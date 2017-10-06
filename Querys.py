@@ -338,14 +338,13 @@ def main():
     # all = scan_table(table_name)
     # elapsed_time = time.time() - start_time
     # print("Time elapsed for all items %f " % elapsed_time)
-    for i in range(100):
-        start_time = time.time()
-        # alucloud171
-        user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
-        elapsed_time = time.time() - start_time
-        print("Top users")
-        print(user_events)
-        print("Time elapsed for  items %f " % elapsed_time)
+    start_time = time.time()
+    # alucloud171
+    user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
+    elapsed_time = time.time() - start_time
+    print("Top users")
+    print(user_events)
+    print("Time elapsed for  items %f " % elapsed_time)
 
 
     # print(all)
