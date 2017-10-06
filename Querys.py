@@ -168,20 +168,26 @@ def actions_between_time(time1, time2, feAux = None):
 
     if feAux is not None:
         fe_complete = fe & feAux
+    else:
+        fe_complete = fe
 
     response = table.scan(
-        ProjectionExpression = pe,
+        # ProjectionExpression = pe,
+        Select='COUNT',
         # ScanFilter=Key('eventTime').between(time1, time2)
         FilterExpression=fe_complete,
     )
-    events = response['Items']
+    events = response['Count']
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,FilterExpression=fe_complete,)
-        events.extend(response['Items'])
+        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
+                              # ProjectionExpression=pe,
+                              Select='COUNT',
+                              FilterExpression=fe_complete,)
+        events = events + (response['Count'])
 
     return events
 
-"""List of services used by an user between two times"""
+"""Number of services used by an user between two times"""
 def used_services(user, time1 = None, time2 = None):
     time1 = format_time(time1)
     time2 = format_time(time2)
@@ -200,28 +206,36 @@ def used_services(user, time1 = None, time2 = None):
 
         table = dynamodb_resource.Table(table_name)
         response = table.scan(
-            ProjectionExpression=pe,
+            # ProjectionExpression=pe,
             # ScanFilter=Key('eventTime').between(time1, time2)
+            Select='COUNT',
             FilterExpression=fe & fe2,
         )
-        events = response['Items']
+        events = response['Count']
         while 'LastEvaluatedKey' in response:
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], ProjectionExpression=pe, FilterExpression=fe & fe2,)
-            events.extend(response['Items'])
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
+                                  # ProjectionExpression=pe,
+                                  Select='COUNT',
+                                  FilterExpression=fe & fe2,)
+            events = events + (response['Count'])
     else:
         fe2 = Key(users_itemName).eq(user);
         table = dynamodb_resource.Table(table_name)
         response = table.scan(
-            ProjectionExpression=pe,
+            # ProjectionExpression=pe,
             # ScanFilter=Key('eventTime').between(time1, time2)
+            Select='COUNT',
             FilterExpression=fe2,
         )
-        events = response['Items']
+        print(response)
+        events =  response['Count']
         while 'LastEvaluatedKey' in response:
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], ProjectionExpression=pe,
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
+                                  # ProjectionExpression=pe,
+                                  Select='COUNT',
                                   FilterExpression=fe2 )
-            events.extend(response['Items'])
-
+            events = events + (response['Count'])
+            print(response)
         # print(users)
 
     return events
@@ -230,8 +244,11 @@ def used_services(user, time1 = None, time2 = None):
 Return events, number_of_events"""
 def user_count_event(user, event, time1, time2):
     event_search = 'eventName'
-    time1 = format_time(time1)
     time2 = format_time(time2)
+
+    index_name = 'eventID'
+    index = 'userIdentity_userName-eventTime-index'
+    time = 'eventTime'
 
     users_itemName = 'userIdentity_userName'
     eventName = 'eventName'
@@ -243,21 +260,26 @@ def user_count_event(user, event, time1, time2):
     fe2 = Key(users_itemName).eq(user);
     fe3 = Key(event_search).eq(event);
     fe = Key(eventTime).between(time1, time2);
+    feAux = Key(users_itemName).eq(user);
     fe_complete = fe & fe2 & fe3
     table = dynamodb_resource.Table(table_name)
-    response = table.scan(
-            ProjectionExpression=pe,
-            # ScanFilter=Key('eventTime').between(time1, time2)
-            FilterExpression= fe_complete,
-        )
-    events = response['Items']
+    response = table.query(
+            IndexName=index,
+    # ProjectionExpression=pe,
+            KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
+            # FilterExpression= fe_complete,
+            Select='COUNT'
+    )
+    print(response)
+    events = response['Count']
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'], ProjectionExpression=pe,
-                                  FilterExpression=fe_complete, )
-        events.extend(response['Items'])
-
-    return events, len(events)
-
+        response = table.query(ExclusiveStartKey=response['LastEvaluatedKey'],
+                              # ProjectionExpression=pe,
+                              FilterExpression=fe_complete,
+                              Select='COUNT'
+                              )
+        events = events + (response['Count'])
+    return events
 
 """Top users"""
 def top_users(time1, time2, event=None):
@@ -306,8 +328,8 @@ def top_users(time1, time2, event=None):
 
 def main():
     # table_name = 'EventoCloudTrail_230'
-    info = get_table_metadata('EventoCloudTrail_230')
-    print(info)
+    # info = get_table_metadata('EventoCloudTrail_230')
+    # print(info)
     # a = actions_between_time('2017-01-01T14:35:21Z','2017-10-01T14:35:21Z')
     # print(a)
     # print(len(a))
@@ -316,14 +338,14 @@ def main():
     # all = scan_table(table_name)
     # elapsed_time = time.time() - start_time
     # print("Time elapsed for all items %f " % elapsed_time)
-
-    start_time = time.time()
-    user_events,ordered_list = top_users('2017-06-01','2017-06-02', event = 'DescribeInstanceStatus')
-    elapsed_time = time.time() - start_time
-    print("Top users")
-    print(user_events)
-    print(ordered_list)
-    print("Time elapsed for  items %f " % elapsed_time)
+    for i in range(100):
+        start_time = time.time()
+        # alucloud171
+        user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
+        elapsed_time = time.time() - start_time
+        print("Top users")
+        print(user_events)
+        print("Time elapsed for  items %f " % elapsed_time)
 
 
     # print(all)
