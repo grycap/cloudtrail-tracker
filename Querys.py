@@ -157,127 +157,99 @@ def actions_between_time(time1, time2, feAux = None):
     time2 = format_time(time2)
 
     users_itemName = 'userIdentity_userName'
-    eventName = 'eventName'
-    eventSource = 'eventSource'
     eventTime = 'eventTime'
+    index = 'userIdentity_userName-eventTime-index'
 
-    pe = users_itemName + ", " + eventName + ", " + eventSource + ", " + eventTime
     #filter expression
-    fe = Key(eventTime).between(time1, time2);
+    fe_complete = Key(eventTime).between(time1, time2)
     table = dynamodb_resource.Table(table_name)
 
     if feAux is not None:
-        fe_complete = fe & feAux
-    else:
-        fe_complete = fe
+        fe_complete = fe_complete & feAux
 
     response = table.scan(
-        # ProjectionExpression = pe,
-        Select='COUNT',
-        # ScanFilter=Key('eventTime').between(time1, time2)
-        FilterExpression=fe_complete,
+
+            FilterExpression=fe_complete,
+            Select='COUNT'
     )
     events = response['Count']
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
-                              # ProjectionExpression=pe,
-                              Select='COUNT',
-                              FilterExpression=fe_complete,)
+        response = table.scan(
+                ExclusiveStartKey=response['LastEvaluatedKey'],
+                FilterExpression=fe_complete,
+                Select='COUNT'
+        )
         events = events + (response['Count'])
 
     return events
 
+
 """Number of services used by an user between two times"""
-def used_services(user, time1 = None, time2 = None):
+def used_services(user, time1=None, time2=None):
     time1 = format_time(time1)
     time2 = format_time(time2)
 
     users_itemName = 'userIdentity_userName'
-    eventName = 'eventName'
-    eventSource = 'eventSource'
     eventTime = 'eventTime'
+    index = 'userIdentity_userName-eventTime-index'
 
-    pe = users_itemName + ", " + eventName + ", " + eventSource + ", " + eventTime
     # filter expression
-    fe2 = Key(users_itemName).eq(user);
-    if time1 and time2:
-
-        fe = Key(eventTime).between(time1, time2);
-
-        table = dynamodb_resource.Table(table_name)
-        response = table.scan(
-            # ProjectionExpression=pe,
-            # ScanFilter=Key('eventTime').between(time1, time2)
-            Select='COUNT',
-            FilterExpression=fe & fe2,
+    feAux = Key(users_itemName).eq(user);
+    if time1 is not None and time2 is  not None:
+        feAux = Key(users_itemName).eq(user) & Key(eventTime).between(time1, time2)
+        print("none")
+    print(feAux)
+    table = dynamodb_resource.Table(table_name)
+    response = table.query(
+        IndexName=index,
+        KeyConditionExpression=feAux ,
+        Select='COUNT'
+    )
+    print(response)
+    events = response['Count']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            IndexName=index,
+            KeyConditionExpression=feAux,
+            Select='COUNT'
         )
-        events = response['Count']
-        while 'LastEvaluatedKey' in response:
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
-                                  # ProjectionExpression=pe,
-                                  Select='COUNT',
-                                  FilterExpression=fe & fe2,)
-            events = events + (response['Count'])
-    else:
-        fe2 = Key(users_itemName).eq(user);
-        table = dynamodb_resource.Table(table_name)
-        response = table.scan(
-            # ProjectionExpression=pe,
-            # ScanFilter=Key('eventTime').between(time1, time2)
-            Select='COUNT',
-            FilterExpression=fe2,
-        )
+        events = events + (response['Count'])
         print(response)
-        events =  response['Count']
-        while 'LastEvaluatedKey' in response:
-            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],
-                                  # ProjectionExpression=pe,
-                                  Select='COUNT',
-                                  FilterExpression=fe2 )
-            events = events + (response['Count'])
-            print(response)
-        # print(users)
+    # print(users)
 
     return events
 
 """Count events from an user
-Return events, number_of_events"""
+Return number_of_events"""
 def user_count_event(user, event, time1, time2):
-    event_search = 'eventName'
     time2 = format_time(time2)
 
-    index_name = 'eventID'
     index = 'userIdentity_userName-eventTime-index'
-    time = 'eventTime'
 
     users_itemName = 'userIdentity_userName'
     eventName = 'eventName'
-    eventSource = 'eventSource'
     eventTime = 'eventTime'
 
-    pe = users_itemName + ", " + eventName + ", " + eventSource + ", " + eventTime
-    # filter expression
-    fe2 = Key(users_itemName).eq(user);
-    fe3 = Key(event_search).eq(event);
-    fe = Key(eventTime).between(time1, time2);
+    feEvent = Key(eventName).eq(event);
     feAux = Key(users_itemName).eq(user);
-    fe_complete = fe & fe2 & fe3
     table = dynamodb_resource.Table(table_name)
     response = table.query(
             IndexName=index,
-    # ProjectionExpression=pe,
-            KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
-            # FilterExpression= fe_complete,
+            KeyConditionExpression=feAux & Key(eventTime).between(time1, time2) ,
+            FilterExpression=feEvent,
             Select='COUNT'
     )
     print(response)
     events = response['Count']
     while 'LastEvaluatedKey' in response:
-        response = table.query(ExclusiveStartKey=response['LastEvaluatedKey'],
-                              # ProjectionExpression=pe,
-                              FilterExpression=fe_complete,
-                              Select='COUNT'
-                              )
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            IndexName=index,
+            KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
+            FilterExpression=feEvent,
+            Select='COUNT'
+         )
         events = events + (response['Count'])
     return events
 
@@ -306,6 +278,8 @@ def top_users(time1, time2, event=None):
             users_events_count[user] = n_events_user
 
         return users_events,users_events_count
+
+    index = 'userIdentity_userName-eventTime-index'
 
     if not event:
         actions = actions_between_time(time1, time2)
@@ -338,18 +312,43 @@ def main():
     # all = scan_table(table_name)
     # elapsed_time = time.time() - start_time
     # print("Time elapsed for all items %f " % elapsed_time)
+
     start_time = time.time()
     # alucloud171
     user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
-    print("Top users")
+    print(user_events)
+    print("Time elapsed for  items %f " % elapsed_time)
+
+    start_time = time.time()
+    # alucloud171
+    user_events = used_services('alucloud171','2017-06-01T12:00:51Z', '2017-06-01T19:00:51Z' )
+    elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  items %f " % elapsed_time)
 
 
-    # print(all)
-    # print(len(all))
+    start_time = time.time()
+    # alucloud171
+    user_events = actions_between_time( '2016-06-01T12:00:51Z','2018-06-01T19:00:51Z')
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  items %f " % elapsed_time)
 
+
+    # start_time = time.time()
+    # # alucloud171
+    # user_events = user_count_event('gmolto', 'DescribeMetricFilters', '2017-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for  items %f " % elapsed_time)
 
 if (__name__ == '__main__'):
     main()
+
+"""TODO
+user_list
+top_users
+
+cuidado con scan de actions_between
+"""
