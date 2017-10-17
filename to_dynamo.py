@@ -37,3 +37,24 @@ class UseDynamoDB:
             # )
             print("PutItem succeeded:")
             # print(json.dumps(response, indent=4))
+
+    def event_save_custom(self, name_table, event=my_parser.Event('')):
+        # eventos = resource.Table(name_table)
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table(name_table)
+        # Creamos evento nuevo
+        # datos = {
+        #     'eventID':'b6b958b2-ff15-42b6-bc6d-c8e81a780dd7',
+        #     'account_id':1,
+        #     'hola':'adios'
+        # }
+
+
+        print('Event request: {0}'.format(event))
+
+        table.put_item(
+            Item=event
+        )
+
+
+        print("PutItem succeeded:")

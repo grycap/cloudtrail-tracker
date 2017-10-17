@@ -24,6 +24,7 @@ import time
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
 table_name='EventoCloudTrail_230'
+index = 'userIdentity_userName-eventTime-index'
 
 def get_table_metadata(table_name):
     """
@@ -82,45 +83,29 @@ def scan_table(table_name, filter_key=None, filter_value=None):
     return events
 
 
-def query_table(table_name, filter_key=None, filter_value=None):
-    """
-    Perform a query operation on the table. 
-    Can specify filter_key (col name) and its value to be filtered.
-    """
-    table = dynamodb_resource.Table(table_name)
-
-    if filter_key and filter_value:
-        filtering_exp = Key(filter_key).eq(filter_value)
-        response = table.query(KeyConditionExpression=filtering_exp)
-    else:
-        response = table.query()
-
-    return response
-
-
-"""Return a dict :   {'UserX': 'number of actions/events', ...} """
+"""Return a list of users"""
 def users_list():
     users_itemName = 'userIdentity_userName'
 
-    pe = users_itemName #what we want to search
+    pe = Key('eventID').eq('1') #what we want to search
 
     table = dynamodb_resource.Table(table_name)
 
-    users = dict()
-
-    response = table.scan(ProjectionExpression=pe,)
+    response = table.query(
+        KeyConditionExpression=pe,
+    )
     data = response['Items']
 
-    search_in_events(users,data,users_itemName)
+    #search_in_events(users,data,users_itemName)
     # print(users)
     while 'LastEvaluatedKey' in response:
-        response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'],ProjectionExpression=pe,)
+        response = table.scan(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            ProjectionExpression=pe,
+        )
         data= response['Items']
-        search_in_events(users, data, users_itemName)
+        #search_in_events(users, data, users_itemName)
         # print(users)
-
-    print("- Users- \n %s " % users)
-    exit()
 
     return data
 
@@ -158,7 +143,7 @@ def actions_between_time(time1, time2, feAux = None):
 
     users_itemName = 'userIdentity_userName'
     eventTime = 'eventTime'
-    index = 'userIdentity_userName-eventTime-index'
+
 
     #filter expression
     fe_complete = Key(eventTime).between(time1, time2)
@@ -191,7 +176,6 @@ def used_services(user, time1=None, time2=None):
 
     users_itemName = 'userIdentity_userName'
     eventTime = 'eventTime'
-    index = 'userIdentity_userName-eventTime-index'
 
     # filter expression
     feAux = Key(users_itemName).eq(user);
@@ -327,14 +311,22 @@ def main():
     print(user_events)
     print("Time elapsed for  items %f " % elapsed_time)
 
+    start_time = time.time()
+    # alucloud171
+    # user_events = users_list()
+    user_events = users_list()
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  items %f " % elapsed_time)
 
+    """
     start_time = time.time()
     # alucloud171
     user_events = actions_between_time( '2016-06-01T12:00:51Z','2018-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  items %f " % elapsed_time)
-
+    """
 
     # start_time = time.time()
     # # alucloud171
