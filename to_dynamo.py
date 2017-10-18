@@ -1,31 +1,38 @@
 
 from boto3 import dynamodb
 import boto3
-import json
+import json, ast
 import my_parser
 import decimal
+from boto3.dynamodb.conditions import Key
 
 class UseDynamoDB:
     
     def __init__(self, name):
         self.name = name
+        self.index = 'userIdentity_userName-eventTime-index'
+
     
     def guardar_evento(self, name_table, event=my_parser.Event('')):
         #eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
+        nameCamp = 'userIdentity_userName'
         # Creamos evento nuevo
         # datos = {
         #     'eventID':'b6b958b2-ff15-42b6-bc6d-c8e81a780dd7',
         #     'account_id':1,
         #     'hola':'adios'
         # }
-        
+
         for datos in event.events():
             # print('Event name: {0}'.format(e['event_name']))
             # print('Event request: {0}'.format(e['request']))
             print('Event request: {0}'.format(datos))
-            
+
+            userName = datos.get(nameCamp, None)
+            if userName is None:
+                datos[nameCamp] = 'no_user'
 
             #evento = Item(eventos, data=datos)
             table.put_item(
@@ -38,23 +45,57 @@ class UseDynamoDB:
             print("PutItem succeeded:")
             # print(json.dumps(response, indent=4))
 
-    def event_save_custom(self, name_table, event=my_parser.Event('')):
+            if userName is None:
+                continue
+
+            self.new_user(name_table, userName)
+
+            print("User %s added to list" % userName)
+
+    """Get old user and add a new user. if not exist yet"""
+    def new_user(self, name_table,user):
+        index = 'userIdentity_userName'
+        setValue = 'listUsers'
+        arr = ['userIdentity_userName','all']
         # eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
-        # Creamos evento nuevo
-        # datos = {
-        #     'eventID':'b6b958b2-ff15-42b6-bc6d-c8e81a780dd7',
-        #     'account_id':1,
-        #     'hola':'adios'
-        # }
 
-
-        print('Event request: {0}'.format(event))
-
-        table.put_item(
-            Item=event
+        # filter expression
+        fe = Key(arr[0]).eq(arr[1]);
+        response = table.query(
+            IndexName=self.index ,
+            KeyConditionExpression=fe,
+        )
+        users = response['Items'][0][setValue]
+        # users = ast.literal_eval(users)
+        if users.get(user,None) is not None: return
+        print(users)
+        users[user] = '1'
+        #update
+        print(users)
+        m = { "M": {
+            user: {
+                "L": [
+                    { "S": "1" }
+                ]
+            }
+            }
+        }
+        table.update_item(
+            # Key={arr[0]: arr[1]},
+            Key={'eventID': '1',
+                 'userIdentity_userName': 'all',
+                 # 'eventTime': '1'
+            },
+            UpdateExpression=("SET {0} = :p").format(setValue),
+            ExpressionAttributeValues={
+                ':p': users,
+                # ':p': {user:'1'},
+                # ':p': m,
+            },
+            ReturnValues="UPDATED_NEW"
+            # ExpressionAttributeValues={':updated': 'UPDATED'}
         )
 
-
-        print("PutItem succeeded:")
+        # print(users)
