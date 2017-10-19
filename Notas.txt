@@ -2,10 +2,6 @@ Sin un índice global las consultas se relentizan mucho. Hay que usar scan, lo q
 Al usar un índice global (nombre del usuario, userIdentity_userName), ordenado por fecha (eventTime)lo cual nos va a permitir usar query sobre
 el nombre del usuario y filtrar por el tiempo.
 
-
-Para una busqueda en general, sin el usuario (clave principal del indice secundario), hace falta usar scan
-ALERTA con esto, aumenta mucho el tiempo a partir de la segunda peticion!
-
 SGI:
 'userIdentity_userName-eventTime-index'
     used_count_events
@@ -15,3 +11,6 @@ SGI:
 Insertar en la tabla un elemento que sea toda la lista de usuarios
 Vigilar el coste de eliminar e insertar
 
+Tanto top_users commo actions_between_time hacen una query por usuario, debido a que el usuario es un
+index y es más fácil buscar por el (querys en lugar de scan)
+Tarda poco, el problema es cuando se hacen varias consultas seguidas, que puede no ir bien

@@ -136,38 +136,23 @@ def format_time(time):
     return time
 
 """all actions between time1 and time2
-time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ,
-Return, userIdentity_userName, eventName, Evntsource, eventTime """
-def actions_between_time(time1, time2, feAux = None):
+time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
+returns a number (int)"""
+def actions_between_time(time1, time2, event=None):
     time1 = format_time(time1)
     time2 = format_time(time2)
 
-    users_itemName = 'userIdentity_userName'
-    eventTime = 'eventTime'
+    total = 0
+    users_l = users_list()
+    if event is None:
 
+        for user in users_l:
+            total = total + used_services(user, time1, time2)
+    else:
+        for user in users_l:
+            total = total + user_count_event(user, event, time1, time2)
 
-    #filter expression
-    fe_complete = Key(eventTime).between(time1, time2)
-    table = dynamodb_resource.Table(table_name)
-
-    if feAux is not None:
-        fe_complete = fe_complete & feAux
-
-    response = table.scan(
-
-            FilterExpression=fe_complete,
-            Select='COUNT'
-    )
-    events = response['Count']
-    while 'LastEvaluatedKey' in response:
-        response = table.scan(
-                ExclusiveStartKey=response['LastEvaluatedKey'],
-                FilterExpression=fe_complete,
-                Select='COUNT'
-        )
-        events = events + (response['Count'])
-
-    return events
+    return total
 
 
 """Number of services used by an user between two times"""
@@ -197,8 +182,7 @@ def used_services(user, time1=None, time2=None):
             Select='COUNT'
         )
         events = events + (response['Count'])
-        print(response)
-    # print(users)
+
 
     return events
 
@@ -281,18 +265,18 @@ def main():
     print(user_events)
     print("Time elapsed for top_users items %f " % elapsed_time)
 
-    for i in range(50):
-        start_time = time.time()
-        # alucloud171
-        user_events = actions_between_time( '2016-06-01T12:00:51Z','2018-06-01T19:00:51Z')
-        elapsed_time = time.time() - start_time
-        print(user_events)
-        print("Time elapsed for  items %f " % elapsed_time)
+
+    start_time = time.time()
+    user_events = actions_between_time( '2016-06-01T12:00:51Z','2018-06-01T19:00:51Z')
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
+    start_time = time.time()
+    user_events = actions_between_time('2016-06-01T12:00:51Z', '2018-06-01T19:00:51Z',event='DescribeInstanceStatus')
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
 
 
 if (__name__ == '__main__'):
     main()
-
-"""TODO
-cuidado con scan de actions_between
-"""
