@@ -45,7 +45,7 @@ class UseDynamoDB:
             print("PutItem succeeded:")
             # print(json.dumps(response, indent=4))
 
-            if userName is None:
+            if userName is None or userName == ' ':
                 continue
 
             self.new_user(name_table, userName)

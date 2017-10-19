@@ -12,8 +12,6 @@ SGI:
     useed_services
 
 
-
-
-
 Insertar en la tabla un elemento que sea toda la lista de usuarios
 Vigilar el coste de eliminar e insertar
+
