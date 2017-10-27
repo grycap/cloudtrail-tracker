@@ -70,18 +70,8 @@ class UseDynamoDB:
         users = response['Items'][0][setValue]
         # users = ast.literal_eval(users)
         if users.get(user,None) is not None: return
-        print(users)
         users[user] = '1'
         #update
-        print(users)
-        m = { "M": {
-            user: {
-                "L": [
-                    { "S": "1" }
-                ]
-            }
-            }
-        }
         table.update_item(
             # Key={arr[0]: arr[1]},
             Key={'eventID': '1',

@@ -51,19 +51,6 @@ def handler(event, context):
     print("Downloading log in bucket {} with key {}".format(bucket, key))
     os.makedirs(os.path.dirname(download_path), exist_ok=True)
     print("bucket %s , key %s , download_path %s" % (bucket, key, download_path))
-    # s3_client.download_file(bucket, key, download_path)
-    #
-    # grayify_image(download_path)
-    # bucket_out = bucket + '-out'
-    # print("Uploading image in bucket {} with key {}".format(bucket_out, key))
-    # s3_client.upload_file(download_path, '{}'.format(bucket_out), key)
-    #
-    # print("Changing ACLs for public-read for object in bucket {} with key{}".format(bucket_out,key))
-    # s3_resource = boto3.resource('s3')
-    # obj = s3_resource.Object(bucket_out, key)
-    # obj.Acl().put(ACL='public-read')
-    # if __name__ == '__main__':
-    #     grayify_image(sys.argv[1])
 
 
 def main():
