@@ -23,7 +23,7 @@ def get_structure(path):
         # print(path)
         # print(j)
         if len(j) > 0:
-            aux = ["{0}\{1}".format(path,x) for x in j]
+            aux = [os.path.join(path,x) for x in j]
             res.extend(aux)
     return res
 
