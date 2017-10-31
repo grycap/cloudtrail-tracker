@@ -42,15 +42,19 @@ class Event:
     def __init__(self, archive_base_dir):
         # store base dir to CloudTrail archives
         self.file = archive_base_dir.rstrip('/')
+        fp = gzip.open(self.file, 'rt')
+        self.all_events = json.loads(fp.read())
+        fp.close()
+
+    def count_events(self):
+        return len(self.all_events['Records'])
     
     def events(self):
-        fp = gzip.open(self.file , 'rt')
-        all_events = json.loads(fp.read())
-        fp.close()
+
     
-        if ('Records' in all_events):
+        if ('Records' in self.all_events):
         
-            for trail_item in all_events['Records']:
+            for trail_item in self.all_events['Records']:
                 yield self.build_event(trail_item)
 
     def build_event(self, source):
@@ -178,7 +182,8 @@ class Parser:
 def main():
     print('Example')
     
-    event = Event('974349055189_CloudTrail_us-east-1_20170601T0005Z_12nCTooUATtsirhW.json.gz')
+    event = Event('examples\\ano1\\mes1\\dia1\\974349055189_CloudTrail_us-east-1_20170601T0005Z_12nCTooUATtsirhW.json.gz')
+    print("Num events %d " % event.count_events())
     for e in event.events():
         # print('Event name: {0}'.format(e['event_name']))
         # print('Event request: {0}'.format(e['request']))

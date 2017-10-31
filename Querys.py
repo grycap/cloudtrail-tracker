@@ -83,6 +83,10 @@ def scan_table(table_name, filter_key=None, filter_value=None):
 
     return events
 
+def item_count():
+    table = dynamodb_resource.Table(table_name)
+
+    return table.item_count
 
 """Return a list of users"""
 def users_list():

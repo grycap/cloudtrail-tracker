@@ -8,12 +8,13 @@ from boto3.dynamodb.conditions import Key
 
 class UseDynamoDB:
     
-    def __init__(self, name):
+    def __init__(self, name, verbose=False):
         self.name = name
         self.index = 'userIdentity_userName-eventTime-index'
+        self.verbose = verbose
 
     
-    def guardar_evento(self, name_table, event=my_parser.Event('')):
+    def guardar_evento(self, name_table, event):
         #eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
@@ -28,7 +29,8 @@ class UseDynamoDB:
         for datos in event.events():
             # print('Event name: {0}'.format(e['event_name']))
             # print('Event request: {0}'.format(e['request']))
-            print('Event request: {0}'.format(datos))
+            if self.verbose:
+                print('Event request: {0}'.format(datos))
 
             userName = datos.get(nameCamp, None)
             if userName is None:
@@ -42,15 +44,16 @@ class UseDynamoDB:
             # response = eventos.put_item(
             #     Item=datos
             # )
-            print("PutItem succeeded:")
+            if self.verbose:
+                print("PutItem succeeded:")
             # print(json.dumps(response, indent=4))
 
             if userName is None or userName == ' ':
                 continue
 
             self.new_user(name_table, userName)
-
-            print("User %s added to list" % userName)
+            if self.verbose:
+                print("User %s added to list" % userName)
 
     """Get old user and add a new user. if not exist yet"""
     def new_user(self, name_table,user):
