@@ -1,9 +1,12 @@
 import boto3
-import os, time
+import os, time, argparse
 from to_dynamo import UseDynamoDB
 from my_parser import Event
 import Querys
 import numpy as np
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 
 def chunks(l, porc=0.1):
     """Yield successive n-sized chunks from l."""
@@ -35,28 +38,28 @@ def querys(times_chunk):
     start_time = time.time()
     user_events = Querys.user_count_event('gmolto', 'DescribeMetricFilters', '2017-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for user_count_event items %f " % elapsed_time)
     times_chunk[2] = (elapsed_time)
 
     start_time = time.time()
     user_events = Querys.used_services('alucloud171', '2017-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for used_services items %f " % elapsed_time)
     times_chunk[3] = (elapsed_time)
 
     start_time = time.time()
     user_events = Querys.users_list()
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for users_list items %f " % elapsed_time)
     times_chunk[4] = (elapsed_time)
 
     start_time = time.time()
     user_events = Querys.top_users('2017-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for top_users items %f " % elapsed_time)
     times_chunk[5] = (elapsed_time)
 
@@ -64,14 +67,14 @@ def querys(times_chunk):
     start_time = time.time()
     user_events = Querys.actions_between_time('2016-06-01T12:00:51Z', '2018-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
     times_chunk[6] = (elapsed_time)
 
     start_time = time.time()
     user_events = Querys.actions_between_time('2016-06-01T12:00:51Z', '2018-06-01T19:00:51Z', event='DescribeInstanceStatus')
     elapsed_time = time.time() - start_time
-    print(user_events)
+    # print(user_events)
     print("      ---- > Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
     times_chunk[7] = (elapsed_time)
 
@@ -86,9 +89,11 @@ def save_array(data, path):
 """ Save events from a dir ans calculate times"""
 def analysis_events(path, table_name = 'EventoCloudTrail_230'):
     #Get all events from path
+    args = parser.parse_args()
+    path = args.path
+    print("Path of files: %s with %d files" % (path, len(path)))
     events = get_structure(path)
     #split in equal parts (except last)
-
     #matrix for saves times
     save_times = []
     number_events = 0
@@ -99,9 +104,10 @@ def analysis_events(path, table_name = 'EventoCloudTrail_230'):
         #act_between_times_events, ALL]
         print("Uploading %d files " % len(l))
         start_time = time.time()
-
+        count = 0
         for e in l: #e = events file
-
+            count = count + 1
+            print(" ------------------------------ Number %d" % count)
             event = Event(e)
             number_events = number_events + event.count_events()
             db = UseDynamoDB("prueba", verbose=False)

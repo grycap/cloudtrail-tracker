@@ -242,8 +242,8 @@ def top_users(time1, time2, event=None):
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
 
-
 def main():
+
 
     start_time = time.time()
     user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
