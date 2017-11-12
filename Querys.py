@@ -16,7 +16,7 @@ aux methods:
 search in a list of events (dict format): search_in_events(dict, events, attrib)
 format/validate time format: format_time(time)
 """
-
+import boto3
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
 import time
@@ -242,9 +242,22 @@ def top_users(time1, time2, event=None):
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
 
+from decimal import *
+def prueba():
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(table_name)
+
+    item = {u'eventID': u'e215b279-7d2b-4d71-b058-dc73349bd39c', u'userIdentity_sessionContext_attributes_creationDate': u'2016-01-31T20:53:19Z', u'responseElements': ' ', u'userIdentity_sessionContext_attributes_mfaAuthenticated': u'false', u'eventType': u'AwsApiCall', u'userIdentity_arn': u'arn:aws:iam::974349055189:user/alucloud55', u'userIdentity_accessKeyId': u'ASIAIVCXXWR6RHPI33XQ', u'userIdentity_invokedBy': u'signin.amazonaws.com', u'eventSource': u'monitoring.amazonaws.com', u'requestID': u'41bfb196-c862-11e5-ab8f-07ec252f4914', u'userAgent': u'signin.amazonaws.com', u'recipientAccountId': u'974349055189', u'eventTime': u'2016-01-31T21:33:24Z', u'requestParameters_maxRecords': 100, u'eventName': u'DescribeAlarms', u'userIdentity_accountId': u'974349055189', u'eventVersion': u'1.03', u'userIdentity_principalId': u'AIDAIRYFPYWMHYYZ6A77C', u'userIdentity_type': u'IAMUser', u'userIdentity_userName': u'alucloud55', u'awsRegion': u'us-east-1', u'sourceIPAddress': u'190.44.150.5'}
+
+    table.put_item(
+        Item=item
+    )
+
+    exit()
+
 def main():
 
-
+    prueba()
     start_time = time.time()
     user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time

@@ -12,7 +12,7 @@ import gzip
 import json
 import os
 import re
-
+from decimal import *
 
 def flatten_json(y):
     out = {}
@@ -29,6 +29,9 @@ def flatten_json(y):
         else:
             if (x == "" or x == None):
                 x = " "
+            #verifi if is a number and a decimal to pass as Decimal('')
+            elif(isinstance(x,float)):
+                x = Decimal(str(x))
             out[name[:-1]] = x
 
     flatten(y)
