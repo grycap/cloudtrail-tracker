@@ -137,7 +137,7 @@ def analysis_events(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230')
 def main():
     args = parser.parse_args()
     path = args.path
-    porc_chunk = args.porc_chunk
+    porc_chunk = float(args.porc_chunk)
     analysis_events(path, porc_chunk)
     # a = [[1, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8, 9], [9, 8, 7, 6, 5, 4, 3, 2, 1]]
     # save_array(a,'times/times')
