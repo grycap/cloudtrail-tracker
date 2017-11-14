@@ -14,3 +14,6 @@ Vigilar el coste de eliminar e insertar
 Tanto top_users commo actions_between_time hacen una query por usuario, debido a que el usuario es un
 index y es más fácil buscar por el (querys en lugar de scan)
 Tarda poco, el problema es cuando se hacen varias consultas seguidas, que puede no ir bien
+
+
+
