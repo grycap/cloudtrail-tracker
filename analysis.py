@@ -8,6 +8,7 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 parser.add_argument("--porc_chunk", help="Split the data. 0.1 = splits of 10%. Default 0.1", default=0.1)
+parser.add_argument("--upload", help="Upload files", default=False)
 
 def chunks(l, porc=0.1):
     """Yield successive n-sized chunks from l."""
@@ -89,7 +90,7 @@ def save_array(data, path):
             outfile.write('\n')
 
 """ Save events from a dir ans calculate times"""
-def analysis_events(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230'):
+def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230'):
     #Get all events from path
 
     print("Path of files: %s with %d files" % (path, len(path)))
@@ -134,13 +135,52 @@ def analysis_events(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230')
     print("Saving array of times...")
     save_array(save_times, 'times/times')
 
+"""Upload all files from path.
+Do a tracing with a file history and starts from the last point"""
+def upload_all(path, table_name = 'EventoCloudTrail_230'):
+    # Get all events from path
+    path_tracing  = "tracing_items"
+    print("Path of files: %s with " % (path))
+
+    if not os.path.exists(os.path.join(path_tracing)):
+        f = open(path_tracing, "w")
+        f.close()
+
+    file_trace = open(path_tracing, "r")
+
+    traced_items = file_trace.readlines()
+    traced_items = [x[:-1] for x in traced_items]
+    file_trace.close()
+    print("Traced files: %d" % (len(traced_items)))
+    events = get_structure(path)
+
+    print("Number of files: %d" % len(events))
+    events = list(set(events) - set(traced_items))
+    print("Number of total files to upload: %d" % len(events))
+
+    file_trace = open(path_tracing, "a+")
+    for e in events:  # e = events file
+        event = Event(e)
+        db = UseDynamoDB("Uploading", verbose=False)
+        db.guardar_evento(table_name, event)
+        file_trace.write(e+"\n")
+        file_trace.flush()
+
+
+    file_trace.close()
+
+def query_analyze():
+    # TODO only analyze
+    pass
+
 def main():
     args = parser.parse_args()
     path = args.path
     porc_chunk = float(args.porc_chunk)
-    analysis_events(path, porc_chunk)
-    # a = [[1, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8, 9], [9, 8, 7, 6, 5, 4, 3, 2, 1]]
-    # save_array(a,'times/times')
+
+    # analysis_upload_query(path, porc_chunk)
+    if args.upload:
+        upload_all(path)
 
 
 if (__name__ == '__main__'):
