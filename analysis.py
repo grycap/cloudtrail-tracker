@@ -6,7 +6,7 @@ import Querys
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples/prueba')
+parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 parser.add_argument("--porc_chunk", help="Split the data. 0.1 = splits of 10%. Default 0.1", default=0.1)
 parser.add_argument("--upload", help="Upload files", default=False)
 
@@ -90,7 +90,7 @@ def save_array(data, path):
             outfile.write('\n')
 
 """ Save events from a dir ans calculate times"""
-def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230'):
+def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_V2'):
     #Get all events from path
 
     print("Path of files: %s with %d files" % (path, len(path)))
@@ -137,7 +137,7 @@ def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail
 
 """Upload all files from path.
 Do a tracing with a file history and starts from the last point"""
-def upload_all(path, table_name = 'EventoCloudTrail_230'):
+def upload_all(path, table_name = 'EventoCloudTrail_V2'):
     # Get all events from path
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
@@ -181,7 +181,7 @@ def main():
     # analysis_upload_query(path, porc_chunk)
     args.upload = True
     if args.upload:
-        upload_all(path,table_name = 'EventoCloudTrail_2302')
+        upload_all(path,table_name = 'EventoCloudTrail_V2')
 
 
 if (__name__ == '__main__'):

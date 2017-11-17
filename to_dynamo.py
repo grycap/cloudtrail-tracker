@@ -65,7 +65,7 @@ class UseDynamoDB:
         table = dynamodb.Table(name_table)
 
         # filter expression
-        fe = Key(arr[0]).eq(arr[1]);
+        fe = Key(index).eq('all');
         response = table.query(
             # IndexName=self.index ,
             KeyConditionExpression=fe,
@@ -77,8 +77,8 @@ class UseDynamoDB:
         #update
         table.update_item(
             # Key={arr[0]: arr[1]},
-            Key={'eventTime': '1',
-                 'userIdentity_userName': 'all',
+            Key={'userIdentity_userName': 'all',
+                'eventTime': '1',
                  # 'eventTime': '1'
             },
             UpdateExpression=("SET {0} = :p").format(setValue),

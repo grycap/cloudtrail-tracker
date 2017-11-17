@@ -24,8 +24,7 @@ from operator import itemgetter
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
-table_name='EventoCloudTrail_230'
-index = 'userIdentity_userName-eventTime-index'
+table_name='EventoCloudTrail_V2'
 
 def get_table_metadata(table_name):
     """
@@ -91,7 +90,7 @@ def item_count():
 """Return a list of users"""
 def users_list():
     listName = 'listUsers'
-    pe = Key('eventID').eq('1') #what we want to search
+    pe = Key('userIdentity_userName').eq('all') #what we want to search
 
     table = dynamodb_resource.Table(table_name)
 
@@ -173,7 +172,6 @@ def used_services(user, time1=None, time2=None):
         feAux = Key(users_itemName).eq(user) & Key(eventTime).between(time1, time2)
     table = dynamodb_resource.Table(table_name)
     response = table.query(
-        IndexName=index,
         KeyConditionExpression=feAux ,
         Select='COUNT'
     )
@@ -181,7 +179,6 @@ def used_services(user, time1=None, time2=None):
     while 'LastEvaluatedKey' in response:
         response = table.query(
             ExclusiveStartKey=response['LastEvaluatedKey'],
-            IndexName=index,
             KeyConditionExpression=feAux,
             Select='COUNT'
         )
@@ -196,8 +193,6 @@ def user_count_event(user, event, time1, time2):
     time1 = format_time(time1)
     time2 = format_time(time2)
 
-    index = 'userIdentity_userName-eventTime-index'
-
     users_itemName = 'userIdentity_userName'
     eventName = 'eventName'
     eventTime = 'eventTime'
@@ -206,7 +201,6 @@ def user_count_event(user, event, time1, time2):
     feAux = Key(users_itemName).eq(user);
     table = dynamodb_resource.Table(table_name)
     response = table.query(
-            IndexName=index,
             KeyConditionExpression=feAux & Key(eventTime).between(time1, time2) ,
             FilterExpression=feEvent,
             Select='COUNT'
@@ -215,7 +209,6 @@ def user_count_event(user, event, time1, time2):
     while 'LastEvaluatedKey' in response:
         response = table.query(
             ExclusiveStartKey=response['LastEvaluatedKey'],
-            IndexName=index,
             KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
             FilterExpression=feEvent,
             Select='COUNT'
@@ -242,18 +235,9 @@ def top_users(time1, time2, event=None):
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
 
-from decimal import *
-def prueba():
-    import Database
-    Database.init2(table_name+"2")
-
-
-
-    exit()
-
 def main():
 
-    prueba()
+
     start_time = time.time()
     user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
     elapsed_time = time.time() - start_time
