@@ -6,7 +6,7 @@ import Querys
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
+parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples/prueba')
 parser.add_argument("--porc_chunk", help="Split the data. 0.1 = splits of 10%. Default 0.1", default=0.1)
 parser.add_argument("--upload", help="Upload files", default=False)
 
@@ -179,8 +179,9 @@ def main():
     porc_chunk = float(args.porc_chunk)
 
     # analysis_upload_query(path, porc_chunk)
+    args.upload = True
     if args.upload:
-        upload_all(path)
+        upload_all(path,table_name = 'EventoCloudTrail_2302')
 
 
 if (__name__ == '__main__'):

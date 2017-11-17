@@ -11,7 +11,7 @@ def guardar_eventos():
 
     bucket_name = 'alucloud230'
 
-    table_name = 'EventoCloudTrail_230'
+    table_name = 'EventoCloudTrail_2302'
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket_name)
     

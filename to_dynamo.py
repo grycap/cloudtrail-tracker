@@ -10,7 +10,7 @@ class UseDynamoDB:
     
     def __init__(self, name, verbose=False):
         self.name = name
-        self.index = 'userIdentity_userName-eventTime-index'
+        # self.index = 'userIdentity_userName-eventTime-index'
         self.verbose = verbose
 
     
@@ -59,7 +59,7 @@ class UseDynamoDB:
     def new_user(self, name_table,user):
         index = 'userIdentity_userName'
         setValue = 'listUsers'
-        arr = ['userIdentity_userName','all']
+        arr = ['eventTime','1']
         # eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
@@ -67,7 +67,7 @@ class UseDynamoDB:
         # filter expression
         fe = Key(arr[0]).eq(arr[1]);
         response = table.query(
-            IndexName=self.index ,
+            # IndexName=self.index ,
             KeyConditionExpression=fe,
         )
         users = response['Items'][0][setValue]
@@ -77,7 +77,7 @@ class UseDynamoDB:
         #update
         table.update_item(
             # Key={arr[0]: arr[1]},
-            Key={'eventID': '1',
+            Key={'eventTime': '1',
                  'userIdentity_userName': 'all',
                  # 'eventTime': '1'
             },
