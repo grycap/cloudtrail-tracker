@@ -235,8 +235,89 @@ def top_users(time1, time2, event=None):
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
 
+
+def pruebas(p = True):
+    ul = users_list()
+    print("Total %d " % len(ul))
+    x = 0
+    start = time.time()
+    if p:
+        for i in ["gmolto"]:
+            x += 1
+            print("User number %d - %s " % (x,i))
+            start_time = time.time()
+            user, event, time1, time2 = i, 'DescribeMetricFilters', '2014-06-01T12:00:51Z', '2018-07-01T19:00:51Z'
+            time1 = format_time(time1)
+            time2 = format_time(time2)
+
+            users_itemName = 'userIdentity_userName'
+            eventName = 'eventName'
+            eventTime = 'eventTime'
+
+            feEvent = Key(eventName).eq(event);
+            feAux = Key(users_itemName).eq(user);
+            table = dynamodb_resource.Table(table_name)
+            response = table.query(
+                KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
+                FilterExpression=feEvent,
+                # Select='COUNT'
+            )
+            events = response['Count']
+            while 'LastEvaluatedKey' in response:
+                response = table.query(
+                    ExclusiveStartKey=response['LastEvaluatedKey'],
+                    KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
+                    FilterExpression=feEvent,
+                    # Select='COUNT'
+                )
+                events = events + (response['Count'])
+            elapsed_time = time.time() - start_time
+            print(events)
+            break;
+            print(elapsed_time)
+    else:
+        actions_between_time('2016-06-01T12:00:51Z', '2018-06-01T19:00:51Z')
+    end = time.time() - start
+    print("Total %f" % end)
+    exit()
+
+
+def pruebas2(p = True):
+    #ul = users_list()
+    #print("Total %d " % len(ul))
+    x = 0
+    start = time.time()
+    time1, time2 = '2017-06-01T12:00:51Z','2017-06-01T19:00:51Z'
+    time1 = format_time(time1)
+    time2 = format_time(time2)
+
+    users_itemName = 'userIdentity_userName'
+    eventTime = 'eventTime'
+
+    # filter expression
+    # feAux = Key(users_itemName).eq(user);
+    feAux = None
+    if time1 is not None and time2 is not None:
+        feAux = Key(eventTime).between(time1, time2)
+    table = dynamodb_resource.Table(table_name)
+    response = table.query(
+        KeyConditionExpression=feAux,
+        # Select='COUNT'
+    )
+    events = response['Count']
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            KeyConditionExpression=feAux,
+            # Select='COUNT'
+        )
+        events = events + (response['Count'])
+    print("Total %f" % end)
+    exit()
+
 def main():
 
+    # pruebas2()
 
     start_time = time.time()
     user_events = user_count_event('gmolto','DescribeMetricFilters','2017-06-01T12:00:51Z','2017-06-01T19:00:51Z')
