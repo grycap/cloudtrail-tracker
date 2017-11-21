@@ -48,6 +48,89 @@ class Event:
         fp = gzip.open(self.file, 'rt')
         self.all_events = json.loads(fp.read())
         fp.close()
+        self.selected = [
+            "eventID",
+            "userIdentity_userName",
+            "awsRegion",
+            "eventName",
+            "eventSource",
+            "eventTime",
+            "eventType",
+            # "eventVersion",
+            # "recipientAccountId",
+            # "requestID",
+            # "sourceIPAddress",
+            "userAgent",
+            # "userIdentity_type",
+            # "userIdentity_accountId",
+            # "userIdentity_arn",
+            # "userIdentity_principalId",
+            # "responseElements",
+            # "userIdentity_accessKeyId",
+            # "userIdentity_sessionContext_attributes_creationDate",
+            # "userIdentity_sessionContext_attributes_mfaAuthenticated",
+            # "userIdentity_invokedBy",
+            # "resources_0_ARN",
+            # "resources_0_accountId",
+            # "resources_0_type",
+            # "readOnly",
+            # "requestParameters_encryptionContext_aws:lambda:FunctionArn",
+            # "requestParameters_instancesSet_items_0_instanceId",
+            # "requestParameters_filterSet_items_0_name",
+            # "requestParameters_filterSet_items_0_valueSet_items_0_value",
+            # "userIdentity_sessionContext_sessionIssuer_accountId",
+            # "userIdentity_sessionContext_sessionIssuer_arn",
+            # "userIdentity_sessionContext_sessionIssuer_principalId",
+            # "userIdentity_sessionContext_sessionIssuer_type",
+            # "userIdentity_sessionContext_sessionIssuer_userName",
+            # "requestParameters",
+            # "errorCode",
+            # "errorMessage",
+            # "requestParameters_maxRecords",
+            "requestParameters_bucketName",
+            # "requestParameters_accountAttributeNameSet_items_0_attributeName",
+            # "requestParameters_availabilityZone",
+            # "requestParameters_blockDeviceMapping_items_0_deviceName",
+            # "requestParameters_blockDeviceMapping_items_0_ebs_deleteOnTermination",
+            # "requestParameters_blockDeviceMapping_items_0_ebs_volumeSize",
+            # "requestParameters_blockDeviceMapping_items_0_ebs_volumeType",
+            # "requestParameters_clientToken",
+            # "requestParameters_clusterId",
+            "requestParameters_dBInstanceIdentifier",
+            "requestParameters_dBSecurityGroupName",
+            # "requestParameters_disableApiTermination",
+            # "requestParameters_environmentId",
+            # "requestParameters_environmentIds_0",
+            # "requestParameters_externalId",
+            # "requestParameters_force",
+            # "requestParameters_groupSet_items_0_groupId",
+            "requestParameters_includeAllInstances",
+            "requestParameters_includeDeleted",
+            "requestParameters_instanceType",
+            # "requestParameters_instancesSet_items_0_imageId",
+            # "requestParameters_instancesSet_items_0_keyName",
+            # "requestParameters_instancesSet_items_0_maxCount",
+            # "requestParameters_instancesSet_items_0_minCount",
+            # "requestParameters_location_0",
+            # "requestParameters_maxResults",
+            # "requestParameters_monitoring_enabled",
+            # "requestParameters_roleArn",
+            "requestParameters_roleSessionName",
+            # "requestParameters_snapshotId",
+            # "requestParameters_stackName",
+            "requestParameters_volumeSet_items_0_volumeId",
+            # "responseElements_assumedRoleUser_arn",
+            # "responseElements_assumedRoleUser_assumedRoleId",
+            "responseElements_credentials_accessKeyId",
+            "responseElements_credentials_expiration",
+            "responseElements_credentials_sessionToken",
+            # "responseElements_instancesSet_items_0_currentState_code",
+            # "responseElements_instancesSet_items_0_currentState_name",
+            # "responseElements_instancesSet_items_0_instanceId",
+            # "responseElements_instancesSet_items_0_previousState_code",
+            # "responseElements_instancesSet_items_0_previousState_name",
+            # "sharedEventID",
+        ]
 
     def count_events(self):
         return len(self.all_events['Records'])
@@ -60,11 +143,23 @@ class Event:
             for trail_item in self.all_events['Records']:
                 yield self.build_event(trail_item)
 
+    def select(self, flat={}):
+        res = {}
+        for k in self.selected:
+            r = flat.get(k, None)
+            if r:
+                res[k] = r
+
+
+        return res
     def build_event(self, source):
         # print("\n\n %s source" % source)
         flat = flatten_json(source)
         # f = json_normalize(flat)
         # print("\n %s flatten" % f)
+        flat = self.select(flat)
+        print(flat)
+        exit()
         return flat
 
     """Pasa los datos largos (listas, dicts, elementos simples..)
@@ -105,6 +200,7 @@ class Parser:
         # store base dir to CloudTrail archives
         self.archive_base_dir = archive_base_dir.rstrip('/')
         print("init")
+
 
     def archive_file_list(self):
         for (base_path, dir_list, file_list) in os.walk(self.archive_base_dir):

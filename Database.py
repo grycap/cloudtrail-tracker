@@ -103,4 +103,4 @@ def init(table_name='EventoCloudTrail_230'):
 
 
 if (__name__ == '__main__'):
-    init()
+    init('EventoCloudTrail_230_less')

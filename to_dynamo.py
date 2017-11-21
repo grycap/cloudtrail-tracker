@@ -13,6 +13,7 @@ class UseDynamoDB:
         self.index = 'userIdentity_userName-eventTime-index'
         self.verbose = verbose
 
+
     
     def guardar_evento(self, name_table, event):
         #eventos = resource.Table(name_table)
