@@ -180,9 +180,9 @@ def main():
 
     # analysis_upload_query(path, porc_chunk)
     args.upload = True
-    if args.upload:
-        upload_all(path, table_name="EventoCloudTrail_230_less")
-    # upload_all(path,table_name="EventoCloudTrail_230_less")
+    # if args.upload:
+    #     upload_all(path, table_name="EventoCloudTrail_230_less")
+    upload_all(path,table_name="EventoCloudTrail_230_less")
 
 if (__name__ == '__main__'):
     main()

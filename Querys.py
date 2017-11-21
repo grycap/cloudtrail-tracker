@@ -24,7 +24,7 @@ from operator import itemgetter
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
-table_name='EventoCloudTrail_V2'
+table_name='EventoCloudTrail_230_less'
 
 def get_table_metadata(table_name):
     """
@@ -234,48 +234,6 @@ def top_users(time1, time2, event=None):
 
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
-
-
-from decimal import *
-def prueba():
-    time1, time2 = '2017-06-01T12:00:51Z','2017-06-01T19:00:51Z'
-    time1 = format_time(time1)
-    time2 = format_time(time2)
-
-    users_itemName = 'userIdentity_userName'
-    eventTime = 'eventTime'
-    ul = users_list()
-    # filter expression
-    x = 0
-    start = time.time()
-    for i in ul:
-
-        x+= 1
-        print("Usuario %d : %s" %(x,i))
-        start_time = time.time()
-        feAux = Key(users_itemName).eq(i);
-        if time1 is not None and time2 is not None:
-            feAux = Key(users_itemName).eq(i) & Key(eventTime).between(time1, time2)
-        table = dynamodb_resource.Table(table_name)
-        response = table.query(
-            IndexName=index,
-            KeyConditionExpression=feAux,
-            Select='COUNT'
-        )
-        events = response['Count']
-        while 'LastEvaluatedKey' in response:
-            response = table.query(
-                ExclusiveStartKey=response['LastEvaluatedKey'],
-                IndexName=index,
-                KeyConditionExpression=feAux,
-                Select='COUNT'
-            )
-            events = events + (response['Count'])
-        elapsed_time = time.time() - start_time
-        print("Time elapsed %f " % elapsed_time)
-
-    end = time.time() - start
-    print("Time elapsed for all %f " % end)
 
 
 def main():

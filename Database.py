@@ -16,11 +16,11 @@ def create_table(table_name):
     table = dynamodb_resource.create_table(
         AttributeDefinitions=[
             {
-                'AttributeName': 'userIdentity_userName',
+                'AttributeName': 'eventID',
                 'AttributeType': 'S'
             },
             {
-                'AttributeName': 'eventTime',
+                'AttributeName': 'userIdentity_userName',
                 'AttributeType': 'S'
             },
         ],
@@ -54,6 +54,7 @@ def add_users_row(name_table):
         try:
             table = dynamodb_resource.Table(name_table)
             datos = {
+                "eventID": "1",
                 "eventTime": "1",
                 "userIdentity_userName": "all",
                 "listUsers": {}
