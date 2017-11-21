@@ -158,8 +158,8 @@ class Event:
         # f = json_normalize(flat)
         # print("\n %s flatten" % f)
         flat = self.select(flat)
-        print(flat)
-        exit()
+        # print(flat)
+        # exit()
         return flat
 
     """Pasa los datos largos (listas, dicts, elementos simples..)

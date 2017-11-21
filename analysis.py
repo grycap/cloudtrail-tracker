@@ -179,9 +179,9 @@ def main():
     porc_chunk = float(args.porc_chunk)
 
     # analysis_upload_query(path, porc_chunk)
-    # if args.upload:
-    #     upload_all(path)
-    upload_all(path,table_name="EventoCloudTrail_230_less")
+    if args.upload:
+        upload_all(path)
+    # upload_all(path,table_name="EventoCloudTrail_230_less")
 
 
 if (__name__ == '__main__'):
