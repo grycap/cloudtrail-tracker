@@ -6,13 +6,15 @@ import time
 
 dynamodb_resource = resource('dynamodb')
 
+
+
+def init(table_name):
+    create_table(table_name)
+    add_users_row(table_name)
+
 def create_table(table_name):
     table = dynamodb_resource.create_table(
         AttributeDefinitions=[
-            {
-                'AttributeName': 'eventID',
-                'AttributeType': 'S'
-            },
             {
                 'AttributeName': 'userIdentity_userName',
                 'AttributeType': 'S'
@@ -24,37 +26,15 @@ def create_table(table_name):
         ],
         TableName=table_name,
         KeySchema=[
-            {
-                'AttributeName': 'eventID',
-                'KeyType': 'HASH'  # Partition key
-            },
+
             {
                 'AttributeName': 'userIdentity_userName',
-                'KeyType': 'RANGE'  # Sort key
-            }
-        ],
-        GlobalSecondaryIndexes=[
-            {
-                'IndexName': 'userIdentity_userName-eventTime-index',
-                'KeySchema': [
-                    {
-                        'AttributeName': 'userIdentity_userName',
-                        'KeyType': 'HASH'
-                    },
-                    {
-                        'AttributeName': 'eventTime',
-                        'KeyType': 'RANGE'
-                    }
-                ],
-                'Projection': {
-                    'ProjectionType': 'ALL'
-
-                },
-                'ProvisionedThroughput': {
-                    'ReadCapacityUnits': 5,
-                    'WriteCapacityUnits': 5
-                }
+                'KeyType': 'HASH'
             },
+            {
+                'AttributeName': 'eventTime',
+                'KeyType': 'RANGE'
+            }
         ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 5,
@@ -63,6 +43,7 @@ def create_table(table_name):
     )
 
     print("Table status:", table.table_status)
+
 
 def add_users_row(name_table):
     print("Creating row for user counting...")
@@ -73,7 +54,6 @@ def add_users_row(name_table):
         try:
             table = dynamodb_resource.Table(name_table)
             datos = {
-                'eventID': "1",
                 "eventTime": "1",
                 "userIdentity_userName": "all",
                 "listUsers": {}
@@ -96,11 +76,6 @@ def add_users_row(name_table):
     print("Succeded: %s " % res)
     return
 
-
-def init(table_name='EventoCloudTrail_230'):
-    create_table(table_name)
-    add_users_row(table_name)
-
-
 if (__name__ == '__main__'):
-    init('EventoCloudTrail_230_less')
+
+    init(table_name='EventoCloudTrail_V2')

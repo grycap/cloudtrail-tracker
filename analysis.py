@@ -90,7 +90,7 @@ def save_array(data, path):
             outfile.write('\n')
 
 """ Save events from a dir ans calculate times"""
-def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_230'):
+def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail_V2'):
     #Get all events from path
 
     print("Path of files: %s with %d files" % (path, len(path)))
@@ -137,7 +137,7 @@ def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail
 
 """Upload all files from path.
 Do a tracing with a file history and starts from the last point"""
-def upload_all(path, table_name = 'EventoCloudTrail_230'):
+def upload_all(path, table_name = 'EventoCloudTrail_V2'):
     # Get all events from path
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
@@ -179,10 +179,10 @@ def main():
     porc_chunk = float(args.porc_chunk)
 
     # analysis_upload_query(path, porc_chunk)
+    args.upload = True
     if args.upload:
         upload_all(path, table_name="EventoCloudTrail_230_less")
     # upload_all(path,table_name="EventoCloudTrail_230_less")
-
 
 if (__name__ == '__main__'):
     main()
