@@ -173,16 +173,39 @@ def query_analyze():
     # TODO only analyze
     pass
 
+def count_logs(path, words):
+    events = get_structure(path)
+    # print(events)
+    num_events = 0
+    num_events_word = 0
+    for ev in events:  # e = events file
+        event = Event(ev)
+        for e in event.events():
+            num_events += 1
+
+            # print(e)
+            name_event = e.get("eventName", None)
+            # print(name_event)
+
+            if name_event.lower().startswith(tuple(words)):
+                num_events_word += 1
+    print("Total number of events: %d " % num_events)
+    print("number of events with the words %s: %d , %f" % (words, num_events_word, num_events_word/num_events))
+
+
+
 def main():
     args = parser.parse_args()
     path = args.path
     porc_chunk = float(args.porc_chunk)
 
     # analysis_upload_query(path, porc_chunk)
-    args.upload = True
+    args.upload = False
     if args.upload:
         upload_all(path, table_name="EventoCloudTrail_230_less")
     # upload_all(path,table_name="EventoCloudTrail_230_less")
+    words = ["get","describe", "list"]
+    count_logs(path,words)
 
 if (__name__ == '__main__'):
     main()
