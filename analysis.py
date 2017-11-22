@@ -187,12 +187,35 @@ def count_logs(path, words):
             name_event = e.get("eventName", None)
             # print(name_event)
 
-            if name_event.lower().startswith(tuple(words)):
+            if name_event is None or name_event.lower().startswith(tuple(words)):
                 num_events_word += 1
     print("Total number of events: %d " % num_events)
     print("number of events with the words %s: %d , %f" % (words, num_events_word, num_events_word/num_events))
 
+def count_eventNames(path):
+    events = get_structure(path)
+    # print(events)
+    num_events = 0
+    res = {}
+    for ev in events:  # e = events file
+        event = Event(ev)
+        for e in event.events():
+            num_events += 1
 
+            # print(e)
+            name_event = e.get("eventName", None)
+            # print(name_event)
+            n = res.get(name_event, 0)
+            res[name_event] = n+1
+
+
+    print("Total number of events: %d " % num_events)
+    arr = []
+    for k in res:
+        arr.append((res[k],k))
+    arr.sort()
+    for a in arr:
+        print(a)
 
 def main():
     args = parser.parse_args()
@@ -204,8 +227,8 @@ def main():
     if args.upload:
         upload_all(path, table_name="EventoCloudTrail_230_less")
     # upload_all(path,table_name="EventoCloudTrail_230_less")
-    words = ["get","describe", "list"]
-    count_logs(path,words)
+    words = ["get","describe", "list", "info"]
+    count_eventNames(path)
 
 if (__name__ == '__main__'):
     main()
