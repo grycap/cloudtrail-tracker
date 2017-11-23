@@ -37,7 +37,7 @@ class UseDynamoDB:
 
             name_event = datos.get("eventName", None)
             if name_event is None or name_event.lower().startswith(tuple(settings.filterEventNames)):
-                print("Evento no")
+                # print("Evento no")
                 return
 
             userName = datos.get(nameCamp, None)

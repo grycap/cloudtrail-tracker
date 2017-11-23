@@ -1,5 +1,5 @@
 from __future__ import print_function
-from to_dynamo import UseDynamoDB
+from Write import UseDynamoDB
 from my_parser import Event
 from analysis import get_structure
 import os, argparse

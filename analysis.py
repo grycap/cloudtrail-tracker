@@ -1,6 +1,6 @@
 import boto3
 import os, time, argparse
-from to_dynamo import UseDynamoDB
+from Write import UseDynamoDB
 from my_parser import Event
 import Querys
 import numpy as np
