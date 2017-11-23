@@ -32,6 +32,7 @@ def flatten_json(y):
             #verifi if is a number and a decimal to pass as Decimal('')
             elif(isinstance(x,float)):
                 x = Decimal(str(x))
+
             out[name[:-1]] = x
 
     flatten(y)
@@ -48,6 +49,7 @@ class Event:
         fp = gzip.open(self.file, 'rt')
         self.all_events = json.loads(fp.read())
         fp.close()
+        """Values that we want to store of an event"""
         self.selected = [
             "eventID",
             "userIdentity_userName",
@@ -143,6 +145,8 @@ class Event:
             for trail_item in self.all_events['Records']:
                 yield self.build_event(trail_item)
 
+    """Function for select only the values that we are searching - 
+    Filter """
     def select(self, flat={}):
         res = {}
         for k in self.selected:

@@ -5,6 +5,7 @@ import json, ast
 import my_parser
 import decimal
 from boto3.dynamodb.conditions import Key
+import settings
 
 class UseDynamoDB:
     
@@ -16,6 +17,7 @@ class UseDynamoDB:
 
     
     def guardar_evento(self, name_table, event):
+
         #eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
@@ -32,6 +34,11 @@ class UseDynamoDB:
             # print('Event request: {0}'.format(e['request']))
             if self.verbose:
                 print('Event request: {0}'.format(datos))
+
+            name_event = datos.get("eventName", None)
+            if name_event is None or name_event.lower().startswith(tuple(settings.filterEventNames)):
+                print("Evento no")
+                return
 
             userName = datos.get(nameCamp, None)
             if userName is None:

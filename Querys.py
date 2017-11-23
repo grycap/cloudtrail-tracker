@@ -21,10 +21,11 @@ from boto3 import resource
 from boto3.dynamodb.conditions import Key
 import time
 from operator import itemgetter
+import settings
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
-table_name='EventoCloudTrail_230_less'
+table_name=settings.table_name
 
 def get_table_metadata(table_name):
     """

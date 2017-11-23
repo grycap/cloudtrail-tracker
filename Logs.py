@@ -1,44 +1,50 @@
 from __future__ import print_function
 from to_dynamo import UseDynamoDB
 from my_parser import Event
-import os
+from analysis import get_structure
+import os, argparse
 import boto3
 import uuid
 import botocore
+import settings
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 
 
-def guardar_eventos():
+def upload_events(path, table_name = 'EventoCloudTrail_V3'):
+    # Get all events from path
+    path_tracing  = "tracing_items"
+    print("Path of files: %s with " % (path))
 
-    bucket_name = 'alucloud230'
+    if not os.path.exists(os.path.join(path_tracing)):
+        f = open(path_tracing, "w")
+        f.close()
 
-    table_name = 'EventoCloudTrail_V2'
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket(bucket_name)
-    
-    #bucket = conn.get_bucket('alucloud230')
-    LOCAL_PATH = "./examples/"
-    for l in bucket.objects.all():
-        
-        keyString = str(l.key)
-        print(LOCAL_PATH + keyString)
-        # check if file exists locally, if not: download it
-        
-        if not os.path.exists(LOCAL_PATH + keyString):
-            file_path = LOCAL_PATH + keyString
-            print("\nGuardando evento %s " % file_path)
-            #l.get_contents_to_filename(file_path)
-            try:
-                s3.Bucket(bucket_name).download_file(keyString, LOCAL_PATH + keyString)
-            except botocore.exceptions.ClientError as e:
-                if e.response['Error']['Code'] == "404":
-                    print("The object does not exist.")
-                else:
-                    raise
-            
-            event = Event(file_path)
-            db = UseDynamoDB("prueba")
-            db.guardar_evento(table_name,event)
-            os.remove(LOCAL_PATH + keyString)
+    file_trace = open(path_tracing, "r")
+
+    traced_items = file_trace.readlines()
+    traced_items = [x[:-1] for x in traced_items]
+    file_trace.close()
+    print("Traced files: %d" % (len(traced_items)))
+    events = get_structure(path)
+
+    print("Number of files: %d" % len(events))
+    events = list(set(events) - set(traced_items))
+    print("Number of total files to upload: %d" % len(events))
+
+    file_trace = open(path_tracing, "a+")
+    for e in events:  # e = events file
+        event = Event(e)
+        db = UseDynamoDB("Uploading", verbose=False)
+
+        db.guardar_evento(table_name, event)
+        file_trace.write(e+"\n")
+        file_trace.flush()
+
+
+    file_trace.close()
+
 
 
 def handler(event, context):
@@ -53,7 +59,9 @@ def handler(event, context):
 
 
 def main():
-    guardar_eventos()
+    args = parser.parse_args()
+    path = args.path
+    upload_events(path, settings.table_name)
 
 
 if (__name__ == '__main__'):

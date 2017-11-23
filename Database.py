@@ -3,12 +3,15 @@ import boto3
 from boto3 import resource
 import botocore
 import time
+import settings
 
+table_name = settings.table_name
 dynamodb_resource = resource('dynamodb')
 
 
 
 def init(table_name):
+    print("Creating table %s " % table_name)
     create_table(table_name)
     add_users_row(table_name)
 
@@ -23,18 +26,45 @@ def create_table(table_name):
                 'AttributeName': 'userIdentity_userName',
                 'AttributeType': 'S'
             },
+            {
+                'AttributeName': 'eventTime',
+                'AttributeType': 'S'
+            }
         ],
         TableName=table_name,
         KeySchema=[
 
             {
-                'AttributeName': 'userIdentity_userName',
+                'AttributeName': 'eventID',
                 'KeyType': 'HASH'
             },
             {
-                'AttributeName': 'eventTime',
+                'AttributeName': 'userIdentity_userName',
                 'KeyType': 'RANGE'
             }
+        ],
+        GlobalSecondaryIndexes=[
+            {
+                'IndexName': 'userIdentity_userName-eventTime-index',
+                'KeySchema': [
+                    {
+                        'AttributeName': 'userIdentity_userName',
+                        'KeyType': 'HASH'
+                    },
+                    {
+                        'AttributeName': 'eventTime',
+                        'KeyType': 'RANGE'
+                    }
+                ],
+                'Projection': {
+                    'ProjectionType': 'ALL'
+
+                },
+                'ProvisionedThroughput': {
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                }
+            },
         ],
         ProvisionedThroughput={
             'ReadCapacityUnits': 5,
@@ -79,4 +109,4 @@ def add_users_row(name_table):
 
 if (__name__ == '__main__'):
 
-    init(table_name='EventoCloudTrail_V2')
+    init(table_name=settings.table_name)

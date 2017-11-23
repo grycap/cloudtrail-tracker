@@ -227,7 +227,7 @@ def main():
     if args.upload:
         upload_all(path, table_name="EventoCloudTrail_230_less")
     # upload_all(path,table_name="EventoCloudTrail_230_less")
-    words = ["get","describe", "list", "info"]
+    words = ["get","describe", "list", "info", "decrypt"]
     count_eventNames(path)
 
 if (__name__ == '__main__'):
