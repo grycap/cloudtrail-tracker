@@ -196,13 +196,16 @@ def count_eventNames(path):
     events = get_structure(path)
     # print(events)
     num_events = 0
-    res = {}
+    res = {"noID":0}
     for ev in events:  # e = events file
         event = Event(ev)
         for e in event.events():
             num_events += 1
 
             # print(e)
+            id = e.get("eventID", None)
+            if id is None or id == "" or not id:
+                res["noID"] = res["noID"] + 1
             name_event = e.get("eventName", None)
             # print(name_event)
             n = res.get(name_event, 0)
