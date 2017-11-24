@@ -196,7 +196,9 @@ def count_eventNames(path):
     events = get_structure(path)
     # print(events)
     num_events = 0
-    res = {"noID":0}
+    res = {}
+    eventsID = {}
+    collision = {}
     for ev in events:  # e = events file
         event = Event(ev)
         for e in event.events():
@@ -204,21 +206,28 @@ def count_eventNames(path):
 
             # print(e)
             id = e.get("eventID", None)
-            if id is None or id == "" or not id:
-                res["noID"] = res["noID"] + 1
+            numEventID = eventsID.get(id, 0)
+            eventsID[id] = numEventID + 1
+            if (numEventID + 1 > 1):
+                #repeated - collision!
+                collision[id] = numEventID + 1
+
             name_event = e.get("eventName", None)
             # print(name_event)
             n = res.get(name_event, 0)
             res[name_event] = n+1
 
 
-    print("Total number of events: %d " % num_events)
+
     arr = []
     for k in res:
-        arr.append((res[k],k))
+        arr.append((res[k],k, res[k]/num_events))
     arr.sort()
     for a in arr:
         print(a)
+    print(collision)
+    print("Total number of events: %d " % num_events)
+    print("Total number of REPEATED events: %d " % len(collision.keys()))
 
 def main():
     args = parser.parse_args()
