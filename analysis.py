@@ -1,9 +1,7 @@
-import boto3
-import os, time, argparse
+import os, time, argparse, json
 from Write import UseDynamoDB
 from my_parser import Event
 import Querys
-import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
@@ -193,12 +191,19 @@ def count_logs(path, words):
     print("number of events with the words %s: %d , %f" % (words, num_events_word, num_events_word/num_events))
 
 def count_eventNames(path):
+
+    def check_collision(d={}):
+        coll = []
+        for k in d.keys():
+            if len(d[k]) > 1:
+                coll.append(d[k])
+        return coll
+
     events = get_structure(path)
     # print(events)
     num_events = 0
     res = {}
     eventsID = {}
-    collision = {}
     for ev in events:  # e = events file
         event = Event(ev)
         for e in event.events():
@@ -206,18 +211,18 @@ def count_eventNames(path):
 
             # print(e)
             id = e.get("eventID", None)
-            numEventID = eventsID.get(id, 0)
-            eventsID[id] = numEventID + 1
-            if (numEventID + 1 > 1):
-                #repeated - collision!
-                collision[id] = numEventID + 1
+            #repeated - collision!
+            repeated = eventsID.get(id, [])
+            repeated.append(e)
+            eventsID[id] = repeated
+            # if we have a key with a list of len>1    -> collision
 
             name_event = e.get("eventName", None)
             # print(name_event)
             n = res.get(name_event, 0)
             res[name_event] = n+1
 
-
+    collision = check_collision(eventsID)
 
     arr = []
     for k in res:
@@ -225,9 +230,15 @@ def count_eventNames(path):
     arr.sort()
     for a in arr:
         print(a)
-    print(collision)
+    save_dict_into_file(collision,"collisions")
     print("Total number of events: %d " % num_events)
-    print("Total number of REPEATED events: %d " % len(collision.keys()))
+    print("Total number of REPEATED events: %d " % len(collision))
+
+
+def save_dict_into_file(d, name_file):
+    f = open(name_file, "w+")
+    f.write(json.dumps(d))
+    f.close()
 
 def main():
     args = parser.parse_args()
