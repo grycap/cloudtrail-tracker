@@ -143,7 +143,7 @@ def format_time(time):
 """all actions between time1 and time2
 time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
 returns a number (int)"""
-def actions_between_time(time1, time2, event=None):
+def actions_between_time(time1, time2, event=None,  request_parameter = None):
     time1 = format_time(time1)
     time2 = format_time(time2)
 
@@ -155,7 +155,7 @@ def actions_between_time(time1, time2, event=None):
             total = total + used_services(user, time1, time2)
     else:
         for user in users_l:
-            total = total + user_count_event(user, event, time1, time2)
+            total = total + user_count_event(user, event, time1, time2,request_parameter=request_parameter)
 
     return total
 
@@ -193,7 +193,7 @@ def used_services(user, time1=None, time2=None):
 
 """Count events from an user
 Return number_of_events"""
-def user_count_event(user, event, time1, time2):
+def user_count_event(user, event, time1, time2, request_parameter = None):
     time1 = format_time(time1)
     time2 = format_time(time2)
 
@@ -204,6 +204,12 @@ def user_count_event(user, event, time1, time2):
     eventTime = 'eventTime'
 
     feEvent = Key(eventName).eq(event);
+
+    if request_parameter:
+        request = request_parameter[0]
+        parameter = request_parameter[1]
+        feEvent = feEvent & Key(request).eq(parameter)
+
     feAux = Key(users_itemName).eq(user);
     table = dynamodb_resource.Table(table_name)
     response = table.query(
@@ -225,7 +231,7 @@ def user_count_event(user, event, time1, time2):
     return events
 
 """Top users, return an ordered list of tuples with [('user',numOfActions)]"""
-def top_users(time1, time2, event=None):
+def top_users(time1, time2, event=None, request_parameter=None):
     time1 = format_time(time1)
     time2 = format_time(time2)
     resList = []
@@ -237,7 +243,7 @@ def top_users(time1, time2, event=None):
             resList.append((user,events))
     else:
         for user in users_l:
-            events = user_count_event(user, event, time1, time2)
+            events = user_count_event(user, event, time1, time2, request_parameter=request_parameter)
             resList.append((user,events))
 
     resList = sorted(resList, key=itemgetter(1))
@@ -245,41 +251,43 @@ def top_users(time1, time2, event=None):
 
 
 def main():
-
+    eventName = "RunInstances"
+    request = ("requestParameters_instanceType", "m1.small")
     # pruebas2()
 
-    start_time = time.time()
-    user_events = user_count_event('gmolto','DescribeMetricFilters','2014-06-01T12:00:51Z','2017-06-01T19:00:51Z')
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for user_count_event items %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = user_count_event('grycap-aws',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=request)
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for user_count_event items %f " % elapsed_time)
+
+    # start_time = time.time()
+    # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z' )
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for used_services items %f " % elapsed_time)
+
+    # start_time = time.time()
+    # user_events = users_list()
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for users_list items %f " % elapsed_time)
+
+    # start_time = time.time()
+    # user_events = top_users('2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for top_users items %f " % elapsed_time)
+
+
+    # start_time = time.time()
+    # user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
     start_time = time.time()
-    user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z' )
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for used_services items %f " % elapsed_time)
-
-    start_time = time.time()
-    user_events = users_list()
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for users_list items %f " % elapsed_time)
-
-    start_time = time.time()
-    user_events = top_users('2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z')
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for top_users items %f " % elapsed_time)
-
-
-    start_time = time.time()
-    user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
-    start_time = time.time()
-    user_events = actions_between_time('2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z',event='DescribeInstanceStatus')
+    user_events = actions_between_time('2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z',event='RunInstances', request_parameter=request)
     elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
