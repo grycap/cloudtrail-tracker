@@ -153,11 +153,11 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
         total = 0
         if count:
             for user in users_l:
-                total = total + used_services(user, time1, time2,request_parameter = None, count= True)
+                total = total + used_services(user, time1, time2,request_parameter = None, count= count)
         else:
             total = []
             for user in users_l:
-                total.extend(used_services(user, time1, time2,request_parameter = None, count= True))
+                total.extend(used_services(user, time1, time2,request_parameter = None, count= count))
     else:
         total = 0
         if count:
