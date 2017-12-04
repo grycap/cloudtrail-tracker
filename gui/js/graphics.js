@@ -25,14 +25,12 @@ function count_events_day(data){
 
         list.push([key, counter[key]])
     }
-    print(list)
     list.sort(function(a, b) {
 
         a = new Date(a[0]);
         b = new Date(b[0]);
         return a<b ? -1 : a>b ? 1 : 0;
     });
-    print(list)
     return list
 }
 
@@ -71,7 +69,8 @@ function graph(data) {
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-    var svg = d3.select("body").append("svg")
+    $("#events").empty()
+    var svg = d3.select("#events").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -128,7 +127,7 @@ function graph(data) {
 
 parameters = {
     "httpMethod": "POST",
-    "type": "actions_between",
+    "type": "used_services",
     "count": "False",
     "user": "amcaar",
     "event": "RunInstances",
@@ -140,14 +139,43 @@ parameters = {
     ]
 }
 
-jQuery.ajax({
+//date = YYYY-MM-DD
+function timeFormat(date){
+    date = date + "T00:00:00Z"
+    return date
+}
+
+function scan() {
+
+    type = $("#function").text()
+    user_name = $("#user_name").val()
+    time1 = $("#time1").val()
+    time2 = $("#time2").val()
+    event_name = $("#event_name").val()
+    used_services_parameter = $("#used_services_parameter").val()
+    used_services_parameter_value = $("#used_services_parameter_value").val()
+    count = $("#checkbox").is(":checked")
+
+    parameters["type"] = type
+    parameters["count"] = count
+    parameters["user"] = user_name
+    parameters["time1"] = time1
+    parameters["time2"] = time2
+    parameters["event"] = event_name
+    parameters["request_parameter"] = [
+        used_services_parameter, used_services_parameter_value
+    ]
+    time1 = timeFormat(time1)
+    time2 = timeFormat(time2)
+    print(parameters)
+    jQuery.ajax({
     url: API_url,
     type: 'POST',
     contentType: "application/json",
     data: JSON.stringify(parameters),
     success: function (data) {
         console.log("Success")
-        console.log(data)
+        print(data)
         graph(data)
     },
     error: function (jqXHR, textStatus, errorThrown) {
@@ -159,3 +187,4 @@ jQuery.ajax({
 
     },
 })
+}

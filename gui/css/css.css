@@ -1,0 +1,10 @@
+.opciones{
+    margin-top: 10%;
+}
+
+.switch-wrapper {
+  display: inline-block;
+  position: relative;
+  top: 3px;
+}
+

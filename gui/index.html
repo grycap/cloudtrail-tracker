@@ -2,29 +2,100 @@
 <meta charset="utf-8">
 <style> /* set the CSS */
 
-.axis { font: 14px sans-serif; }
+.axis {
+    font: 14px sans-serif;
+}
 
 .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 2px;
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
 }
 
 </style>
 <head>
+    <link rel="stylesheet" type="text/css" href="css/css.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js" defer></script>
     <script src="js/graphics.js" defer></script>
-    <script src="js/apiCalls.js" defer></script>
+    <script src="js/functions.js" defer></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
-<body>
-<h1>Data events</h1>
-<h2>User: gmolto</h2>
+<body class="container-fluid">
+<div class="row">
 
-<div id='div'>
-    <button id="call">Call</button>
+    <div class="col-12 col-md-auto" id="events">
+        <h1>Data events</h1>
+
+    </div>
+
+
+    <div class="col">
+        <!--Dropdown primary-->
+        <div class="dropdown">
+
+            <!--Trigger-->
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">Querys
+            </button>
+
+
+            <!--Menu-->
+            <div class="dropdown-menu dropdown-primary">
+                <a class="dropdown-item" href="#" onclick="select('users_list')">User list</a>
+                <a class="dropdown-item" href="#" onclick="select('actions_between')">Actions between two times</a>
+                <a class="dropdown-item" href="#" onclick="select('used_services')">Used services</a>
+                <a class="dropdown-item" href="#" value="" onclick="select('used_services_parameter')">Used services with special
+                    parameter</a>
+                <a class="dropdown-item" href="#" onclick="select('user_count_event')">Count events from an user</a>
+                <a class="dropdown-item" href="#" onclick="select('top_users')">Top user</a>
+
+            </div>
+            <div class="md-form opciones">
+                <h1 id="function"></h1>
+                <input id="user_name" type="text" length="10" value="amcaar">
+                <label for="user_name">User name</label>
+                <br>
+                <input id="time1" type="text" length="10" value="2013-01-02">
+                <label for="time1">Time 1 (YYYY-MM-DD)</label>
+                <br>
+                <input id="time2" type="text" length="10" value="2017-01-02">
+                <label for="time2">Time 2 (YYYY-MM-DD)</label>
+                <br>
+                <input id="event_name" type="text" length="10" value="RunInstances">
+                <label for="event_name">Event name</label>
+                <br>
+                <input id="used_services_parameter" type="text" length="15" value="requestParameters_instanceType">
+                <label for="used_services_parameter">Parameter key</label>
+                <br>
+                <input id="used_services_parameter_value" type="text" length="15" value="m1.small">
+                <label for="used_services_parameter_value">Paratemer value</label>
+                <br>
+                <fieldset>
+                    <label for="checkbox">Count </label>
+                    <input type="checkbox" name="checkbox" id="checkbox">
+                </fieldset>
+                <button type="button" class="btn btn-primary" onclick="scan()">Scan</button>
+            </div>
+        </div>
+    </div>
+    <!--/Dropdown primary-->
 </div>
 
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+        integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+        integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
 </body>
 
 <!--START GOOGLE CHROME WITH
