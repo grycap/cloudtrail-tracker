@@ -47,11 +47,12 @@ def count_events_day(events=[]):
 
 if (__name__ == '__main__'):
 
+
     parameters = {
       "httpMethod": "POST",
       "type": "used_services",
       "count": "False",
-      "user": "gmolto",
+      "user": "amcaar",
       "event": "RunInstances",
       "time1": "2013-06-01T12:00:51Z",
       "time2": "2018-06-01T19:00:51Z",
@@ -60,7 +61,7 @@ if (__name__ == '__main__'):
         "m1.small"
       ]
     }
-
     data = APiCaller(parameters)
+    print(data)
     events_per_day = count_events_day(data)
     save_path(events_per_day, "event_days.csv")
