@@ -1,10 +1,11 @@
 
 from boto3 import dynamodb
 import boto3
-import json, ast
+import json, ast, os, sys
 import my_parser
 import decimal
 from boto3.dynamodb.conditions import Key
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import settings
 
 class UseDynamoDB:

@@ -19,9 +19,10 @@ format/validate time format: format_time(time)
 import boto3
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
-import time
+import time, os , sys
 from operator import itemgetter
-import settings
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+from settings import settings
 
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')

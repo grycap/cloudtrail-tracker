@@ -1,4 +1,4 @@
-import os, time, argparse, json
+import os, time, argparse, json, sys
 from Write import UseDynamoDB
 from my_parser import Event
 import Querys
