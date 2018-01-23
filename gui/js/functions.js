@@ -5,6 +5,7 @@ function print(x){
 
 function select(value){
     $("#function").html(value)
+    $("#function").val(value)
     user_name = $(".user_name")
     time1 = $(".time1")
     time2 = $(".time2")
@@ -15,6 +16,7 @@ function select(value){
 
     switch (value) {
         case 'users_list':
+
             user_name.hide()
             time1.hide()
             time2.hide()
@@ -25,6 +27,7 @@ function select(value){
             break;
 
         case 'actions_between':
+            $("#function").html("Acciones entre dos fechas")
             user_name.hide()
             time1.show()
             time2.show()
@@ -35,6 +38,7 @@ function select(value){
             break;
 
         case 'used_services':
+            $("#function").html("Servicios usados")
             user_name.show()
             time1.show()
             time2.show()
@@ -45,6 +49,7 @@ function select(value){
             break;
 
         case 'used_services_parameter':
+            $("#function").html("Servicios usados con filtro")
             user_name.show()
             time1.show()
             time2.show()
@@ -55,6 +60,7 @@ function select(value){
             break;
 
         case 'user_count_event':
+            $("#function").html("Contador de eventos")
             user_name.show()
             time1.show()
             time2.show()

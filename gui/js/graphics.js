@@ -1,19 +1,20 @@
 API_url = "https://aekot17gqj.execute-api.us-east-1.amazonaws.com/test/alucloud230query"
+datos = null
 
 function print(x) {
     console.log(x)
 }
 
-function count_events_day(data){
+function count_events_day(data) {
     counter = {}
 
-    for (var d in data){
+    for (var d in data) {
         elem = data[d]
         key = String(elem.eventTime).substring(0, 10)
         count = counter[key]
-        if (!count){
+        if (!count) {
             counter[key] = 1
-        } else{
+        } else {
             counter[key] = count + 1
         }
 
@@ -21,29 +22,28 @@ function count_events_day(data){
 
     list = []
 
-    for (var key in counter){
+    for (var key in counter) {
 
         list.push([key, counter[key]])
     }
-    list.sort(function(a, b) {
+    list.sort(function (a, b) {
 
         a = new Date(a[0]);
         b = new Date(b[0]);
-        return a<b ? -1 : a>b ? 1 : 0;
+        return a < b ? -1 : a > b ? 1 : 0;
     });
     return list
 }
 
-    // event_list = []
-    // for k in counter.keys():
-    //     event_list.append((k, counter[k]))
-    //
-    // #order list
-    // sorted_list = sorted(event_list )
-    //
-    // return sorted_list
+function count_per_event(data) {
+    for (var d in data) {
+        elem = data[d]
+        print(elem)
+    }
+}
 
 function graph(data) {
+    datos = data
     // set the dimensions and margins of the graph
     var margin = {top: 20, right: 20, bottom: 100, left: 50},
         width = 960 - margin.left - margin.right,
@@ -125,6 +125,13 @@ function graph(data) {
 
 }
 
+function bars(data) {
+    // print(data)
+    data = JSON.parse(data)
+    data = count_per_event(data);
+
+}
+
 parameters = {
     "httpMethod": "POST",
     "type": "used_services",
@@ -140,14 +147,14 @@ parameters = {
 }
 
 //date = YYYY-MM-DD
-function timeFormat(date){
+function timeFormat(date) {
     date = date + "T00:00:00Z"
     return date
 }
 
 function scan() {
 
-    type = $("#function").text()
+    type = $("#function").val()
     user_name = $("#user_name").val()
     time1 = $("#time1").val()
     time2 = $("#time2").val()
@@ -169,22 +176,27 @@ function scan() {
     time2 = timeFormat(time2)
     print(parameters)
     jQuery.ajax({
-    url: API_url,
-    type: 'POST',
-    contentType: "application/json",
-    data: JSON.stringify(parameters),
-    success: function (data) {
-        console.log("Success")
-        print(data)
-        graph(data)
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        var code = jqXHR.status
+        url: API_url,
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify(parameters),
+        success: function (data) {
+            console.log("Success")
+            print(data)
+            by_event = $("#by_event").is(":checked")
+            if (by_event) {
+                bars(data)
+            } else
+                graph(data)
 
-        console.log(("error " + code));
-        console.log(jqXHR.responseText)
-        console.log(jqXHR)
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            var code = jqXHR.status
 
-    },
-})
+            console.log(("error " + code));
+            console.log(jqXHR.responseText)
+            console.log(jqXHR)
+
+        },
+    })
 }
