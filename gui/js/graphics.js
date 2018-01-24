@@ -36,10 +36,28 @@ function count_events_day(data) {
 }
 
 function count_per_event(data) {
+     counter = {}
     for (var d in data) {
         elem = data[d]
-        print(elem)
+        key = String(elem.eventSource).split(".")[0]
+        // print(key)
+        count = counter[key]
+        if (!count) {
+            counter[key] = 1
+        } else {
+            counter[key] = count + 1
+        }
+
     }
+
+    list = []
+
+    for (var key in counter) {
+
+        list.push([key, counter[key]])
+    }
+
+    return list
 }
 
 function graph(data) {
@@ -129,6 +147,90 @@ function bars(data) {
     // print(data)
     data = JSON.parse(data)
     data = count_per_event(data);
+    print(data)
+    $("#events").empty()
+        var margin = {top: 20, right: 20, bottom: 100, left: 50},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+    var svg = d3.select("#events").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+     data.forEach(function (d) {
+        // print(d)
+        d.letter = d[0];
+        d.frequency = +d[1];
+    });
+
+
+    x.domain(data.map(function (d) {
+        return d.letter;
+    }));
+    y.domain([0, d3.max(data, function (d) {
+        return d.frequency;
+    })]);
+
+    g.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    g.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(y).ticks(10, ""))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Frequency");
+
+    var bar = g.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("g")
+
+    bar.append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) {
+            return x(d.letter);
+        })
+        .attr("y", function (d) {
+            return y(d.frequency);
+        })
+        .attr("width", x.bandwidth())
+        .attr("height", function (d) {
+            return (height - y(d.frequency)) * 1;
+        })
+        .attr("fill", function (d) {
+            return "rgb(0, 0, " + (d.frequency * 10) + ")";
+        })
+
+
+    barHeight = 20
+    bar.append("text")
+        .attr("x", function (d) {
+            return x(d.letter) + 25;
+        })
+        .attr("y", function (d) {
+            return y(d.frequency) - 10
+        })
+        .attr("dy", ".35em")
+        .text(function (d) {
+            return d.frequency;
+        });
+
+
+
 
 }
 
@@ -182,7 +284,7 @@ function scan() {
         data: JSON.stringify(parameters),
         success: function (data) {
             console.log("Success")
-            print(data)
+            // print(data)
             by_event = $("#by_event").is(":checked")
             if (by_event) {
                 bars(data)
