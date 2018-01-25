@@ -27,8 +27,8 @@ def handler(event, context):
     user_name = event.get("user",None)
     count = event.get("count",True)
     if count == "False": count = False
-    time1, time2 = event["time1"],event["time2"]
-
+    time1 = event.get("time1")
+    time2 = event.get("time2")
 
     if type == "actions_between":
         return json.dumps(Querys.actions_between_time(
@@ -68,7 +68,7 @@ def handler(event, context):
 
 
 
-    return "Error: {0}".format(event)
+    return "Error: {}".format(event.keys())
 
 
 if __name__ == '__main__':

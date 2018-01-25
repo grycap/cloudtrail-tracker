@@ -66,8 +66,9 @@ def create_API(name):
         "api-version": lambda_version,
         "aws-acct-id": "974349055189",
         "lambda-function-name": lambda_func_name,
+        "lambda-function-name-path": lambda_func_name+"/{type}/{event}/{user}/{count}/{time1}/{time2}/",
     }
-
+    #arn:aws:lambda:us-east-1:974349055189:function:alucloud230Query
     uri = "arn:aws:apigateway:{aws-region}:lambda:path/{api-version}/functions/arn:aws:lambda:{aws-region}:{aws-acct-id}:function:{lambda-function-name}/invocations".format(
         **uri_data)
     print("Updating integration")
@@ -77,15 +78,17 @@ def create_API(name):
         httpMethod='GET',
         # type='HTTP' | 'AWS' | 'MOCK' | 'HTTP_PROXY' | 'AWS_PROXY',
         type='AWS',
-        integrationHttpMethod='GET',
+        integrationHttpMethod='POST',
         uri=uri,
         # requestParameters={
         #     'string': 'string'
         # },
-        # requestTemplates={
-        #     'string': 'string'
-        # },
-        # passthroughBehavior='string',
+        requestTemplates={
+
+                "application/json": "{\n    \"type\":  \"$input.params('type')\",\n    \"event\": \"$input.params('event')\",\n    \"user\":  \"$input.params('user')\", \n    \"count\": \"$input.params('count')\",\n    \"time1\": \"$input.params('time1')\",\n    \"time2\": \"$input.params('time2')\"\n}"
+
+        },
+        passthroughBehavior='WHEN_NO_TEMPLATES',
         # cacheNamespace='string',
         # cacheKeyParameters=[
         #     'string',
@@ -109,13 +112,36 @@ def create_API(name):
         # },
         # contentHandling='CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT'
     )
-    ## create POST method response
+    ## create GET method response
     api_client.put_method_response(
         restApiId=idAPI,
         resourceId=parentIdResource,
         httpMethod='GET',
         statusCode="200",
     )
+
+    print("Adding permisions lambda -> APIGateway")
+    ## Add permisions from lambda to api gateway
+    uri_data['aws-api-id'] = idAPI
+    source_arn = "arn:aws:execute-api:{aws-region}:{aws-acct-id}:{aws-api-id}/*/POST/{lambda-function-name}".format(
+        **uri_data)
+
+    aws_lambda.add_permission(
+        FunctionName=lambda_func_name,
+        StatementId=idAPI+"API_gatewat",
+        Action="lambda:InvokeFunction",
+        Principal="apigateway.amazonaws.com",
+        # SourceArn=source_arn
+    )
+
+    print("Creating stage")
+    stage = api_client.create_deployment(
+        restApiId=idAPI,
+        stageName="QueryStage230",
+    )
+
+    print(stage)
+
 
 
 
