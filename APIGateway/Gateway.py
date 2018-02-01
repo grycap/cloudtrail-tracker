@@ -3,6 +3,7 @@ import boto3
 AWS_REGION = 'us-east-1'
 lambda_func_name= "alucloud230Query"
 REST_path = "{type}/{event}/{user}/{count}/{time1}/{time2}"
+stage_name = "QueryStage230"
 
 def create_API(name):
     api_client = boto3.client('apigateway', region_name=AWS_REGION)
@@ -98,26 +99,82 @@ def create_API(name):
     )
 
     print("Creating integration response")
-    response = api_client.put_integration_response(
-        restApiId=idAPI,
-        resourceId=parentIdResource,
-        httpMethod='GET',
-        statusCode='200',
-        selectionPattern=".*"
-        # responseParameters={
-        #     'string': 'string'
-        # },
-        # responseTemplates={
-        #     'string': 'string'
-        # },
-        # contentHandling='CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT'
-    )
     ## create GET method response
     api_client.put_method_response(
         restApiId=idAPI,
         resourceId=parentIdResource,
         httpMethod='GET',
         statusCode="200",
+        responseParameters={
+            'method.response.header.Access-Control-Allow-Origin': False
+        },
+        responseModels={
+            'application/json': 'Empty'
+        }
+    )
+
+    response = api_client.put_integration_response(
+        restApiId=idAPI,
+        resourceId=parentIdResource,
+        httpMethod='GET',
+        statusCode='200',
+        selectionPattern=".*",
+        responseParameters={
+            'method.response.header.Access-Control-Allow-Origin': '\'*\''
+        },
+        responseTemplates={
+            'application/json': ''
+        }
+    )
+
+    # Add an options method to the rest api
+    api_method = api_client.put_method(
+        restApiId=idAPI,
+        resourceId=parentIdResource,
+        httpMethod='OPTIONS',
+        authorizationType='NONE'
+    )
+    # Set the put integration of the OPTIONS method
+    api_client.put_integration(
+        restApiId=idAPI,
+        resourceId=parentIdResource,
+        httpMethod='OPTIONS',
+        type='MOCK',
+        requestTemplates={
+            'application/json': '{"statusCode": 200}'
+        }
+    )
+
+    # Set the put method response of the OPTIONS method
+    api_client.put_method_response(
+        restApiId=idAPI,
+        resourceId=parentIdResource,
+        httpMethod='OPTIONS',
+        statusCode='200',
+        responseParameters={
+            'method.response.header.Access-Control-Allow-Headers': False,
+            'method.response.header.Access-Control-Allow-Origin': False,
+            'method.response.header.Access-Control-Allow-Methods': False
+        },
+        responseModels={
+            'application/json': 'Empty'
+        }
+    )
+
+    # Set the put integration response of the OPTIONS method
+    api_client.put_integration_response(
+        restApiId=idAPI,
+        resourceId=parentIdResource,
+        httpMethod='OPTIONS',
+        statusCode='200',
+        responseParameters={
+            'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token\'',
+            'method.response.header.Access-Control-Allow-Methods': '\'GET,OPTIONS\'',
+            'method.response.header.Access-Control-Allow-Origin': '\'*\''
+        },
+        responseTemplates={
+            'application/json': ''
+        }
     )
 
     print("Adding permisions lambda -> APIGateway")
@@ -137,10 +194,14 @@ def create_API(name):
     print("Creating stage")
     stage = api_client.create_deployment(
         restApiId=idAPI,
-        stageName="QueryStage230",
+        stageName=stage_name,
     )
 
-    print(stage)
+
+    # URL stage : https://{API_ID}.execute-api.{REGION}.amazonaws.com/{STAGE}/{RESOURCE}
+
+
+    print("URL: https://{}.execute-api.{}.amazonaws.com/{}/{}/".format(idAPI, AWS_REGION, stage_name, lambda_func_name))
 
 
 

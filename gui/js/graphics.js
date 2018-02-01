@@ -1,6 +1,6 @@
 // API_url = "https://aekot17gqj.execute-api.us-east-1.amazonaws.com/test/alucloud230query"
 // API_url = " https://ucxi51mw43.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/{type}/{event}/{user}/{count}/{time1}/{time2}"
-API_url = " https://ucxi51mw43.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/"
+API_url = "https://ebr5dnftdl.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/"
 datos = null
 
 function print(x) {
@@ -265,8 +265,11 @@ function scan() {
     event_name = $("#event_name").val()
     used_services_parameter = $("#used_services_parameter").val()
     used_services_parameter_value = $("#used_services_parameter_value").val()
-    count = $("#checkbox").is(":checked")
-
+    countt = $("#checkbox").is(":checked")
+    if (countt == "false" || !countt) {
+        print("FAAAALSOOOOOO")
+        countt = "False"
+    }
     parameters["type"] = type
     parameters["count"] = count
     parameters["user"] = user_name
@@ -280,10 +283,10 @@ function scan() {
     time2 = timeFormat(time2)
     print(parameters)
     //{type}/{event}/{user}/{count}/{time1}/{time2}
-    url = API_url + type + "/" + event_name + "/" + user_name + "/" + count + "/" +time1 + "/" + time2
+    url = API_url + type + "/" + event_name + "/" + user_name + "/" + countt + "/" +time1 + "/" + time2
     print(url)
     jQuery.ajax({
-        url: API_url,
+        url: url,
         // type: 'GET',
         contentType: "application/json",
         // data: JSON.stringify(parameters),
