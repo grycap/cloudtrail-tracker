@@ -1,6 +1,6 @@
 // API_url = "https://aekot17gqj.execute-api.us-east-1.amazonaws.com/test/alucloud230query"
 // API_url = " https://ucxi51mw43.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/{type}/{event}/{user}/{count}/{time1}/{time2}"
-API_url = "https://ebr5dnftdl.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/"
+API_url = "https://f2abn1swaf.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/"
 datos = null
 
 function print(x) {
@@ -251,10 +251,10 @@ parameters = {
 }
 
 //date = YYYY-MM-DD
-function timeFormat(date) {
-    date = date + "T00:00:00Z"
-    return date
-}
+// function timeFormat(date) {
+//     date = date + "T00:00:00Z"
+//     return date
+// }
 
 function scan() {
 
@@ -264,10 +264,11 @@ function scan() {
     time2 = $("#time2").val()
     event_name = $("#event_name").val()
     used_services_parameter = $("#used_services_parameter").val()
+    used_services_parameter.replace(/\s/g,'')
     used_services_parameter_value = $("#used_services_parameter_value").val()
+    used_services_parameter_value.replace(/\s/g,'')
     countt = $("#checkbox").is(":checked")
     if (countt == "false" || !countt) {
-        print("FAAAALSOOOOOO")
         countt = "False"
     }
     parameters["type"] = type
@@ -279,11 +280,15 @@ function scan() {
     parameters["request_parameter"] = [
         used_services_parameter, used_services_parameter_value
     ]
-    time1 = timeFormat(time1)
-    time2 = timeFormat(time2)
+    // time1 = timeFormat(time1)
+    // time2 = timeFormat(time2)
     print(parameters)
     //{type}/{event}/{user}/{count}/{time1}/{time2}
     url = API_url + type + "/" + event_name + "/" + user_name + "/" + countt + "/" +time1 + "/" + time2
+    if (used_services_parameter != "" || used_services_parameter_value != ""){
+        url = url + "/" + used_services_parameter + "/" + used_services_parameter_value
+    }
+
     print(url)
     jQuery.ajax({
         url: url,

@@ -6,7 +6,16 @@ import uuid, json
 from DynamoDB import Querys
 # import requests
 
+"""YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
+def format_time(time):
+    if(time is None): return None
+    if len(time) == 10:
+        time = time + "T00:00:00Z"
 
+    if len(time) != 20:
+        raise Exception("Error on time format!")
+
+    return time
 
 def handler(event, context):
     # data = json.loads(event)
@@ -22,13 +31,19 @@ def handler(event, context):
     #         "m1.small"
     #     ]
     # }
-    request_parameters = event.get("request_parameter",None)
+    request = event.get("request",None)
+    parameter = event.get("parameter",None)
+    if request and parameter :
+        request_parameters = [request, parameter]
+    else:
+        request_parameters = None
+
     event_name = event.get("event",None)
     user_name = event.get("user",None)
     count = event.get("count",True)
     if count == "False": count = False
-    time1 = event.get("time1")
-    time2 = event.get("time2")
+    time1 = format_time(event.get("time1"))
+    time2 = format_time(event.get("time2"))
 
     if type == "actions_between":
         return json.dumps(Querys.actions_between_time(
