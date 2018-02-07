@@ -2,47 +2,41 @@ import boto3
 
 AWS_REGION = 'us-east-1'
 lambda_func_name= "alucloud230Query"
-REST_path = "{type}/{event}/{user}/{count}/{time1}/{time2}/{request}/{parameter}"
 stage_name = "QueryStage230"
 api_client = boto3.client('apigateway', region_name=AWS_REGION)
 aws_lambda = boto3.client('lambda', region_name=AWS_REGION)
 
-params_parameters = {
 
+
+params = {
     "application/json": "{\n    "
                         "\"type\":  \"$input.params('type')\",\n    "
                         "\"event\": \"$input.params('event')\",\n    "
                         "\"user\":  \"$input.params('user')\", \n    "
-                        "\"count\": \"$input.params('count')\",\n    "
-                        "\"time1\": \"$input.params('time1')\",\n    "
-                        "\"time2\": \"$input.params('time2')\",\n    "
-                        "\"request\": \"$input.params('request')\",\n    "
-                        "\"parameter\": \"$input.params('parameter')\"\n "
-                        '}'
-
-}
-
-params_without = {
-
-    "application/json": "{\n    "
-                        "\"type\":  \"$input.params('type')\",\n    "
-                        "\"event\": \"$input.params('event')\",\n    "
-                        "\"user\":  \"$input.params('user')\", \n    "
-                        "\"count\": \"$input.params('count')\",\n    "
                         "\"time1\": \"$input.params('time1')\",\n    "
                         "\"time2\": \"$input.params('time2')\"\n    "
                         '}'
 
 }
 
-def add_method(idAPI, parentIdResource, params = {}):
+def add_method(idAPI, parentIdResource, params = {}, queryString={}):
     print("Creating GET method")
-    response = api_client.put_method(
-        restApiId=idAPI,
-        resourceId=parentIdResource,
-        httpMethod='GET',
-        authorizationType='NONE',  # change in a future for COGNITO_USER_POOLS
-    )
+
+    if queryString:
+        response = api_client.put_method(
+            restApiId=idAPI,
+            resourceId=parentIdResource,
+            httpMethod='GET',
+            authorizationType='NONE',  # change in a future for COGNITO_USER_POOLS
+            requestParameters=queryString,
+        )
+    else:
+        response = api_client.put_method(
+            restApiId=idAPI,
+            resourceId=parentIdResource,
+            httpMethod='GET',
+            authorizationType='NONE',  # change in a future for COGNITO_USER_POOLS
+        )
 
     lambda_version = aws_lambda.meta.service_model.api_version
 
@@ -51,12 +45,13 @@ def add_method(idAPI, parentIdResource, params = {}):
         "api-version": lambda_version,
         "aws-acct-id": "974349055189",
         "lambda-function-name": lambda_func_name,
-        "lambda-function-name-path": lambda_func_name + "/{type}/{event}/{user}/{count}/{time1}/{time2}/",
+        # "lambda-function-name-path": lambda_func_name + "/{type}/{event}/{user}/{count}/{time1}/{time2}/",
     }
     # arn:aws:lambda:us-east-1:974349055189:function:alucloud230Query
     uri = "arn:aws:apigateway:{aws-region}:lambda:path/{api-version}/functions/arn:aws:lambda:{aws-region}:{aws-acct-id}:function:{lambda-function-name}/invocations".format(
         **uri_data)
     print("Updating integration")
+
     response = api_client.put_integration(
         restApiId=idAPI,
         resourceId=parentIdResource,
@@ -68,13 +63,10 @@ def add_method(idAPI, parentIdResource, params = {}):
         uri=uri,
         requestTemplates=params,
         passthroughBehavior='WHEN_NO_TEMPLATES',
-        # cacheNamespace='string',
-        # cacheKeyParameters=[
-        #     'string',
-        # ],
-        # contentHandling='CONVERT_TO_BINARY' | 'CONVERT_TO_TEXT',
 
     )
+
+
 
     print("Creating integration response")
     ## create GET method response
@@ -193,20 +185,99 @@ def create_API(name):
 
 
 
-    pathParts = REST_path.split("/")
-    for pathPart in pathParts:
-        print("Creating path {}".format(pathPart))
-        ## create resource /lambda_func_name/{type}
-        responseResource = api_client.create_resource(
+    ######/users
+    users = "users"
+    print("Creating path {}".format(users))
+    ## create resource /lambda_func_name/{type}
+    responseResource = api_client.create_resource(
             restApiId=idAPI,
             parentId=parentIdResource,  # resource id for the Base API path
-            pathPart=pathPart
-        )
-        parentIdResource = responseResource['id']
-        if pathPart == "{time2}":
-            add_method(idAPI, parentIdResource, params_without)
+            pathPart=users
+    )
+    parentIdResourceUsers = responseResource['id']
+    params = {
+        "application/json": "{\n    "
+                            "\"list_users\":  \"$input.params('list_users')\"\n    "
+                            '}'
 
-    add_method(idAPI, parentIdResource, params_parameters)
+    }
+
+    add_method(idAPI, parentIdResourceUsers, params)
+    ###### end /users
+
+    ##### /users/{user}
+    print("Creating path {}".format(users+"/{users}"))
+    ## create resource /lambda_func_name/{type}
+    responseResource = api_client.create_resource(
+        restApiId=idAPI,
+        parentId=parentIdResourceUsers,  # resource id for the Base API path
+        pathPart="{user}"
+    )
+    parentIdResourceUsersUser = responseResource['id']
+    params = {
+        "application/json": "{\n    "
+                            "\"user\":  \"$input.params('user')\",\n    "
+                            "\"count\":  \"$input.params('count')\",\n    "
+                            "\"eventName\":  \"$input.params('eventName')\",\n    "
+                            "\"from\":  \"$input.params('from')\",\n    "
+                            "\"to\":  \"$input.params('to')\",\n    "
+                            "\"param\":  \"$input.params('param')\",\n    "
+                            "\"value\":  \"$input.params('value')\"\n    "
+                            '}'
+
+    }
+    queryString = {
+        'method.request.querystring.count': False,
+        'method.request.querystring.eventName': False,
+        'method.request.querystring.from': False,
+        'method.request.querystring.to': False,
+        'method.request.querystring.param': False,
+        'method.request.querystring.value': False,
+    }
+
+    add_method(idAPI, parentIdResourceUsersUser, params, queryString=queryString)
+    ##### end /users/{user}
+
+    ##### /services
+    services = "services"
+    print("Creating path {}".format(services))
+    responseResource = api_client.create_resource(
+        restApiId=idAPI,
+        parentId=parentIdResource,  # resource id for the Base API path
+        pathPart=services
+    )
+    parentIdResourceServices = responseResource['id']
+
+    print("Creating path {}".format(services+"/{service}"))
+    responseResource = api_client.create_resource(
+        restApiId=idAPI,
+        parentId=parentIdResourceServices,  # resource id for the Base API path
+        pathPart="{service}"
+    )
+    parentIdResourceServicesService = responseResource['id']
+
+    params = {
+        "application/json": "{\n    "
+                            "\"service\":  \"$input.params('service')\",\n    "
+                            "\"count\":  \"$input.params('count')\",\n    "
+                            "\"eventName\":  \"$input.params('eventName')\",\n    "
+                            "\"from\":  \"$input.params('from')\",\n    "
+                            "\"to\":  \"$input.params('to')\",\n    "
+                            "\"param\":  \"$input.params('param')\",\n    "
+                            "\"value\":  \"$input.params('value')\"\n    "
+                            '}'
+
+    }
+    queryString = {
+        'method.request.querystring.count': False,
+        'method.request.querystring.eventName': False,
+        'method.request.querystring.from': False,
+        'method.request.querystring.to': False,
+        'method.request.querystring.param': False,
+        'method.request.querystring.value': False,
+    }
+
+    add_method(idAPI, parentIdResourceServicesService, params, queryString=queryString)
 
     print("Adding permisions lambda -> APIGateway")
     ## Add permisions from lambda to api gateway

@@ -1,6 +1,6 @@
 // API_url = "https://aekot17gqj.execute-api.us-east-1.amazonaws.com/test/alucloud230query"
 // API_url = " https://ucxi51mw43.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/{type}/{event}/{user}/{count}/{time1}/{time2}"
-API_url = "https://f2abn1swaf.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/"
+API_url = "https://tupe07hsue.execute-api.us-east-1.amazonaws.com/QueryStage230/"
 datos = null
 
 function print(x) {
@@ -267,10 +267,6 @@ function scan() {
     used_services_parameter.replace(/\s/g,'')
     used_services_parameter_value = $("#used_services_parameter_value").val()
     used_services_parameter_value.replace(/\s/g,'')
-    countt = $("#checkbox").is(":checked")
-    if (countt == "false" || !countt) {
-        countt = "False"
-    }
     parameters["type"] = type
     parameters["count"] = count
     parameters["user"] = user_name
@@ -284,8 +280,8 @@ function scan() {
     // time2 = timeFormat(time2)
     print(parameters)
     //{type}/{event}/{user}/{count}/{time1}/{time2}
-    url = API_url + type + "/" + event_name + "/" + user_name + "/" + countt + "/" +time1 + "/" + time2
-    if (used_services_parameter != "" || used_services_parameter_value != ""){
+    url = API_url + type + "/" + event_name + "/" + user_name + "/" +time1 + "/" + time2
+    if (used_services_parameter != "" && used_services_parameter_value != ""){
         url = url + "/" + used_services_parameter + "/" + used_services_parameter_value
     }
 

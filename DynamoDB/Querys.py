@@ -141,10 +141,11 @@ def format_time(time):
 
     return time
 
-"""all actions between time1 and time2
-time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
-returns a number (int)"""
+
 def actions_between_time(time1, time2, event=None,  request_parameter = None, count= False):
+    """all actions between time1 and time2
+    time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
+    returns a number (int)"""
     time1 = format_time(time1)
     time2 = format_time(time2)
 
@@ -173,8 +174,9 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
     return total
 
 
-"""Number of services used by an user between two times"""
 def used_services(user, time1=None, time2=None,count=False):
+    """Number of services used by an user between two times"""
+
     time1 = format_time(time1)
     time2 = format_time(time2)
 
@@ -229,10 +231,8 @@ def used_services(user, time1=None, time2=None,count=False):
     return events
 
 
-"""Number of services used by an user between two times"""
-
-
 def used_services_parameter(user, request_parameter, time1=None, time2=None, count=False):
+    """Number of services used by an user between two times"""
     time1 = format_time(time1)
     time2 = format_time(time2)
 
@@ -294,9 +294,10 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
     return events
 
 
-"""Count events from an user
-Return number_of_events"""
+
 def user_count_event(user, event, time1, time2, request_parameter = None, count=False):
+    """Events from an user
+    Return_events"""
     time1 = format_time(time1)
     time2 = format_time(time2)
 

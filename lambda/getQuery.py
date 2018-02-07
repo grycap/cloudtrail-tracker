@@ -8,7 +8,7 @@ from DynamoDB import Querys
 
 """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
 def format_time(time):
-    if(time is None): return None
+    if(not time): return None
     if len(time) == 10:
         time = time + "T00:00:00Z"
 
@@ -17,33 +17,60 @@ def format_time(time):
 
     return time
 
-def handler(event, context):
-    # data = json.loads(event)
-    type = event.get("type",None)
-    # {
+
+# {
     #     "httpMethod": "GET",
     #     "type": "actions_between",
     #     "event": "RunInstances",
-    #     "time1": "2014-06-01T12:00:51Z",
-    #     "time2": "2018-06-01T19:00:51Z",
+    #     "time1": "2014-06-01",
+    #     "time2": "2018-06-01",
     #     "request_parameter": [
     #         "requestParameters_instanceType",
     #         "m1.small"
     #     ]
     # }
-    request = event.get("request",None)
-    parameter = event.get("parameter",None)
+def handler(event, context):
+
+    if event.get("list_users", None):
+        return action("users_list")
+
+    # type = event.get("type",None)
+    request = event.get("param",None)
+    parameter = event.get("value",None)
     if request and parameter :
         request_parameters = [request, parameter]
     else:
         request_parameters = None
 
-    event_name = event.get("event",None)
+    event_name = event.get("eventName",None)
     user_name = event.get("user",None)
+    service = event.get("service",None)
     count = event.get("count",True)
-    if count == "False": count = False
-    time1 = format_time(event.get("time1"))
-    time2 = format_time(event.get("time2"))
+
+    time1 = format_time(event.get("from",None))
+    time2 = format_time(event.get("to",None))
+
+    #Select action
+    if user_name and not service:
+        #used_services or used_services_parameter or user_count_event
+        if not event_name:
+            if parameter:
+                type = "used_services_parameter"
+            else:
+                type = "used_services"
+        else:
+            type = "user_count_event"
+    elif service and not user_name:
+        #actions_between
+        type = "actions_between"
+
+    else:
+        return json.dumps("Error")
+
+
+    return action(type, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
+
+def action(type, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
 
     if type == "actions_between":
         return json.dumps(Querys.actions_between_time(
@@ -92,8 +119,8 @@ if __name__ == '__main__':
         "type": "used_services",
         "user": "gmolto",
         "event": "RunInstances",
-        "time1": "2014-06-01T12:00:51Z",
-        "time2": "2018-06-01T19:00:51Z",
+        "time1": "2014-06-01",
+        "time2": "2018-06-01",
         "request_parameter": [
             "requestParameters_instanceType",
             "m1.small"

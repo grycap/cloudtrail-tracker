@@ -22,6 +22,8 @@ function select(value){
             time2.hide()
             event_name.hide()
             used_services_parameter.hide()
+            $("#used_services_parameter_kinput").val("")
+            $("#used_services_parameter_vinput").val("")
             used_services_parameter_value.hide()
             count.hide()
             break;
@@ -45,6 +47,8 @@ function select(value){
             event_name.hide()
             used_services_parameter.hide()
             used_services_parameter_value.hide()
+            $("#used_services_parameter_kinput").val("")
+            $("#used_services_parameter_vinput").val("")
             count.show()
             break;
 
