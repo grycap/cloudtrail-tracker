@@ -58,15 +58,23 @@ class Event:
             "eventSource",
             "eventTime",
             "eventType",
-            # "eventVersion",
-            # "recipientAccountId",
-            # "requestID",
-            # "sourceIPAddress",
             "userAgent",
+            "userIdentity_principalId",
+            "requestParameters_bucketName",
+            "requestParameters_dBInstanceIdentifier",
+            "requestParameters_dBSecurityGroupName",
+            "requestParameters_includeAllInstances",
+            "requestParameters_includeDeleted",
+            "requestParameters_instanceType",
+            "requestParameters_roleSessionName",
+            "requestParameters_volumeSet_items_0_volumeId",
+            "responseElements_credentials_accessKeyId",
+            "responseElements_credentials_expiration",
+            "responseElements_credentials_sessionToken",
+
             # "userIdentity_type",
             # "userIdentity_accountId",
             # "userIdentity_arn",
-            "userIdentity_principalId",
             # "responseElements",
             # "userIdentity_accessKeyId",
             # "userIdentity_sessionContext_attributes_creationDate",
@@ -89,7 +97,6 @@ class Event:
             # "errorCode",
             # "errorMessage",
             # "requestParameters_maxRecords",
-            "requestParameters_bucketName",
             # "requestParameters_accountAttributeNameSet_items_0_attributeName",
             # "requestParameters_availabilityZone",
             # "requestParameters_blockDeviceMapping_items_0_deviceName",
@@ -98,17 +105,12 @@ class Event:
             # "requestParameters_blockDeviceMapping_items_0_ebs_volumeType",
             # "requestParameters_clientToken",
             # "requestParameters_clusterId",
-            "requestParameters_dBInstanceIdentifier",
-            "requestParameters_dBSecurityGroupName",
             # "requestParameters_disableApiTermination",
             # "requestParameters_environmentId",
             # "requestParameters_environmentIds_0",
             # "requestParameters_externalId",
             # "requestParameters_force",
             # "requestParameters_groupSet_items_0_groupId",
-            "requestParameters_includeAllInstances",
-            "requestParameters_includeDeleted",
-            "requestParameters_instanceType",
             # "requestParameters_instancesSet_items_0_imageId",
             # "requestParameters_instancesSet_items_0_keyName",
             # "requestParameters_instancesSet_items_0_maxCount",
@@ -117,21 +119,20 @@ class Event:
             # "requestParameters_maxResults",
             # "requestParameters_monitoring_enabled",
             # "requestParameters_roleArn",
-            "requestParameters_roleSessionName",
-            # "requestParameters_snapshotId",
-            # "requestParameters_stackName",
-            "requestParameters_volumeSet_items_0_volumeId",
-            # "responseElements_assumedRoleUser_arn",
-            # "responseElements_assumedRoleUser_assumedRoleId",
-            "responseElements_credentials_accessKeyId",
-            "responseElements_credentials_expiration",
-            "responseElements_credentials_sessionToken",
             # "responseElements_instancesSet_items_0_currentState_code",
             # "responseElements_instancesSet_items_0_currentState_name",
             # "responseElements_instancesSet_items_0_instanceId",
             # "responseElements_instancesSet_items_0_previousState_code",
             # "responseElements_instancesSet_items_0_previousState_name",
             # "sharedEventID",
+            # "eventVersion",
+            # "recipientAccountId",
+            # "requestID",
+            # "sourceIPAddress",
+            # "responseElements_assumedRoleUser_arn",
+            # "responseElements_assumedRoleUser_assumedRoleId",
+            # "requestParameters_snapshotId",
+            # "requestParameters_stackName",
         ]
 
     def count_events(self):
@@ -194,13 +195,17 @@ class Event:
 
 def main():
     print('Example')
-    
-    event = Event('examples\\ano1\\mes1\\dia1\\974349055189_CloudTrail_us-east-1_20170601T0005Z_12nCTooUATtsirhW.json.gz')
-    print("Num events %d " % event.count_events())
-    for e in event.events():
-        # print('Event name: {0}'.format(e['event_name']))
-        # print('Event request: {0}'.format(e['request']))
-        print('Event request: {0}'.format(e))
+    path = "/home/jose/Documentos/TFG/muestras"
+    # event = Event('/home/jose/Documentos/TFG/muestras/974349055189_CloudTrail_us-east-1_20170607T1510Z_kgD1yab9lfzZAzaQ.json.gz')
+    for doc in os.listdir(path):
+        event = Event("{}/{}".format(path, doc))
+        # print("Num events %d " % event.count_events())
+        for e in event.events():
+            # print('Event name: {0}'.format(e['event_name']))
+            # print('Event request: {0}'.format(e['request']))
+            #rds.amazonaws.com
+            if "rds" in e['eventSource']:
+                print('Event request: {0}'.format(e))
     
     # parser = Parser('examples/')
     # for event in parser.events():

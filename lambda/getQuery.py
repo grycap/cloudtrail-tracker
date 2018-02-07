@@ -1,7 +1,7 @@
 from __future__ import print_function
 import boto3
 import os
-import sys
+import sys, ast
 import uuid, json
 from DynamoDB import Querys
 # import requests
@@ -17,18 +17,28 @@ def format_time(time):
 
     return time
 
-
-# {
-    #     "httpMethod": "GET",
-    #     "type": "actions_between",
-    #     "event": "RunInstances",
-    #     "time1": "2014-06-01",
-    #     "time2": "2018-06-01",
-    #     "request_parameter": [
-    #         "requestParameters_instanceType",
-    #         "m1.small"
-    #     ]
-    # }
+select = [
+            "eventID",
+            "userIdentity_userName",
+            "awsRegion",
+            "eventName",
+            "eventSource",
+            "eventTime",
+            "eventType",
+            "userAgent",
+            "userIdentity_principalId",
+            "requestParameters_bucketName",
+            "requestParameters_dBInstanceIdentifier",
+            "requestParameters_dBSecurityGroupName",
+            "requestParameters_includeAllInstances",
+            "requestParameters_includeDeleted",
+            "requestParameters_instanceType",
+            "requestParameters_roleSessionName",
+            "requestParameters_volumeSet_items_0_volumeId",
+            "responseElements_credentials_accessKeyId",
+            "responseElements_credentials_expiration",
+            "responseElements_credentials_sessionToken",
+]
 def handler(event, context):
 
     if event.get("list_users", None):
@@ -37,8 +47,23 @@ def handler(event, context):
     # type = event.get("type",None)
     request = event.get("param",None)
     parameter = event.get("value",None)
-    if request and parameter :
-        request_parameters = [request, parameter]
+
+    if request and parameter:
+        request =  ast.literal_eval(request)
+        parameter=  ast.literal_eval(parameter)
+        requests = []
+        parameters = []
+        for i in range(len(request)):
+            r = request[i]
+            p = parameter[i]
+            if r in select:
+                requests.append(r)
+                parameters.append(p)
+            elif "requestParameters_"+r in select:
+                requests.append("requestParameters_"+r)
+                parameters.append(p)
+
+        request_parameters = [requests, parameters]
     else:
         request_parameters = None
 

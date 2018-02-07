@@ -197,7 +197,7 @@ def create_API(name):
     parentIdResourceUsers = responseResource['id']
     params = {
         "application/json": "{\n    "
-                            "\"list_users\":  \"$input.params('list_users')\"\n    "
+                            "\"list_users\":  \"list_users\"\n    "
                             '}'
 
     }
