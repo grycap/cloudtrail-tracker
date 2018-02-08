@@ -2,7 +2,7 @@ from __future__ import print_function
 import boto3
 import os
 import sys, ast
-import uuid, json
+import uuid, json, time, datetime
 from DynamoDB import Querys
 # import requests
 
@@ -46,6 +46,7 @@ def handler(event, context):
 
     # type = event.get("type",None)
     request = event.get("param",None)
+    print(request)
     parameter = event.get("value",None)
 
     if request and parameter:
@@ -70,10 +71,22 @@ def handler(event, context):
     event_name = event.get("eventName",None)
     user_name = event.get("user",None)
     service = event.get("service",None)
-    count = event.get("count",True)
-
+    count = event.get("count",False)
     time1 = format_time(event.get("from",None))
     time2 = format_time(event.get("to",None))
+
+    if not count :
+        count = False
+    if not event_name:
+        event_name = None
+    if not service:
+        service = None
+    if not time1:
+        time1 = time.strftime("%Y-%m-%d")
+    if not time2:
+        date_1 = datetime.datetime.strptime(time1, "%Y-%m-%d")
+        time2 = date_1 + datetime.timedelta(days = 7)
+        time2 = time2.strftime("%Y-%m-%d")
 
     #Select action
     if user_name and not service:
@@ -88,10 +101,17 @@ def handler(event, context):
     elif service and not user_name:
         #actions_between
         type = "actions_between"
+        if request_parameters:
+            requests, parameters = request_parameters
+            requests.append("eventSource")
+            parameters.append(service+".amazonaws.com")
+            request_parameters = [requests, parameters]
+        else:
+            request_parameters = [["eventSource"],[service+".amazonaws.com"]]
+        # return "{} {} {} {} {} {} {} {}".format(type, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
         return json.dumps("Error")
-
 
     return action(type, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
@@ -140,16 +160,13 @@ def action(type, user_name=None, time1=None, time2=None, event_name=None, reques
 
 if __name__ == '__main__':
     event = {
-        "httpMethod": "GET",
-        "type": "used_services",
-        "user": "gmolto",
-        "event": "RunInstances",
-        "time1": "2014-06-01",
-        "time2": "2018-06-01",
-        "request_parameter": [
-            "requestParameters_instanceType",
-            "m1.small"
-        ]
+    "user":  "alucloud171",
+    "count":  "",
+    "eventName":  "",
+    "from":  "",
+    "to":  "",
+    "param":  "",
+    "value":  ""
     }
     res = handler(event, None)
     print(res)

@@ -315,7 +315,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     if request_parameter:
         requests = request_parameter[0]
         parameters = request_parameter[1]
-        for i in range(len(requests)):
+        for i in range(1,len(requests)):
             feEvent = feEvent & Key(requests[i]).eq(parameters[i])
 
     feAux = Key(users_itemName).eq(user);
@@ -397,11 +397,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for user_count_event items %f " % elapsed_time)
     #
-    # start_time = time.time()
-    # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
-    # elapsed_time = time.time() - start_time
-    # print(user_events)
-    # print("Time elapsed for used_services items %f " % elapsed_time)
+    start_time = time.time()
+    user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for used_services items %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
@@ -429,11 +429,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
-    start_time = time.time()
-    user_events = actions_between_time('2017-06-01T12:00:51Z', '2017-07-01T19:00:51Z',event='RunInstances', request_parameter=request, count=False)
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = actions_between_time('2017-06-01T12:00:51Z', '2017-07-01T19:00:51Z',event='RunInstances', request_parameter=request, count=False)
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
 
 
 if (__name__ == '__main__'):
