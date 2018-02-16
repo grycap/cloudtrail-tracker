@@ -1,10 +1,12 @@
-import boto3
+import boto3, os, sys
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
+try:
+    from settings import settings
+except:
+    from .settings import settings
 
-AWS_REGION = 'us-east-1'
-lambda_func_name= "alucloud230Query"
-stage_name = "QueryStage230"
-api_client = boto3.client('apigateway', region_name=AWS_REGION)
-aws_lambda = boto3.client('lambda', region_name=AWS_REGION)
+api_client = boto3.client('apigateway', region_name=settings.AWS_REGION)
+aws_lambda = boto3.client('lambda', region_name=settings.AWS_REGION)
 
 
 
@@ -41,10 +43,10 @@ def add_method(idAPI, parentIdResource, params = {}, queryString={}):
     lambda_version = aws_lambda.meta.service_model.api_version
 
     uri_data = {
-        "aws-region": AWS_REGION,
+        "aws-region": settings.AWS_REGION,
         "api-version": lambda_version,
         "aws-acct-id": "974349055189",
-        "lambda-function-name": lambda_func_name,
+        "lambda-function-name": settings.lambda_func_name,
         # "lambda-function-name-path": lambda_func_name + "/{type}/{event}/{user}/{count}/{time1}/{time2}/",
     }
     # arn:aws:lambda:us-east-1:974349055189:function:alucloud230Query
@@ -170,12 +172,12 @@ def create_API(name):
     idResource = responseResource['items'][0]['id']
     path = responseResource['items'][0]['path']
     print("API resources - PATH {}".format(path))
-    print("API creating resource /{}".format(lambda_func_name))
+    print("API creating resource /{}".format(settings.lambda_func_name))
     ## create resource /lambda_func_name
     responseResource = api_client.create_resource(
         restApiId=idAPI,
         parentId=idResource,  # resource id for the Base API path
-        pathPart=lambda_func_name,
+        pathPart=settings.lambda_func_name,
 
     )
 
@@ -286,7 +288,7 @@ def create_API(name):
     #     **uri_data)
 
     aws_lambda.add_permission(
-        FunctionName=lambda_func_name,
+        FunctionName=settings.lambda_func_name,
         StatementId=idAPI+"API_gatewat",
         Action="lambda:InvokeFunction",
         Principal="apigateway.amazonaws.com",
@@ -296,14 +298,14 @@ def create_API(name):
     print("Creating stage")
     stage = api_client.create_deployment(
         restApiId=idAPI,
-        stageName=stage_name,
+        stageName=settings.stage_name,
     )
 
 
     # URL stage : https://{API_ID}.execute-api.{REGION}.amazonaws.com/{STAGE}/{RESOURCE}
 
 
-    print("URL: https://{}.execute-api.{}.amazonaws.com/{}/{}/".format(idAPI, AWS_REGION, stage_name, lambda_func_name))
+    print("URL: https://{}.execute-api.{}.amazonaws.com/{}/{}/".format(idAPI, settings.AWS_REGION, settings.stage_name, settings.lambda_func_name))
 
 
 
@@ -311,6 +313,6 @@ def create_API(name):
 if (__name__ == '__main__'):
     print("Creating API Rest . . . ",end='', flush=True)
 
-    create_API("prueba")
+    create_API(settings.API_name)
 
     print("Done!")

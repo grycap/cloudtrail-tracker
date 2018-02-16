@@ -53,17 +53,9 @@ def upload_event_handler(path, table_name):
     """Upload without tracing.
     Util for lambda function
     Now path is one file"""
-
-
-
-
-
     # events = get_structure(path)
-
     event = Event(path)
-    db = UseDynamoDB("Uploading", verbose=False)
-
-
+    db = UseDynamoDB("Uploading", verbose=True)
     db.guardar_evento(table_name, event)
 
 

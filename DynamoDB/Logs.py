@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 
 
-def upload_events(path, table_name = 'EventoCloudTrail_V3'):
+def upload_events(path, table_name):
     # Get all events from path
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
@@ -53,17 +53,9 @@ def upload_event_handler(path, table_name):
     """Upload without tracing.
     Util for lambda function
     Now path is one file"""
-
-
-
-
-
     # events = get_structure(path)
-
     event = Event(path)
     db = UseDynamoDB("Uploading", verbose=False)
-
-
     db.guardar_evento(table_name, event)
 
 

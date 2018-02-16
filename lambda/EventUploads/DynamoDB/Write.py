@@ -10,9 +10,9 @@ import decimal
 from boto3.dynamodb.conditions import Key
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 try:
-    import settings
+    from settings import settings
 except:
-    from . import settings
+    from .settings import settings
 
 class UseDynamoDB:
     
@@ -109,3 +109,6 @@ class UseDynamoDB:
         )
 
         # print(users)
+
+if __name__ == '__main__':
+    print(settings.filterEventNames)

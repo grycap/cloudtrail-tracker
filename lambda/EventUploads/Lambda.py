@@ -2,7 +2,10 @@
 import boto3, os, sys
 
 sys.path.insert(1, os.path.join(sys.path[0], '../..'))
-from settings import settings
+try:
+    from settings import settings
+except:
+    from .settings import settings
 
 import shutil
 
@@ -36,7 +39,7 @@ def create_lambda(name):
         },
         Description="Lambda function to query DynamoDB",
         Timeout=60,
-        MemorySize=512,
+        MemorySize=128,
     )
     # arnLambda = response['FunctionArn']
     # s3 = boto3.resource('s3')
@@ -70,5 +73,5 @@ def create_lambda(name):
 
 if (__name__ == '__main__'):
     print("Creating lambda . . . ",end='', flush=True)
-    create_lambda("alucloud230UploadEvents")
+    create_lambda(settings.lambda_func_name_Uploads)
     print("Done!")

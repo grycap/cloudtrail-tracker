@@ -27,7 +27,7 @@ from settings import settings
 # The boto3 dynamoDB resource
 dynamodb_resource = resource('dynamodb')
 table_name=settings.table_name
-index = 'userIdentity_userName-eventTime-index'
+index = settings.index
 
 def get_table_metadata(table_name):
     """
