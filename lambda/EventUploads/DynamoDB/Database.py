@@ -1,9 +1,13 @@
 """Inits the database"""
-import boto3
+import boto3, sys, os
 from boto3 import resource
 import time
-import settings
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
+try:
+    from settings import settings
+except:
+    from .settings import settings
 table_name = settings.table_name
 dynamodb_resource = resource('dynamodb')
 
@@ -107,5 +111,4 @@ def add_users_row(name_table):
     return
 
 if (__name__ == '__main__'):
-
     init(table_name=settings.table_name)
