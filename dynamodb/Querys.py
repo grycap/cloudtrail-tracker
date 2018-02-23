@@ -16,7 +16,6 @@ aux methods:
 search in a list of events (dict format): search_in_events(dict, events, attrib)
 format/validate time format: format_time(time)
 """
-import boto3
 from boto3 import resource
 from boto3.dynamodb.conditions import Key
 import time, os , sys

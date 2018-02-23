@@ -3,7 +3,7 @@ import boto3
 import os
 import sys, ast
 import uuid, json, time, datetime
-from DynamoDB import Querys
+from dynamodb import Querys
 # import requests
 
 """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """

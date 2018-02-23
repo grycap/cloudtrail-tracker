@@ -5,7 +5,7 @@ import sys
 import uuid
 
 from settings import settings
-from DynamoDB import Logs
+from dynamodb import Logs
 
 s3_client = boto3.client('s3')
 
