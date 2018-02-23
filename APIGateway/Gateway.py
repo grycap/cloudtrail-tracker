@@ -1,10 +1,6 @@
 import boto3, os, sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-try:
-    from settings import settings
-except:
-    from .settings import settings
-
+from settings import settings
 api_client = boto3.client('apigateway', region_name=settings.AWS_REGION)
 aws_lambda = boto3.client('lambda', region_name=settings.AWS_REGION)
 
@@ -45,7 +41,7 @@ def add_method(idAPI, parentIdResource, params = {}, queryString={}):
     uri_data = {
         "aws-region": settings.AWS_REGION,
         "api-version": lambda_version,
-        "aws-acct-id": "974349055189",
+        "aws-acct-id": settings.aws_acct_id,
         "lambda-function-name": settings.lambda_func_name,
         # "lambda-function-name-path": lambda_func_name + "/{type}/{event}/{user}/{count}/{time1}/{time2}/",
     }

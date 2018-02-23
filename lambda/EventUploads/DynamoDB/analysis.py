@@ -1,12 +1,8 @@
 import os, time, argparse, json, sys
-try:
-    from Write import UseDynamoDB
-    from my_parser import Event
-    import Querys
-except:
-    from .Write import UseDynamoDB
-    from .my_parser import Event
-    from . import Querys
+from Write import UseDynamoDB
+from my_parser import Event
+import Querys
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 parser.add_argument("--porc_chunk", help="Split the data. 0.1 = splits of 10%. Default 0.1", default=0.1)
@@ -115,7 +111,7 @@ def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail
             print(" -------------------------File Number %d with %d events " % (count, event.count_events()))
             number_events = number_events + event.count_events()
             db = UseDynamoDB("prueba", verbose=False)
-            db.guardar_evento(table_name, event)
+            db.store_event(table_name, event)
         elapsed_time_upload = time.time() - start_time
         time_chunk[0] = number_events
         time_chunk[1] = elapsed_time_upload
@@ -164,7 +160,7 @@ def upload_all(path, table_name = 'EventoCloudTrail_V2'):
     for e in events:  # e = events file
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
-        db.guardar_evento(table_name, event)
+        db.store_event(table_name, event)
         file_trace.write(e+"\n")
         file_trace.flush()
 

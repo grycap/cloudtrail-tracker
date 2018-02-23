@@ -111,7 +111,7 @@ def analysis_upload_query(path, porc_chunk = 0.1, table_name = 'EventoCloudTrail
             print(" -------------------------File Number %d with %d events " % (count, event.count_events()))
             number_events = number_events + event.count_events()
             db = UseDynamoDB("prueba", verbose=False)
-            db.guardar_evento(table_name, event)
+            db.store_event(table_name, event)
         elapsed_time_upload = time.time() - start_time
         time_chunk[0] = number_events
         time_chunk[1] = elapsed_time_upload
@@ -160,7 +160,7 @@ def upload_all(path, table_name = 'EventoCloudTrail_V2'):
     for e in events:  # e = events file
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
-        db.guardar_evento(table_name, event)
+        db.store_event(table_name, event)
         file_trace.write(e+"\n")
         file_trace.flush()
 

@@ -7,11 +7,9 @@ tutorial dynamoDB: https://aws.amazon.com/es/getting-started/tutorials/create-no
 
 """
 
-from datetime import datetime
 import gzip
 import json
 import os
-import re
 from decimal import *
 
 def flatten_json(y):

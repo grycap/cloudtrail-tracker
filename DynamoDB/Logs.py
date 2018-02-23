@@ -1,12 +1,8 @@
 from __future__ import print_function
-try:
-    from Write import UseDynamoDB
-    from my_parser import Event
-    from analysis import get_structure
-except:
-    from .Write import UseDynamoDB
-    from .my_parser import Event
-    from .analysis import get_structure
+from Write import UseDynamoDB
+from my_parser import Event
+from analysis import get_structure
+
 import os, argparse
 import uuid
 import sys
@@ -42,7 +38,7 @@ def upload_events(path, table_name):
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
 
-        db.guardar_evento(table_name, event)
+        db.store_event(table_name, event)
         file_trace.write(e+"\n")
         file_trace.flush()
 
@@ -56,7 +52,7 @@ def upload_event_handler(path, table_name):
     # events = get_structure(path)
     event = Event(path)
     db = UseDynamoDB("Uploading", verbose=False)
-    db.guardar_evento(table_name, event)
+    db.store_event(table_name, event)
 
 
 

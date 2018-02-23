@@ -2,17 +2,17 @@ from __future__ import print_function
 from Write import UseDynamoDB
 from my_parser import Event
 from analysis import get_structure
+
 import os, argparse
-import boto3
 import uuid
-import botocore
-import settings
+import sys
+from settings import settings
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
 
 
-def upload_events(path, table_name = 'EventoCloudTrail_V3'):
+def upload_events(path, table_name):
     # Get all events from path
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
@@ -38,12 +38,22 @@ def upload_events(path, table_name = 'EventoCloudTrail_V3'):
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
 
-        db.guardar_evento(table_name, event)
+        db.store_event(table_name, event)
         file_trace.write(e+"\n")
         file_trace.flush()
 
 
     file_trace.close()
+
+def upload_event_handler(path, table_name):
+    """Upload without tracing.
+    Util for lambda function
+    Now path is one file"""
+    # events = get_structure(path)
+    event = Event(path)
+    db = UseDynamoDB("Uploading", verbose=False)
+    db.store_event(table_name, event)
+
 
 
 
@@ -59,9 +69,10 @@ def handler(event, context):
 
 
 def main():
-    args = parser.parse_args()
-    path = args.path
-    upload_events(path, settings.table_name)
+    # args = parser.parse_args()
+    # path = args.path
+    # upload_events(path, settings.table_name)
+    print(settings.table_name)
 
 
 if (__name__ == '__main__'):

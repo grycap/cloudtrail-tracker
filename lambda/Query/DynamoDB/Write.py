@@ -1,12 +1,11 @@
 
 from boto3 import dynamodb
 import boto3
-import json, ast, os, sys
-import my_parser
-import decimal
+import os, sys
 from boto3.dynamodb.conditions import Key
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import settings
+from settings import settings
+
 
 class UseDynamoDB:
     
@@ -17,7 +16,7 @@ class UseDynamoDB:
 
 
     
-    def guardar_evento(self, name_table, event):
+    def store_event(self, name_table, event):
 
         #eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
@@ -103,3 +102,6 @@ class UseDynamoDB:
         )
 
         # print(users)
+
+if __name__ == '__main__':
+    print(settings.filterEventNames)

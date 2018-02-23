@@ -4,10 +4,8 @@ from boto3 import resource
 import time
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-try:
-    from settings import settings
-except:
-    from .settings import settings
+from settings import settings
+
 table_name = settings.table_name
 dynamodb_resource = resource('dynamodb')
 
