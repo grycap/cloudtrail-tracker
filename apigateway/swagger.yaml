@@ -1,0 +1,157 @@
+swagger: "2.0"
+info:
+  description: "API definition of CloudTrail-Tracker"
+  version: "1.0.0"
+  title: "Swagger CloudTrail-Tracker"
+  #termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "joprfon@inf.upv.es"
+  #license:
+  #  name: "Apache 2.0"
+  #  url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+#host: "petstore.swagger.io"
+basePath: "/{stage}/cloudtracking_querys"
+tags:
+
+- name: "services"
+  description: "General query services"
+- name: "users"
+  description: "Information about actions of an user"
+  #externalDocs:
+  #  description: "Find out more about our store"
+  #  url: "http://swagger.io"
+schemes:
+- "http"
+paths:
+  /services/{service}:
+  
+    get:
+      tags:
+      - "services"
+      summary: "Finds information from a service"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "services"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "service"
+        in: "path"
+        description: "name of service to find"
+        required: true
+        type: "string"
+      - name: "eventName"
+        in: "query"
+        description: "Event name to filter"
+        required: false
+        type: "string"
+      - name: "count"
+        in: "query"
+        description: "Return a number instead a json"
+        required: false
+        type: "boolean"
+      - name: "from"
+        in: "query"
+        description: "Date to start. YYYY-MM-DD"
+        required: false
+        type: "string"
+      - name: "to"
+        in: "query"
+        description: "Date to end. YYYY-MM-DD"
+        required: false
+        type: "string"
+      - name: "param"
+        in: "query"
+        description: "Extra parameter to search (column)."
+        required: false
+        type: "string"
+      - name: "value"
+        in: "query"
+        description: "Value of the parameter to search."
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/user"
+            
+  /users:
+    get:
+      tags:
+      - "users"
+      summary: "List all users"
+      description: "List all users"
+      operationId: "usersList"
+      produces: 
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              type: string
+  /users/{user}:
+    get:
+      tags:
+      - "users"
+      summary: "List events from an user"
+      operationId: "user"
+      produces: 
+      - "application/json"
+      parameters:
+      - name: "user"
+        in: "path"
+        description: "name of service to find"
+        required: true
+        type: "string"
+      - name: "eventName"
+        in: "query"
+        description: "Event name to filter"
+        required: false
+        type: "string"
+      - name: "count"
+        in: "query"
+        description: "Return a number instead a json"
+        required: false
+        type: "boolean"
+      - name: "from"
+        in: "query"
+        description: "Date to start. YYYY-MM-DD"
+        required: false
+        type: "string"
+      - name: "to"
+        in: "query"
+        description: "Date to end. YYYY-MM-DD"
+        required: false
+        type: "string"
+      - name: "param"
+        in: "query"
+        description: "Extra parameter to search (column)."
+        required: false
+        type: "string"
+      - name: "value"
+        in: "query"
+        description: "Value of the parameter to search."
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/user"
+      
+#TODO all definitions of 
+definitions:
+  user:
+    type: array
+    items:
+      type: object
+      properties:
+        eventTime:
+          type: "string"
+        eventSource:
+          type: "string"
+        userIdentity_userName:
+          type: "string"
