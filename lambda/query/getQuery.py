@@ -75,7 +75,7 @@ def handler(event, context):
     time1 = format_time(event.get("from",None))
     time2 = format_time(event.get("to",None))
 
-    if not count :
+    if not count or count == "false" or count == "False":
         count = False
     if not event_name:
         event_name = None
