@@ -39,34 +39,48 @@ select = [
             "responseElements_credentials_expiration",
             "responseElements_credentials_sessionToken",
 ]
+
+def get_request_parameters(event):
+    request = event.get("params", None)
+    parameter = event.get("values", None)
+    request_parameters = None
+    if request and parameter:
+        try:
+            request =  ast.literal_eval(request)
+            parameter =  ast.literal_eval(parameter)
+        except ValueError:
+            pass
+        requests = []
+        parameters = []
+        if type(request) == list:
+            #something
+            pass
+        elif type(request) == str:
+            request = request.split(",")
+            parameter = parameter.split(",")
+
+        for i in range(len(request)):
+            r = request[i]
+            p = parameter[i]
+
+            if "requestParameters_" + r in select:
+                requests.append("requestParameters_" + r)
+            elif "responseElements_" + r in select:
+                requests.append("responseElements_" + r)
+            else:
+                requests.append(r)
+            parameters.append(p)
+        request_parameters = [requests, parameters]
+    return request_parameters
+
+
 def handler(event, context):
 
     if event.get("list_users", None):
         return action("users_list")
 
-    request = event.get("param",None)
-    parameter = event.get("value",None)
+    request_parameters = get_request_parameters(event)
 
-    if request and parameter:
-        request =  ast.literal_eval(request)
-        parameter=  ast.literal_eval(parameter)
-        requests = []
-        parameters = []
-        for i in range(len(request)):
-            r = request[i]
-            p = parameter[i]
-
-            if "requestParameters_"+r in select:
-                requests.append("requestParameters_"+r)
-            elif "responseElements_"+r in select:
-                requests.append("responseElements_"+r)
-            else:
-                requests.append(r)
-            parameters.append(p)
-
-        request_parameters = [requests, parameters]
-    else:
-        request_parameters = None
 
     event_name = event.get("eventName",None)
     user_name = event.get("user",None)
@@ -92,7 +106,7 @@ def handler(event, context):
     if user_name and not service:
         #used_services or used_services_parameter or user_count_event
         if not event_name:
-            if parameter:
+            if request_parameters:
                 method = "used_services_parameter"
             else:
                 method = "used_services"
@@ -161,14 +175,16 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
 if __name__ == '__main__':
     event = {
-    "user":  "",
-    "service": "ec2",
+    "user":  "gmolto",
+    "service": "",
     "count":  "",
     "eventName":  "",
     "from":  "2016-06-01",
     "to":  "2017-09-01",
-    "param":  "['instanceType']",
-    "value":  "['m1.small']"
+    # "params":  "['instanceType']",
+    "params":  "instanceType,eventSource",
+    # "values":  "['m1.small']"
+    "values":  "m1.small,ec2.amazonaws.com"
     }
     res = handler(event, None)
     print(res)

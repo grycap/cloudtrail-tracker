@@ -1,0 +1,153 @@
+swagger: '2.0'
+info:
+  description: API definition of CloudTrail-Tracker
+  version: 1.0.0
+  title: Swagger CloudTrail-Tracker
+  contact:
+    email: joprfon@inf.upv.es
+basePath: '/{stage}/cloudtracking_querys'
+tags:
+  - name: services
+    description: General query services
+  - name: users
+    description: Information about actions of an user
+schemes:
+  - http
+paths:
+  '/services/{service}':
+    get:
+      tags:
+        - services
+      summary: Finds information from a service
+      description: Multiple status values can be provided with comma separated strings
+      operationId: services
+      produces:
+        - application/json
+      parameters:
+        - name: service
+          in: path
+          description: Name of service to find
+          required: true
+          type: string
+        - name: eventName
+          in: query
+          description: Event name to filter
+          required: false
+          type: string
+        - name: count
+          in: query
+          description: Return a number instead a json
+          required: false
+          default: false
+          type: boolean
+        - name: from
+          in: query
+          description: Date to start. YYYY-MM-DD
+          required: false
+          type: string
+        - name: to
+          in: query
+          description: Date to end. YYYY-MM-DD
+          required: false
+          type: string
+        - name: params
+          in: query
+          description: A comma-separated list of extra parameter to search (column).
+          required: false
+          type: array
+          items:
+            type: string
+        - name: values
+          in: query
+          description: A comma-separated list of extra parameter to search (column).
+          required: false
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/item_object'
+  /users:
+    get:
+      tags:
+        - users
+      summary: List all users
+      description: List all users
+      operationId: usersList
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              type: string
+  '/users/{user}':
+    get:
+      tags:
+        - users
+      summary: List events from an user
+      operationId: user
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: path
+          description: name of service to find
+          required: true
+          type: string
+        - name: eventName
+          in: query
+          description: Event name to filter
+          required: false
+          type: string
+        - name: count
+          in: query
+          description: Return a number instead a json
+          required: false
+          type: boolean
+        - name: from
+          in: query
+          description: Date to start. YYYY-MM-DD
+          required: false
+          type: string
+        - name: to
+          in: query
+          description: Date to end. YYYY-MM-DD
+          required: false
+          type: string
+        - name: params
+          in: query
+          description: A comma-separated list of extra parameter to search (column).
+          required: false
+          type: array
+          items:
+            type: string
+        - name: values
+          in: query
+          description: A comma-separated list of extra values to search (value).
+          required: false
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/item_object'
+definitions:
+  item_object:
+    type: array
+    items:
+      type: object
+      properties:
+        eventTime:
+          type: string
+        eventSource:
+          type: string
+        userIdentity_userName:
+          type: string

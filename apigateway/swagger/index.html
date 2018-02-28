@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <meta charset="UTF-8">
+    <title>Swagger CloudTrail-Tracker</title>
+                                                         </head>
+<body>
+<div class="container">
+    <h1>Swagger CloudTrail-Tracker</h1>
+    <p class="sw-info">
+        Base URL: <span class="sw-info-basePath">/{stage}/cloudtracking_querys</span>,
+        Version: <span class="sw-info-version">1.0.0</span>
+    </p>
+    <p><p>API definition of CloudTrail-Tracker</p>
+    </p>
+    
+    
+    <div id="sw-schemes" class="sw-default-value">
+        <span class="sw-default-value-header">Schemes:</span>
+        http
+    </div>
+    
+        
+        <h2 id="swagger--summary-tags">Summary</h2>
+            <h3 id="tag-services" class="swagger-summary-tag">Tag: services</h3>
+            <p>General query services</p>
+        
+            <p class="sw-tag-external-doc">
+            </p>
+            <table class="table table-bordered table-condensed swagger--summary">
+                <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#operation--services--service--get">GET /services/{service}</a></td>
+                        <td><p>Finds information from a service</p>
+        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 id="tag-users" class="swagger-summary-tag">Tag: users</h3>
+            <p>Information about actions of an user</p>
+        
+            <p class="sw-tag-external-doc">
+            </p>
+            <table class="table table-bordered table-condensed swagger--summary">
+                <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#operation--users-get">GET /users</a></td>
+                        <td><p>List all users</p>
+        </td>
+                    </tr>
+                    <tr>
+                        <td><a href="#operation--users--user--get">GET /users/{user}</a></td>
+                        <td><p>List events from an user</p>
+        </td>
+                    </tr>
+                </tbody>
+            </table>
+        
+    
+    
+    
+    <h2>Paths</h2>
+    
+        
+        <span id="path--services--service-"></span>
+            <div id="operation--services--service--get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">Finds information from a service</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/services/{service}</strong></h3>
+                        Tags:
+                            <a href="#tag-services">services</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>Multiple status values can be provided with comma separated strings</p>
+            
+                    </section>
+            
+                    
+                        <section class="sw-request-params">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-param-name"></th>
+                                    <th class="sw-param-description"></th>
+                                    <th class="sw-param-type"></th>
+                                    <th class="sw-param-data-type"></th>
+                                    <th class="sw-param-annotation"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                service
+                                            </td>
+                                            <td><p>Name of service to find</p>
+                                        </td>
+                                            <td>path</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                eventName
+                                            </td>
+                                            <td><p>Event name to filter</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                count
+                                            </td>
+                                            <td><p>Return a number instead a json</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">boolean</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                from
+                                            </td>
+                                            <td><p>Date to start. YYYY-MM-DD</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                to
+                                            </td>
+                                            <td><p>Date to end. YYYY-MM-DD</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                params
+                                            </td>
+                                            <td><p>A comma-separated list of extra parameter to search (column).</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string[]</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                values
+                                            </td>
+                                            <td><p>A comma-separated list of extra parameter to search (column).</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string[]</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>successful operation</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                                <a class="json-schema-ref" href="#/definitions/item_object">item_object</a>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--users"></span>
+            <div id="operation--users-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">List all users</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/users</strong></h3>
+                        Tags:
+                            <a href="#tag-users">users</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>List all users</p>
+            
+                    </section>
+            
+                    
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>successful operation</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                            <section class="json-schema-array-items">
+                                                                                
+                                                                                <span class="json-property-type">string</span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </section>    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--users--user-"></span>
+            <div id="operation--users--user--get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">List events from an user</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/users/{user}</strong></h3>
+                        Tags:
+                            <a href="#tag-users">users</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        
+                    </section>
+            
+                    
+                        <section class="sw-request-params">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="sw-param-name"></th>
+                                    <th class="sw-param-description"></th>
+                                    <th class="sw-param-type"></th>
+                                    <th class="sw-param-data-type"></th>
+                                    <th class="sw-param-annotation"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                                user
+                                            </td>
+                                            <td><p>name of service to find</p>
+                                        </td>
+                                            <td>path</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                                    <span class="json-property-required"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                eventName
+                                            </td>
+                                            <td><p>Event name to filter</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                count
+                                            </td>
+                                            <td><p>Return a number instead a json</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">boolean</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                from
+                                            </td>
+                                            <td><p>Date to start. YYYY-MM-DD</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                to
+                                            </td>
+                                            <td><p>Date to end. YYYY-MM-DD</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                params
+                                            </td>
+                                            <td><p>A comma-separated list of extra parameter to search (column).</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string[]</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                values
+                                            </td>
+                                            <td><p>A comma-separated list of extra values to search (value).</p>
+                                        </td>
+                                            <td>query</td>
+                                            <td>
+                                        <span class="json-property-type">string[]</span>
+                                        <span class="json-property-range" title="Value limits"></span>
+                                        
+                                            </td>
+                                            <td>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>successful operation</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                                <a class="json-schema-ref" href="#/definitions/item_object">item_object</a>
+                                                    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+    
+     
+    
+                       
+        <h2>Schema definitions</h2>
+    
+            
+                <div id="definition-item_object" class="panel panel-definition">
+                        <div class="panel-heading">
+                                <h3 class="panel-title"><a name="/definitions/item_object"></a>item_object:
+                                    <span class="json-property-type">
+                <span class="json-property-type">object[]</span>
+                <span class="json-property-range" title="Value limits"></span>
+                
+                </span>
+                                </h3>
+                        </div>
+                    <div class="panel-body">
+                            
+                                            <section class="json-schema-array-items">
+                                                
+                                                <span class="json-property-type">object</span>
+                                                <span class="json-property-range" title="Value limits"></span>
+                                                
+                                                <div class="json-inner-schema">
+                                                    
+                                                            <section class="json-schema-properties">
+                                                                <dl>
+                                                                        <dt data-property-name="eventTime">
+                                                                            <span class="json-property-name">eventTime:</span>
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="eventSource">
+                                                                            <span class="json-property-name">eventSource:</span>
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                        <dt data-property-name="userIdentity_userName">
+                                                                            <span class="json-property-name">userIdentity_userName:</span>
+                                                                            
+                                                                            <span class="json-property-type">string</span>
+                                                                            <span class="json-property-range" title="Value limits"></span>
+                                                                            
+                                                                        </dt>
+                                                                        <dd>
+                                                                            
+                                                                            <div class="json-inner-schema">
+                                                                                
+                                                                            </div>
+                                                                        </dd>
+                                                                </dl>
+                                                            </section>
+                                                </div>
+                                            </section>    </div>
+                </div>
+</div>
+<script src="bundle.js" type="application/javascript"></script>
+</body>
+</html>
