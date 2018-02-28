@@ -44,9 +44,7 @@ def handler(event, context):
     if event.get("list_users", None):
         return action("users_list")
 
-    # type = event.get("type",None)
     request = event.get("param",None)
-    print(request)
     parameter = event.get("value",None)
 
     if request and parameter:
@@ -57,12 +55,14 @@ def handler(event, context):
         for i in range(len(request)):
             r = request[i]
             p = parameter[i]
-            if r in select:
-                requests.append(r)
-                parameters.append(p)
-            elif "requestParameters_"+r in select:
+
+            if "requestParameters_"+r in select:
                 requests.append("requestParameters_"+r)
-                parameters.append(p)
+            elif "responseElements_"+r in select:
+                requests.append("responseElements_"+r)
+            else:
+                requests.append(r)
+            parameters.append(p)
 
         request_parameters = [requests, parameters]
     else:
@@ -93,14 +93,14 @@ def handler(event, context):
         #used_services or used_services_parameter or user_count_event
         if not event_name:
             if parameter:
-                type = "used_services_parameter"
+                method = "used_services_parameter"
             else:
-                type = "used_services"
+                method = "used_services"
         else:
-            type = "user_count_event"
+            method = "user_count_event"
     elif service and not user_name:
         #actions_between
-        type = "actions_between"
+        method = "actions_between"
         if request_parameters:
             requests, parameters = request_parameters
             requests.append("eventSource")
@@ -108,16 +108,17 @@ def handler(event, context):
             request_parameters = [requests, parameters]
         else:
             request_parameters = [["eventSource"],[service+".amazonaws.com"]]
-        # return "{} {} {} {} {} {} {} {}".format(type, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
+        # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
         return json.dumps("Error")
+    print(method)
+    print(request_parameters)
+    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
-    return action(type, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
+def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
 
-def action(type, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
-
-    if type == "actions_between":
+    if method == "actions_between":
         return json.dumps(Querys.actions_between_time(
             time1,
             time2,
@@ -125,13 +126,13 @@ def action(type, user_name=None, time1=None, time2=None, event_name=None, reques
             request_parameter=request_parameters,
             count=count
         ))
-    elif type == "used_services":
+    elif method == "used_services":
         return json.dumps(
             Querys.used_services(user_name, time1, time2, count)
 
         )
 
-    elif type == "used_services_parameter":
+    elif method == "used_services_parameter":
         return json.dumps(
             Querys.used_services_parameter(
                 user_name, request_parameters, time1, time2, count
@@ -139,18 +140,18 @@ def action(type, user_name=None, time1=None, time2=None, event_name=None, reques
 
         )
 
-    elif type == "user_count_event":
+    elif method == "user_count_event":
         return json.dumps((
             Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count)
 
         ))
 
-    elif type == "top_users":
+    elif method == "top_users":
         return json.dumps(
             Querys.top_users(time1, time2, event_name, request_parameters)
         )
 
-    elif type == "users_list":
+    elif method == "users_list":
         return json.dumps(Querys.users_list())
 
 
@@ -160,13 +161,14 @@ def action(type, user_name=None, time1=None, time2=None, event_name=None, reques
 
 if __name__ == '__main__':
     event = {
-    "user":  "alucloud171",
+    "user":  "",
+    "service": "ec2",
     "count":  "",
     "eventName":  "",
-    "from":  "",
-    "to":  "",
-    "param":  "",
-    "value":  ""
+    "from":  "2016-06-01",
+    "to":  "2017-09-01",
+    "param":  "['instanceType']",
+    "value":  "['m1.small']"
     }
     res = handler(event, None)
     print(res)
