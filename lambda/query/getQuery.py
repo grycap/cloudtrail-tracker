@@ -126,8 +126,6 @@ def handler(event, context):
 
     else:
         return json.dumps("Error")
-    print(method)
-    print(request_parameters)
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):

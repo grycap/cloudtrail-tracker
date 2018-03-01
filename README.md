@@ -19,3 +19,7 @@ CloudTrail-Tracker is designed as a serverless application that entirely runs on
 ## Current Status
 
 CloudTrail-Tracker is still under development.
+
+## Upload previous events
+
+python dynamodb/Logs.py --path "events_path"

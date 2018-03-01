@@ -1,3 +1,7 @@
+"""
+Upload events.
+"""
+
 from __future__ import print_function
 from Write import UseDynamoDB
 from my_parser import Event
@@ -5,15 +9,16 @@ from analysis import get_structure
 
 import os, argparse
 import uuid
-import sys
 from settings import settings
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')
+parser.add_argument("--path", help="Path that contains items to start to upload", default='./examples')
 
 
 def upload_events(path, table_name):
-    # Get all events from path
+    """Get all events from path, upload them and do a tracing.
+    All tracing stored items is saved at path_tracing file.
+    You can recall this functions without delete this file and start where you left"""
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
 
@@ -44,6 +49,7 @@ def upload_events(path, table_name):
 
 
     file_trace.close()
+    os.remove(path_tracing)
 
 def upload_event_handler(path, table_name):
     """Upload without tracing.
@@ -69,10 +75,10 @@ def handler(event, context):
 
 
 def main():
-    # args = parser.parse_args()
-    # path = args.path
-    # upload_events(path, settings.table_name)
-    print(settings.table_name)
+    args = parser.parse_args()
+    path = args.path
+    upload_events(path, settings.table_name)
+    # print(settings.table_name)
 
 
 if (__name__ == '__main__'):
