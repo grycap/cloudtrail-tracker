@@ -9,7 +9,6 @@ from dynamodb import Logs
 
 s3_client = boto3.client('s3')
 
-print(settings)
 def handler(event, context):
 
     for record in event['Records']:

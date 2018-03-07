@@ -18,9 +18,6 @@ package: # Optional deployment packaging configuration
 
 functions: 
   EventUploads:
-    package:
-      include: # Specify the directories and files which should be included in the deployment package
-        - '!settings/**'
     handler: lambda/eventuploads/Upload.handler
     name: cloudtrail-tracker-uploader
     description: CloudTrail-Tracker (Event Uploads)
@@ -33,4 +30,12 @@ functions:
          bucket: alucloud230
          event: s3:ObjectCreated:*
          rules:            
-           - suffix: .json
+           - suffix: .json.gz
+  Query:
+    handler: lambda/query/getQuery.handler
+    name: cloudtrail-tracker-query
+    description: cloudTrail-Tracker results
+    runtime: python3.6
+    memorySize: 512
+    timeout: 30
+    reservedConcurrency: 5
