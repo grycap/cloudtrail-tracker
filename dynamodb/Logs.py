@@ -8,10 +8,7 @@ from .my_parser import Event
 from .analysis import get_structure
 
 import os, argparse, sys, uuid
-print(sys.path)
-
-
-from .settings import settings
+from settings import settings
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start to upload", default='./examples')
