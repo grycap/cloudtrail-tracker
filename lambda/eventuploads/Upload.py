@@ -26,4 +26,5 @@ def handler(event, context):
         print("Finished")
 
 if __name__ == '__main__':
+    print(settings.table_name)
     handler({},None)

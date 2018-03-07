@@ -3,13 +3,15 @@ Upload events.
 """
 
 from __future__ import print_function
-from Write import UseDynamoDB
-from my_parser import Event
-from analysis import get_structure
+from .Write import UseDynamoDB
+from .my_parser import Event
+from .analysis import get_structure
 
-import os, argparse
-import uuid
-from settings import settings
+import os, argparse, sys, uuid
+print(sys.path)
+
+
+from .settings import settings
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start to upload", default='./examples')
@@ -82,4 +84,5 @@ def main():
 
 
 if (__name__ == '__main__'):
+    print(settings)
     main()

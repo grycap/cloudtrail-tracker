@@ -1,0 +1,36 @@
+service: cloudtrail-tracker
+
+provider: 
+  name: aws
+  stage: dev 
+  region: us-east-1 
+  memorySize: 256
+  deploymentBucket:
+    name: alucloud230
+  role: arn:aws:iam::974349055189:role/lambda-s3-apigw-role
+
+  plugins:
+   - serverless-python-requirements
+
+package: # Optional deployment packaging configuration
+    include: # Specify the directories and files which should be included in the deployment package
+      - dynamodb/Logs.py
+
+functions: 
+  EventUploads:
+    package:
+      include: # Specify the directories and files which should be included in the deployment package
+        - '!settings/**'
+    handler: lambda/eventuploads/Upload.handler
+    name: cloudtrail-tracker-uploader
+    description: CloudTrail-Tracker (Event Uploads)
+    runtime: python3.6
+    memorySize: 256
+    timeout: 10 
+    reservedConcurrency: 5
+    events:
+      - s3: 
+         bucket: alucloud230
+         event: s3:ObjectCreated:*
+         rules:            
+           - suffix: .json
