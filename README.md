@@ -21,5 +21,48 @@ CloudTrail-Tracker is designed as a serverless application that entirely runs on
 CloudTrail-Tracker is still under development.
 
 ## Upload previous events
+  
+  Upload previous events from a path
+  ``` python dynamodb/Logs.py --path "events_path"```
 
-python dynamodb/Logs.py --path "events_path"
+## API calls examples
+
+### Services
+  ``` curl https://{stage}/cloudtracking_querys/services/ec2``` 
+  
+  Return all ec2 events from the last 7 days.
+  
+  ``` curl https://{stage}/cloudtracking_querys/services/ec2?from=2016-01-01&to=2017-01-01```
+  
+  Return all ec2 events between two dates
+  
+  Example of result
+  ```
+  "[{\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"}, {\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"} ......
+  
+  ```
+### Users
+  ``` curl https://{stage}/cloudtracking_querys/users```
+  
+  List all users
+  
+  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230```
+  
+  Get info from user alucloud230 from last 7 days.
+  
+  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?from=2017-06-06&to=2017-09-09```
+  
+  Get info from alucloud230 between 2 dates 
+  
+  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?from=2017-06-06&eventName=RunInstances&to=2017-09-09```
+  
+  Get info from Runinstances events from alucloud230 between 2 dates 
+  
+  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?param=['instanceType','eventSource']&value=['m1.small','ec2.amazonaws.com']&from=2017-06-06&eventName=RunInstances&to=2017-09-09```
+  
+  Get user info between two dates and a list of parameters and values
+  
+  Example of result
+  
+  ``` "[{\"eventTime\": \"2017-07-15T14:03:16Z\", \"eventSource\": \"ec2.amazonaws.com\", \"userIdentity_userName\": \"alucloud230\"}, ...```
+  
