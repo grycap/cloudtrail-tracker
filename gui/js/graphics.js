@@ -1,6 +1,6 @@
 // API_url = "https://aekot17gqj.execute-api.us-east-1.amazonaws.com/test/alucloud230query"
 // API_url = " https://ucxi51mw43.execute-api.us-east-1.amazonaws.com/QueryStage230/alucloud230Query/{type}/{event}/{user}/{count}/{time1}/{time2}"
-API_url = "https://1e17m1gab3.execute-api.us-east-1.amazonaws.com/QueryStage230/"
+API_url = "https://wd3zjioptf.execute-api.us-east-1.amazonaws.com/dev/"
 datos = null
 
 function print(x) {
@@ -285,7 +285,7 @@ function scan() {
     if (used_services_parameter != "" && used_services_parameter_value != ""){
         url = url + "/" + used_services_parameter + "/" + used_services_parameter_value
     }
-
+    url = "https://vjz9r6h2id.execute-api.us-east-1.amazonaws.com/dev/services/ec2?from=2016-01-01&to=2017-01-01"
     print(url)
     jQuery.ajax({
         url: url,
@@ -300,6 +300,8 @@ function scan() {
                 bars(data)
             } else
                 graph(data)
+
+            print(data)
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
