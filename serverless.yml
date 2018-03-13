@@ -22,15 +22,10 @@ functions:
     name: cloudtrail-tracker-uploader
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
-    memorySize: 256
-    timeout: 10 
+    memorySize: 128
+    timeout: 30
     reservedConcurrency: 5
-    events:
-      - s3: 
-         bucket: alucloud230
-         event: s3:ObjectCreated:*
-         rules:            
-           - suffix: .json.gz
+
   Query:
     handler: lambda/query/getQuery.handler
     name: cloudtrail-tracker-query
@@ -39,3 +34,34 @@ functions:
     memorySize: 512
     timeout: 30
     reservedConcurrency: 5
+    events:
+      - http:
+          path: users
+          method: get
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "list_users" : "list_users" }'
+      - http:
+          path: users/{user}
+          method: get
+          integration: lambda
+          request:
+            parameters:
+              querystrings:
+                count: false
+                eventName: false
+                from: false
+                to: false
+                param: false
+                value: false
+            template:
+#              passThrough: WHEN_NO_TEMPLATES
+
+              application/json: '{ "user" : "$input.params(''user'')",
+                                   "count" : "$input.params(''count'')",
+                                   "eventName" : "$input.params(''eventName'')",
+                                   "from" : "$input.params(''from'')",
+                                   "to" : "$input.params(''to'')",
+                                   "param" : "$input.params(''param'')",
+                                   "value" : "$input.params(''value'')"}'
