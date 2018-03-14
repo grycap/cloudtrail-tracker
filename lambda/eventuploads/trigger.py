@@ -1,4 +1,11 @@
-import boto3, os, sys
+import boto3
+import argparse
+
+parser = argparse.ArgumentParser(description='Create a trigger when a file is uploaded to an specific S3 bucket.')
+parser.add_argument('--bucket', type=str,
+                   help='Bucket name.')
+parser.add_argument('--lambda_name',type=str,
+                   help='Lambda function name to launch on every event')
 
 def create_trigger(name, bucket_name):
     client = boto3.client('lambda')
@@ -53,6 +60,12 @@ def create_trigger(name, bucket_name):
 
 if (__name__ == '__main__'):
     print("Creating trigger S3 -> Lambda . . . ",end='', flush=True)
-    bucket_name = "alucloud230"
-    create_trigger("cloudtrail-tracker-uploader", bucket_name)
-    print("Done!")
+    args = parser.parse_args()
+    bucket_name = args.bucket
+    lambda_name = args.lambda_name
+    if not bucket_name or not lambda_name:
+        print("\nLambda name or bucket name are not provided.")
+
+    else:
+        create_trigger(lambda_name, bucket_name)
+        print("Done!")

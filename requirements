@@ -1,2 +1,2 @@
-pip install boto3
-pip install flatten_json
+boto3
+flatten_json
