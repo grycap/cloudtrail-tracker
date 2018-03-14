@@ -3,12 +3,11 @@ Upload events.
 """
 
 from __future__ import print_function
-from Write import UseDynamoDB
-from my_parser import Event
-from analysis import get_structure
+from .Write import UseDynamoDB
+from .my_parser import Event
+from .analysis import get_structure
 
-import os, argparse
-import uuid
+import os, argparse, sys, uuid
 from settings import settings
 
 parser = argparse.ArgumentParser()
@@ -82,4 +81,5 @@ def main():
 
 
 if (__name__ == '__main__'):
+    print(settings)
     main()

@@ -1,7 +1,7 @@
 import os, time, argparse, json, sys
-from Write import UseDynamoDB
-from my_parser import Event
-import Querys
+from .Write import UseDynamoDB
+from .my_parser import Event
+from . import Querys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start the analysis", default='./examples')

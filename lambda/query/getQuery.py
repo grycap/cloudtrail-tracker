@@ -125,7 +125,7 @@ def handler(event, context):
         # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
-        return json.dumps("Error")
+        return json.dumps("Error. Needs an user name or a service.")
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):

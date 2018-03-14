@@ -9,7 +9,6 @@ from dynamodb import Logs
 
 s3_client = boto3.client('s3')
 
-
 def handler(event, context):
 
     for record in event['Records']:
@@ -26,4 +25,5 @@ def handler(event, context):
         print("Finished")
 
 if __name__ == '__main__':
+    print(settings.table_name)
     handler({},None)
