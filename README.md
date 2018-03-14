@@ -53,6 +53,10 @@ python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_l
 
 
 ## Upload previous events
+  
+  Upload previous events from a path
+  ``` python dynamodb/Logs.py --path "events_path"```
+
 
   Upload previous events from a path
   ``` python dynamodb/Logs.py --path "events_path"```
@@ -94,4 +98,4 @@ python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_l
 
   Get user info between two dates and a list of parameters and values
 
-  Example of result
+  Result example
