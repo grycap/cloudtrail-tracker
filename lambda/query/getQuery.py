@@ -125,13 +125,13 @@ def handler(event, context):
         # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
-        return json.dumps("Error. Needs an user name or a service.")
+        return ("Error. Needs an user name or a service.")
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
 
     if method == "actions_between":
-        return json.dumps(Querys.actions_between_time(
+        return (Querys.actions_between_time(
             time1,
             time2,
             event=event_name,
@@ -139,13 +139,13 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
             count=count
         ))
     elif method == "used_services":
-        return json.dumps(
+        return (
             Querys.used_services(user_name, time1, time2, count)
 
         )
 
     elif method == "used_services_parameter":
-        return json.dumps(
+        return (
             Querys.used_services_parameter(
                 user_name, request_parameters, time1, time2, count
             )
@@ -153,18 +153,18 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
         )
 
     elif method == "user_count_event":
-        return json.dumps((
+        return ((
             Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count)
 
         ))
 
     elif method == "top_users":
-        return json.dumps(
+        return (
             Querys.top_users(time1, time2, event_name, request_parameters)
         )
 
     elif method == "users_list":
-        return json.dumps(Querys.users_list())
+        return (Querys.users_list())
 
 
 
