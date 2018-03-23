@@ -41,13 +41,14 @@ select = [
 ]
 
 def get_request_parameters(event):
-    request = event.get("params", None)
-    parameter = event.get("values", None)
+    request = event.get("param", None)
+    parameter = event.get("value", None)
     request_parameters = None
     if request and parameter:
         try:
             request =  ast.literal_eval(request)
             parameter =  ast.literal_eval(parameter)
+
         except ValueError:
             pass
         requests = []
@@ -80,7 +81,6 @@ def handler(event, context):
         return action("users_list")
 
     request_parameters = get_request_parameters(event)
-
 
     event_name = event.get("eventName",None)
     user_name = event.get("user",None)
@@ -129,7 +129,6 @@ def handler(event, context):
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
-
     if method == "actions_between":
         return (Querys.actions_between_time(
             time1,
@@ -179,10 +178,10 @@ if __name__ == '__main__':
     "eventName":  "",
     "from":  "2016-06-01",
     "to":  "2017-09-01",
-    # "params":  "['instanceType']",
-    "params":  "instanceType,eventSource",
-    # "values":  "['m1.small']"
-    "values":  "m1.small,ec2.amazonaws.com"
+    "param":  "['instanceType']",
+    # "param":  "instanceType,eventSource",
+    "value":  "['m1.small']"
+    # "value":  "m1.small,ec2.amazonaws.com"
     }
     res = handler(event, None)
     print(res)
