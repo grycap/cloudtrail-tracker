@@ -88,7 +88,9 @@ def add_users_row(name_table):
                 "eventID": "1",
                 "eventTime": "1",
                 "userIdentity_userName": "all",
-                "listUsers": {}
+                "listUsers": {},
+                "services": {},
+                "cols": {}
 
             }
             res = table.put_item(

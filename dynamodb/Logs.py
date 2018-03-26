@@ -4,6 +4,7 @@ Upload events.
 
 from __future__ import print_function
 import os, argparse, sys, uuid, datetime, boto3, re, glob
+import time
 
 PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
@@ -61,12 +62,16 @@ def upload_events(path, table_name, to):
 
     events = order_by_event(events)
 
-
+    #debug
+    start_time = time.time()
+    all_time = []
+    #fin debug
     file_trace = open(path_tracing, "a+")
     for (e_date, e) in events:  # e = events file
+        # debug
+        start_event = time.time()
         if to_finish < e_date:
             break
-        print(e_date, e)
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
 
@@ -74,7 +79,14 @@ def upload_events(path, table_name, to):
         file_trace.write(e+"\n")
         file_trace.flush()
 
-
+        # debug
+        elapsed_event = time.time() - start_time
+        all_time.append(elapsed_event)
+    # debug
+    elapsed_time = time.time() - start_time
+    print("Total time: %f" % elapsed_time)
+    mean = sum(all_time) / len(all_time)
+    print("mean time per event: %f" % mean)
     file_trace.close()
     os.remove(path_tracing)
 
