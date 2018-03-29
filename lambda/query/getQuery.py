@@ -79,6 +79,10 @@ def handler(event, context):
 
     if event.get("list_users", None):
         return action("users_list")
+    if event.get("services_list", None):
+        return action("services_list")
+    if event.get("parameters_list", None):
+        return action("parameters_list")
 
     request_parameters = get_request_parameters(event)
 
@@ -164,6 +168,10 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
     elif method == "users_list":
         return (Querys.users_list())
+    elif method == "services_list":
+        return (Querys.services_list())
+    elif method == "parameters_list":
+        return (Querys.parameters_list())
 
 
 

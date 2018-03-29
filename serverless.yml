@@ -28,7 +28,7 @@ functions:
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrail-tracker-query
+    name: cloudtrail-tracker-quer
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
@@ -43,6 +43,7 @@ functions:
           request:
             template:
               application/json: '{ "list_users" : "list_users" }'
+
       - http:
           path: users/{user}
           method: get
@@ -65,6 +66,22 @@ functions:
                                    "to" : "$input.params(''to'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
+      - http:
+          path: services
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "services_list" : "services_list" }'
+      - http:
+          path: parameters
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "parameters_list" : "parameters_list" }'
       - http:
           path: services/{service}
           method: get

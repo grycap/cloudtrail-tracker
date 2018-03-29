@@ -89,8 +89,9 @@ def item_count():
 
     return table.item_count
 
-"""Return a list of users"""
+
 def users_list():
+    """Return a list of users"""
     listName = 'listUsers'
     pe = Key('eventID').eq('1') #what we want to search
 
@@ -114,6 +115,58 @@ def users_list():
         # print(users)
 
     return users
+
+def services_list():
+    """Return a list of services"""
+    listName = 'services'
+    pe = Key('eventID').eq('1') #what we want to search
+
+    table = dynamodb_resource.Table(table_name)
+
+    response = table.query(
+        KeyConditionExpression=pe,
+    )
+    data = response['Items']
+    services = list(data[0][listName].keys())
+    #search_in_events(users,data,users_itemName)
+    # print(users)
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            ProjectionExpression=pe,
+        )
+        data= response['Items']
+        services.append(list(data[0][listName].keys()))
+        #search_in_events(users, data, users_itemName)
+        # print(users)
+
+    return services
+
+def parameters_list():
+    """Return a list of parameters to query"""
+    listName = 'cols'
+    pe = Key('eventID').eq('1') #what we want to search
+
+    table = dynamodb_resource.Table(table_name)
+
+    response = table.query(
+        KeyConditionExpression=pe,
+    )
+    data = response['Items']
+    parameters = list(data[0][listName].keys())
+    #search_in_events(users,data,users_itemName)
+    # print(users)
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            ProjectionExpression=pe,
+        )
+        data= response['Items']
+        parameters.append(list(data[0][listName].keys()))
+        #search_in_events(users, data, users_itemName)
+        # print(users)
+
+    return parameters
 
 """Search atrib in list of events"""
 def search_in_events(result=dict(), events=list(), attrib=''):
@@ -392,6 +445,24 @@ def main():
     request = (["requestParameters_instanceType"], ["t1.micro"])
     # request = None
 
+    start_time = time.time()
+    list_users = users_list()
+    elapsed_time = time.time() - start_time
+    print(list_users)
+    print("Time elapsed for user lists %f " % elapsed_time)
+    #
+    start_time = time.time()
+    list_services = services_list()
+    elapsed_time = time.time() - start_time
+    print(list_services)
+    print("Time elapsed for services list  %f " % elapsed_time)
+
+    start_time = time.time()
+    list_parameters = parameters_list()
+    elapsed_time = time.time() - start_time
+    print(list_parameters)
+    print("Time elapsed for services list  %f " % elapsed_time)
+
     # start_time = time.time()
     # user_events = user_count_event('grycap-aws',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=request)
     # elapsed_time = time.time() - start_time
@@ -404,11 +475,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for used_services items %f " % elapsed_time)
 
-    start_time = time.time()
-    user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for used_services_parameter items %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for used_services_parameter items %f " % elapsed_time)
 
 
     # start_time = time.time()
