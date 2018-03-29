@@ -14,6 +14,39 @@ tags:
 schemes:
   - http
 paths:
+  /parameters:
+    get:
+
+      summary: List all available parameters to query
+      description: List all available parameters to query
+      operationId: parametersList
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              type: string
+  /services:
+    get:
+      tags:
+        - services
+      summary: List all services
+      description: List all services
+      operationId: servicesList
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              type: string
   '/services/{service}':
     get:
       tags:
@@ -52,7 +85,7 @@ paths:
           type: string
         - name: params
           in: query
-          description: A comma-separated list of extra parameter to search (column).
+          description: A comma-separated list of extra parameter to search (column). See /parameters to get more info.
           required: false
           type: array
           items:
@@ -122,7 +155,7 @@ paths:
           type: string
         - name: params
           in: query
-          description: A comma-separated list of extra parameter to search (column).
+          description: A comma-separated list of extra parameter to search (column). See /parameters to get more info.
           required: false
           type: array
           items:

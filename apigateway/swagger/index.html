@@ -37,6 +37,11 @@
                 </thead>
                 <tbody>
                     <tr>
+                        <td><a href="#operation--services-get">GET /services</a></td>
+                        <td><p>List all services</p>
+        </td>
+                    </tr>
+                    <tr>
                         <td><a href="#operation--services--service--get">GET /services/{service}</a></td>
                         <td><p>Finds information from a service</p>
         </td>
@@ -68,12 +73,139 @@
                     </tr>
                 </tbody>
             </table>
+            <h3 id="tag-default" class="swagger-summary-tag">Tag: default</h3>
+            
+            <p class="sw-tag-external-doc">
+            </p>
+            <table class="table table-bordered table-condensed swagger--summary">
+                <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="#operation--parameters-get">GET /parameters</a></td>
+                        <td><p>List all available parameters to query</p>
+        </td>
+                    </tr>
+                </tbody>
+            </table>
         
     
     
     
     <h2>Paths</h2>
     
+        
+        <span id="path--parameters"></span>
+            <div id="operation--parameters-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">List all available parameters to query</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/parameters</strong></h3>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>List all available parameters to query</p>
+            
+                    </section>
+            
+                    
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>successful operation</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                            <section class="json-schema-array-items">
+                                                                                
+                                                                                <span class="json-property-type">string</span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </section>    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
+        
+        <span id="path--services"></span>
+            <div id="operation--services-get" class="swagger--panel-operation-get panel">
+                <div class="panel-heading">
+                    <div class="operation-summary">List all services</div>
+                    <h3 class="panel-title"><span class="operation-name">GET</span> <strong>/services</strong></h3>
+                        Tags:
+                            <a href="#tag-services">services</a>
+                </div>
+                <div class="panel-body">
+                    <section class="sw-operation-description">
+                        <p>List all services</p>
+            
+                    </section>
+            
+                    
+                    
+                        <section class="sw-responses">
+                                <p><span class="label label-default">application/json</span> 
+                    </p>
+                    
+                            <dl>
+                                    <dt class="sw-response-200">
+                                        200 OK
+                                    
+                                    </dt>
+                                    <dd class="sw-response-200">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>successful operation</p>
+                                            
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                
+                                                <div class="col-md-6 sw-response-model">
+                                                <div  class="panel panel-definition">
+                                                    <div class="panel-body">
+                                                            
+                                                                            <section class="json-schema-array-items">
+                                                                                
+                                                                                <span class="json-property-type">string</span>
+                                                                                <span class="json-property-range" title="Value limits"></span>
+                                                                                
+                                                                                <div class="json-inner-schema">
+                                                                                    
+                                                                                </div>
+                                                                            </section>    </div>
+                                                </div></div>
+                                            
+                                            </div>                </dd>
+                            </dl>
+                        </section>
+                </div>
+            </div>
         
         <span id="path--services--service-"></span>
             <div id="operation--services--service--get" class="swagger--panel-operation-get panel">
@@ -182,7 +314,7 @@
                                             <td>
                                                 params
                                             </td>
-                                            <td><p>A comma-separated list of extra parameter to search (column).</p>
+                                            <td><p>A comma-separated list of extra parameter to search (column). See /parameters to get more info.</p>
                                         </td>
                                             <td>query</td>
                                             <td>
@@ -404,7 +536,7 @@
                                             <td>
                                                 params
                                             </td>
-                                            <td><p>A comma-separated list of extra parameter to search (column).</p>
+                                            <td><p>A comma-separated list of extra parameter to search (column). See /parameters to get more info.</p>
                                         </td>
                                             <td>query</td>
                                             <td>
