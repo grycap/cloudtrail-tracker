@@ -53,49 +53,64 @@ python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_l
 
 
 ## Upload previous events
-  
-  Upload previous events from a path
-  ``` python dynamodb/Logs.py --path "events_path"```
+
+    *--t is optional*
+
+    ### From local directory
+
+    Upload previous events from a path
+    ``` python dynamodb/Logs.py --path "local path" --t "YYYY-mm-dd date limit"```
+
+    ### From a bucket
+
+    Upload previous events from a bucket on S3
+    ``` python dynamodb/Logs.py --pbucket_nameath "BUCKET_NAME" --t "YYYY-mm-dd date limit"```
 
 
-  Upload previous events from a path
-  ``` python dynamodb/Logs.py --path "events_path"```
+
 
 ## API calls examples
 
+### List all parameters
+   ``` curl https://{stage}/parameters```
+
+   The parameters to use in queries
+
 ### Services
-  ``` curl https://{stage}/cloudtracking_querys/services/ec2```
+   ``` curl https://{stage}/services```
+
+  List all services
+
+  ``` curl https://{stage}/services/ec2```
 
   Return all ec2 events from the last 7 days.
 
-  ``` curl https://{stage}/cloudtracking_querys/services/ec2?from=2016-01-01&to=2017-01-01```
+  ``` curl https://{stage}/services/ec2?from=2016-01-01&to=2017-01-01```
 
   Return all ec2 events between two dates
 
   Example of result
   ```
-  "[{\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"}, {\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"} ......
+  [{\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"}, {\"eventTime\": \"2016-10-09T11:14:44Z\", \"eventSource\": \"signin.amazonaws.com\", \"userIdentity_userName\": \"alucloud179\"} ......
 
   ```
 ### Users
-  ``` curl https://{stage}/cloudtracking_querys/users```
+  ``` curl https://{stage}/users```
 
   List all users
 
-  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230```
+  ``` curl https://{stage}/users/alucloud230```
 
   Get info from user alucloud230 from last 7 days.
 
-  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?from=2017-06-06&to=2017-09-09```
+  ``` curl https://{stage}/users/alucloud230?from=2017-06-06&to=2017-09-09```
 
   Get info from alucloud230 between 2 dates
 
-  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?from=2017-06-06&eventName=RunInstances&to=2017-09-09```
+  ``` curl https://{stage}/users/alucloud230?from=2017-06-06&eventName=RunInstances&to=2017-09-09```
 
   Get info from Runinstances events from alucloud230 between 2 dates
 
-  ``` curl https://{stage}/cloudtracking_querys/users/alucloud230?param=['instanceType','eventSource']&value=['m1.small','ec2.amazonaws.com']&from=2017-06-06&eventName=RunInstances&to=2017-09-09```
+  ``` curl https://{stage}/users/alucloud230?param=['instanceType','eventSource']&value=['m1.small','ec2.amazonaws.com']&from=2017-06-06&eventName=RunInstances&to=2017-09-09```
 
   Get user info between two dates and a list of parameters and values
-
-  Result example

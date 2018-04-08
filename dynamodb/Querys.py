@@ -451,17 +451,17 @@ def main():
     print(list_users)
     print("Time elapsed for user lists %f " % elapsed_time)
     #
-    start_time = time.time()
-    list_services = services_list()
-    elapsed_time = time.time() - start_time
-    print(list_services)
-    print("Time elapsed for services list  %f " % elapsed_time)
-
-    start_time = time.time()
-    list_parameters = parameters_list()
-    elapsed_time = time.time() - start_time
-    print(list_parameters)
-    print("Time elapsed for services list  %f " % elapsed_time)
+    # start_time = time.time()
+    # list_services = services_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_services)
+    # print("Time elapsed for services list  %f " % elapsed_time)
+    #
+    # start_time = time.time()
+    # list_parameters = parameters_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_parameters)
+    # print("Time elapsed for services list  %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = user_count_event('grycap-aws',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=request)
@@ -469,11 +469,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for user_count_event items %f " % elapsed_time)
     #
-    # start_time = time.time()
-    # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
-    # elapsed_time = time.time() - start_time
-    # print(user_events)
-    # print("Time elapsed for used_services items %f " % elapsed_time)
+    start_time = time.time()
+    user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for used_services items %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
