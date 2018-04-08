@@ -54,17 +54,17 @@ python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_l
 
 ## Upload previous events
 
-    *--t is optional*
+    
 
-    ### From local directory
+   ### From local directory
 
-    Upload previous events from a path
-    ``` python dynamodb/Logs.py --path "local path" --t "YYYY-mm-dd date limit"```
+   Upload previous events from a path
+   ``` python dynamodb/Logs.py --path "local path" --t "YYYY-mm-dd date limit"```
 
-    ### From a bucket
+   ### From a bucket
 
-    Upload previous events from a bucket on S3
-    ``` python dynamodb/Logs.py --pbucket_nameath "BUCKET_NAME" --t "YYYY-mm-dd date limit"```
+   Upload previous events from a bucket on S3
+   ``` python dynamodb/Logs.py --pbucket_nameath "BUCKET_NAME" --t "YYYY-mm-dd date limit"```
 
 
 
