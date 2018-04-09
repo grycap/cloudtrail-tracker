@@ -236,6 +236,7 @@ def used_services(user, time1=None, time2=None,count=False):
     eventTime = 'eventTime'
     eventsource = "eventSource"
     eventName = "eventName"
+    eventID = "eventID"
 
     # filter expression
     feAux = Key(users_itemName).eq(user);
@@ -261,7 +262,7 @@ def used_services(user, time1=None, time2=None,count=False):
             )
             events = events + (response['Count'])
     else:
-        pe = "{0}, {1}, {2}, {3}".format(users_itemName, eventTime, eventsource, eventName)
+        pe = "{0}, {1}, {2}, {3}, {4}".format(users_itemName, eventTime, eventsource, eventName, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux,
@@ -293,6 +294,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
     eventTime = 'eventTime'
     eventsource = "eventSource"
     eventName = "eventName"
+    eventID = "eventID"
 
     # filter expression
     feAux = Key(users_itemName).eq(user);
@@ -327,7 +329,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
             events = events + (response['Count'])
 
     else:
-        pe = "{0}, {1}, {2}, {3}".format(users_itemName, eventTime, eventsource, eventName)
+        pe = "{0}, {1}, {2}, {3}, {4}".format(users_itemName, eventTime, eventsource, eventName, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux,
@@ -363,6 +365,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     eventName = 'eventName'
     eventTime = 'eventTime'
     eventsource = "eventSource"
+    eventID = "eventID"
 
     feEvent = Key(eventName).eq(event);
 
@@ -392,7 +395,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
              )
             events = events + (response['Count'])
     else:
-        pe = "{0}, {1}, {2}".format(users_itemName, eventTime, eventsource)
+        pe = "{0}, {1}, {2}, {3}".format(users_itemName, eventTime, eventsource, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
@@ -469,17 +472,17 @@ def main():
     # print(user_events)
     # print("Time elapsed for user_count_event items %f " % elapsed_time)
     #
-    start_time = time.time()
-    user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for used_services items %f " % elapsed_time)
-
     # start_time = time.time()
-    # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
+    # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
     # elapsed_time = time.time() - start_time
     # print(user_events)
-    # print("Time elapsed for used_services_parameter items %f " % elapsed_time)
+    # print("Time elapsed for used_services items %f " % elapsed_time)
+
+    start_time = time.time()
+    user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for used_services_parameter items %f " % elapsed_time)
 
 
     # start_time = time.time()
