@@ -369,7 +369,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     if request_parameter:
         requests = request_parameter[0]
         parameters = request_parameter[1]
-        for i in range(1,len(requests)):
+        for i in range(0,len(requests)):
             feEvent = feEvent & Key(requests[i]).eq(parameters[i])
 
     feAux = Key(users_itemName).eq(user);

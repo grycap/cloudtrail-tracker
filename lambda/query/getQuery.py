@@ -40,6 +40,8 @@ select = [
             "responseElements_credentials_sessionToken",
 ]
 
+
+
 def get_request_parameters(event):
     request = event.get("param", None)
     parameter = event.get("value", None)
@@ -116,6 +118,7 @@ def handler(event, context):
                 method = "used_services"
         else:
             method = "user_count_event"
+
     elif service and not user_name:
         #actions_between
         method = "actions_between"
@@ -130,6 +133,7 @@ def handler(event, context):
 
     else:
         return ("Error. Needs an user name or a service.")
+
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
@@ -142,6 +146,7 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
             count=count
         ))
     elif method == "used_services":
+
         return (
             Querys.used_services(user_name, time1, time2, count)
 
