@@ -82,6 +82,16 @@ python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_l
 
    The parameters to use in queries
 
+### Scan
+
+  Scan without service or user filter
+  
+  ``` curl https://{stage}/scan?from=2016-01-01&to=2017-01-01```
+  
+  Last 7 days
+  
+  ``` curl https://{stage}/scan```
+
 ### Services
    ``` curl https://{stage}/services```
 
