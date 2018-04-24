@@ -21,7 +21,7 @@ def create_trigger(name, bucket_name):
     response = client.add_permission(
         Action='lambda:InvokeFunction',
         FunctionName=name,
-        StatementId='ID-0',
+        StatementId='ID-2',
         Principal='s3.amazonaws.com',
         # SourceAccount='123456789012',
         # SourceArn='arn:aws:s3:::examplebucket/*'

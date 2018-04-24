@@ -36,6 +36,28 @@ functions:
     reservedConcurrency: 5
     events:
       - http:
+          path: scan/
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            parameters:
+              querystrings:
+                count: false
+                eventName: false
+                from: false
+                to: false
+                param: false
+                value: false
+            template:
+              application/json: '{ "scan" : "scan",
+                                   "count" : "$input.params(''count'')",
+                                   "eventName" : "$input.params(''eventName'')",
+                                   "from" : "$input.params(''from'')",
+                                   "to" : "$input.params(''to'')",
+                                   "param" : "$input.params(''param'')",
+                                   "value" : "$input.params(''value'')"}'
+      - http:
           path: users
           method: get
           cors: true

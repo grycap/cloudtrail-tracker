@@ -193,7 +193,6 @@ def format_time(time):
 
     return time
 
-#TODO request_parameter
 def actions_between_time(time1, time2, event=None,  request_parameter = None, count= False):
     """all actions between time1 and time2
     time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
@@ -448,11 +447,11 @@ def main():
     request = (["requestParameters_instanceType"], ["t1.micro"])
     # request = None
 
-    start_time = time.time()
-    list_users = users_list()
-    elapsed_time = time.time() - start_time
-    print(list_users)
-    print("Time elapsed for user lists %f " % elapsed_time)
+    # start_time = time.time()
+    # list_users = users_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_users)
+    # print("Time elapsed for user lists %f " % elapsed_time)
     #
     # start_time = time.time()
     # list_services = services_list()
@@ -478,11 +477,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for used_services items %f " % elapsed_time)
 
-    start_time = time.time()
-    user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for used_services_parameter items %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for used_services_parameter items %f " % elapsed_time)
 
 
     # start_time = time.time()
@@ -498,11 +497,11 @@ def main():
     # print("Time elapsed for top_users items %f " % elapsed_time)
 
 
-    # start_time = time.time()
-    # user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
-    # elapsed_time = time.time() - start_time
-    # print(user_events)
-    # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
+    start_time = time.time()
+    user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = actions_between_time('2017-06-01T12:00:51Z', '2017-07-01T19:00:51Z',event='RunInstances', request_parameter=request, count=False)

@@ -7,13 +7,66 @@ info:
     email: joprfon@inf.upv.es
 basePath: '/{stage}/cloudtracking_querys'
 tags:
+  - name: scan
+    description: General query
   - name: services
-    description: General query services
+    description: General services query
   - name: users
-    description: Information about actions of an user
+    description: Information about user actions
 schemes:
   - http
 paths:
+  /scan:
+    get:
+
+        tags:
+          - scan
+        summary: General query, no user or service filter
+        description: General query, no user or service filter
+        operationId: scan
+        produces:
+          - application/json
+        parameters:
+        - name: eventName
+          in: query
+          description: Event name to filter
+          required: false
+          type: string
+        - name: count
+          in: query
+          description: Return a number instead a json
+          required: false
+          default: false
+          type: boolean
+        - name: from
+          in: query
+          description: Date to start. YYYY-MM-DD
+          required: false
+          type: string
+        - name: to
+          in: query
+          description: Date to end. YYYY-MM-DD
+          required: false
+          type: string
+        - name: params
+          in: query
+          description: A comma-separated list of extra parameter to search (column). See /parameters to get more info.
+          required: false
+          type: array
+          items:
+            type: string
+        - name: values
+          in: query
+          description: A comma-separated list of extra parameter to search (column).
+          required: false
+          type: array
+          items:
+            type: string
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/item_object'
   /parameters:
     get:
 
@@ -184,3 +237,8 @@ definitions:
           type: string
         userIdentity_userName:
           type: string
+        eventID:
+          type: string
+        eventName:
+          type: string
+

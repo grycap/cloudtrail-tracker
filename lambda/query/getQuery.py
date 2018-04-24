@@ -85,6 +85,7 @@ def handler(event, context):
         return action("services_list")
     if event.get("parameters_list", None):
         return action("parameters_list")
+    scan = event.get("scan", None)
 
     request_parameters = get_request_parameters(event)
 
@@ -103,13 +104,17 @@ def handler(event, context):
         service = None
     if not time1:
         time1 = time.strftime("%Y-%m-%d")
-    if not time2:
         date_1 = datetime.datetime.strptime(time1, "%Y-%m-%d")
-        time2 = date_1 + datetime.timedelta(days = 7)
-        time2 = time2.strftime("%Y-%m-%d")
+        time1 = date_1 - datetime.timedelta(days=7)
+        time1 = time1.strftime("%Y-%m-%d")
+    if not time2:
+        time2 = time.strftime("%Y-%m-%d")
+
 
     #Select action
-    if user_name and not service:
+    if scan:
+        method = "actions_between"
+    elif user_name and not service:
         #used_services or used_services_parameter or user_count_event
         if not event_name:
             if request_parameters:
