@@ -35,6 +35,12 @@ git clone https://github.com/grycap/cloudtrail-tracker.git
 cd cloudtrail-tracker
 ```
 
+Edit settings/settings.py file modifying your bucket name, and then create a DynamoDB table:
+
+```
+python dynamodb/Database.py
+```
+
 Edit serverless YAML with your role, bucket and functions names if its necessary.
 
 Once done, deploy with serverless
