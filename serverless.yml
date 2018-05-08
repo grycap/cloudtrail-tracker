@@ -19,7 +19,7 @@ package: # Optional deployment packaging configuration
 functions: 
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrail-tracker-uploader
+    name: cloudtrail-tracker-upload
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -28,7 +28,7 @@ functions:
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrail-tracker-quer
+    name: cloudtrail-tracker-queries
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
