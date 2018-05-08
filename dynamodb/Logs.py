@@ -25,13 +25,23 @@ pattern = re.compile(".*_\d{8}([A-Z])\w+.json.gz")
 
 def order_by_event(list_events):
     """
-    Aux method for order a list of events
+    Aux method for order a list of events.
+    Remove not valid events
 
     :param list_events: list of strings [path/974349055189_CloudTrail_us-east-1_20170602T1040Z_i2yVtZoWqtLlq5oA.json.gz']
     :return: ordered list of tuple (date, string)
     """
     #split into string dates, covert to datetime
+    dates = []
     dates = [datetime.datetime.strptime(e.split("_")[-2][:8], "%Y%m%d") for e in list_events]
+    for e in list_events:
+        try:
+            dates.append(datetime.datetime.strptime(e.split("_")[-2][:8], "%Y%m%d"))
+        except :
+            """
+            Not valid date
+            """
+            continue
     dates = list(zip(dates, list_events))
     dates.sort()
     return dates
