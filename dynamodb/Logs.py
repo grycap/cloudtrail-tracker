@@ -33,16 +33,18 @@ def order_by_event(list_events):
     """
     #split into string dates, covert to datetime
     dates = []
+    events = []
     # dates = [datetime.datetime.strptime(e.split("_")[-2][:8], "%Y%m%d") for e in list_events]
     for e in list_events:
         try:
             dates.append(datetime.datetime.strptime(e.split("_")[-2][:8], "%Y%m%d"))
+            events.append(e)
         except :
             """
             Not valid date
             """
             continue
-    dates = list(zip(dates, list_events))
+    dates = list(zip(dates, events))
     dates.sort()
     return dates
 
@@ -100,20 +102,6 @@ def upload_events(path, table_name, to):
     file_trace.close()
     os.remove(path_tracing)
 
-def upload_events_no_trace(path, table_name, to):
-    """Get all events from path, upload them and do a tracing.
-    """
-    to_finish = datetime.datetime.strptime(to, "%Y-%m-%d")
-    events = get_structure(path)
-    events = order_by_event(events)
-
-    for (e_date, e) in events:  # e = events file
-        if to_finish < e_date:
-            break
-        event = Event(e)
-        db = UseDynamoDB("Uploading", verbose=False)
-
-        db.store_event(table_name, event)
 
 def get_matching_s3_keys(bucket, prefix='', suffix=''):
     """
@@ -162,21 +150,29 @@ def upload_events_from_bucket( bucket, to, table_name, download_path="tmp/"):
     list_ = get_matching_s3_keys(bucket)
     list_ = order_by_event(list_)
 
-
+    print(list_[:10])
+    print(list_[:-10])
     os.makedirs(os.path.dirname(download_path), exist_ok=True)
     for (e_date, s3_object) in list_:
         if to_finish < e_date:
             break
         name_obj = s3_object.split("/")[-1]
-        print(name_obj)
+        # print(name_obj)
+        e = download_path + name_obj
+        s3.download_file(bucket, s3_object, e)
+        print("pre {} < {}".format(to_finish, e_date))
+        if to_finish < e_date:
+            continue
+        print(e)
+        event = Event(e)
+        db = UseDynamoDB("Uploading", verbose=False)
 
-        s3.download_file(bucket, s3_object, download_path + name_obj)
-        upload_events_no_trace(download_path + name_obj, table_name, to)
+        db.store_event(table_name, event)
 
-        #delet content dir
-        files = glob.glob(download_path+"*")
-        for f in files:
-            os.remove(f)
+    #delet content dir
+    files = glob.glob(download_path+"*")
+    for f in files:
+        os.remove(f)
 
 
 def upload_event_handler(path, table_name):
@@ -207,7 +203,7 @@ def main():
     path = args.path
     to = args.t
     bucket_name = args.bucket_name
-    bucket_name = "cursocloudaws-trail"
+    # bucket_name = "cursocloudaws-trail"
     if bucket_name:
         print("bucket_name {}".format(bucket_name))
         upload_events_from_bucket(bucket_name, to, settings.table_name)
