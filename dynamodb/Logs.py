@@ -115,7 +115,40 @@ def upload_events_no_trace(path, table_name, to):
 
         db.store_event(table_name, event)
 
+def get_matching_s3_keys(bucket, prefix='', suffix=''):
+    """
+    Generate the keys in an S3 bucket.
 
+    :param bucket: Name of the S3 bucket.
+    :param prefix: Only fetch keys that start with this prefix (optional).
+    :param suffix: Only fetch keys that end with this suffix (optional).
+    """
+    s3 = boto3.client('s3')
+    kwargs = {'Bucket': bucket}
+
+    # If the prefix is a single string (not a tuple of strings), we can
+    # do the filtering directly in the S3 API.
+    if isinstance(prefix, str):
+        kwargs['Prefix'] = prefix
+    res = []
+    while True:
+
+        # The S3 API response is a large blob of metadata.
+        # 'Contents' contains information about the listed objects.
+        resp = s3.list_objects_v2(**kwargs)
+        for obj in resp['Contents']:
+            key = obj['Key']
+            if key.startswith(prefix) and key.endswith(suffix):
+                res.append( key)
+
+        # The S3 API is paginated, returning up to 1000 keys at a time.
+        # Pass the continuation token into the next response, until we
+        # reach the final page (when this field is missing).
+        try:
+            kwargs['ContinuationToken'] = resp['NextContinuationToken']
+        except KeyError:
+            break
+    return res
 
 def upload_events_from_bucket( bucket, to, table_name, download_path="tmp/"):
     """
@@ -124,9 +157,12 @@ def upload_events_from_bucket( bucket, to, table_name, download_path="tmp/"):
     """
     to_finish = datetime.datetime.strptime(to, "%Y-%m-%d")
     s3 = boto3.client('s3')
-    list_ = s3.list_objects(Bucket=bucket)['Contents']
-    list_ = [l['Key'] for l in list_ if pattern.match(l['Key'])]
+    # from_bucket = s3.list_objects_v2(Bucket=bucket)
+    # list_ = from_bucket['Contents']
+    list_ = get_matching_s3_keys(bucket)
     list_ = order_by_event(list_)
+
+
     os.makedirs(os.path.dirname(download_path), exist_ok=True)
     for (e_date, s3_object) in list_:
         if to_finish < e_date:
@@ -171,6 +207,7 @@ def main():
     path = args.path
     to = args.t
     bucket_name = args.bucket_name
+    bucket_name = "cursocloudaws-trail"
     if bucket_name:
         print("bucket_name {}".format(bucket_name))
         upload_events_from_bucket(bucket_name, to, settings.table_name)
