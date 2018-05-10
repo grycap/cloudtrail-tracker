@@ -171,7 +171,6 @@ def main():
     path = args.path
     to = args.t
     bucket_name = args.bucket_name
-    bucket_name = "cursocloudaws-trail"
     if bucket_name:
         print("bucket_name {}".format(bucket_name))
         upload_events_from_bucket(bucket_name, to, settings.table_name)
