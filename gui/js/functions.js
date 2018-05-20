@@ -88,3 +88,22 @@ function select(value){
 
 
 }
+
+function cognito(){
+    var data = { UserPoolId : 'us-east-1_31YsM4yXE',
+        ClientId : 'ab7b29ef-b16e-41c1-b854-5e29b3c10315'
+    };
+    var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(data);
+    var cognitoUser = userPool.getCurrentUser();
+
+    if (cognitoUser != null) {
+        cognitoUser.getSession(function(err, session) {
+            if (err) {
+                alert(err);
+                return;
+            }
+            console.log('session validity: ' + session.isValid());
+        });
+    }
+
+}
