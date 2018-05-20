@@ -6,7 +6,7 @@ lambda_func_name_trigger = "cloudtrail-tracker-upload"
 #Stage name for API Gateway
 stage_name = "cloudtrailtracker_stage"
 #DynamoDB Table name
-table_name = "EventoCloudTrail"
+table_name = "EventoCloudTrail  "
 #Preconfigured S3 bucket by CloudTrail
 bucket_name = "cursocloudaws-trail"
 #API name

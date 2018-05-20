@@ -14,7 +14,10 @@ dynamodb_resource = resource('dynamodb')
 def init(table_name):
     print("Creating table %s " % table_name)
     create_table(table_name)
+    print(". . .")
+    print("Table created")
     add_users_row(table_name)
+    print("Finished")
 
 def create_table(table_name):
     table = dynamodb_resource.create_table(
@@ -73,11 +76,9 @@ def create_table(table_name):
         }
     )
 
-    print("Table status:", table.table_status)
-
 
 def add_users_row(name_table):
-    print("Creating row for user counting...")
+    print("Creating row for users, services and parameters list...")
     dynamodb_client = boto3.client('dynamodb')
     res = None
     while res is None:
@@ -103,11 +104,11 @@ def add_users_row(name_table):
             intent += 1
             res = None
             print(". . .")
-            time.sleep(5)
+            time.sleep(50)
 
 
 
-    print("Succeded: %s " % res)
+    print("Succeeded")
     return
 
 if (__name__ == '__main__'):
