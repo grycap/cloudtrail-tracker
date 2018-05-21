@@ -19,6 +19,7 @@ from settings import settings
 parser = argparse.ArgumentParser()
 parser.add_argument("--path", help="Path that contains items to start to upload", default='./examples')
 parser.add_argument("--t", help="Date to. YYYY-mm-dd date to finish the script", default='2030-01-20')
+parser.add_argument("--f", help="Date from. YYYY-mm-dd date to finish the script", default='2007-01-01')
 parser.add_argument("--bucket_name", help="Bucket name with stored events", default=None)
 
 pattern = re.compile(".*_\d{8}([A-Z])\w+.json.gz")
@@ -48,11 +49,12 @@ def order_by_event(list_events):
     dates.sort()
     return dates
 
-def upload_events(path, table_name, to):
+def upload_events(path, table_name, to, from_):
     """Get all events from path, upload them and do a tracing.
     All tracing stored items is saved at path_tracing file.
     You can recall this functions without delete this file and start where you left"""
     to_finish = datetime.datetime.strptime(to, "%Y-%m-%d")
+    from_start = datetime.datetime.strptime(from_, "%Y-%m-%d")
     path_tracing  = "tracing_items"
     print("Path of files: %s with " % (path))
 
@@ -82,6 +84,8 @@ def upload_events(path, table_name, to):
     for (e_date, e) in events:  # e = events file
         # debug
         start_event = time.time()
+        if from_start > e_date:
+            continue;
         if to_finish < e_date:
             break
         event = Event(e)
@@ -138,12 +142,13 @@ def get_matching_s3_keys(bucket, prefix='', suffix=''):
             break
     return res
 
-def upload_events_from_bucket( bucket, to, table_name, download_path="tmp/"):
+def upload_events_from_bucket( bucket, to,from_, table_name, download_path="tmp/"):
     """
         Get all events from bucket and upload them .
 
     """
     to_finish = datetime.datetime.strptime(to, "%Y-%m-%d")
+    from_start  = datetime.datetime.strptime(from_, "%Y-%m-%d")
     s3 = boto3.client('s3')
     # from_bucket = s3.list_objects_v2(Bucket=bucket)
     # list_ = from_bucket['Contents']
@@ -154,16 +159,15 @@ def upload_events_from_bucket( bucket, to, table_name, download_path="tmp/"):
     print(list_[:-10])
     os.makedirs(os.path.dirname(download_path), exist_ok=True)
     for (e_date, s3_object) in list_:
+        if from_start > e_date:
+            continue;
         if to_finish < e_date:
             break
         name_obj = s3_object.split("/")[-1]
         # print(name_obj)
         e = download_path + name_obj
         s3.download_file(bucket, s3_object, e)
-        print("pre {} < {}".format(to_finish, e_date))
-        if to_finish < e_date:
-            continue
-        print(e)
+
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
 
@@ -202,14 +206,15 @@ def main():
     args = parser.parse_args()
     path = args.path
     to = args.t
+    from_ = args.f
     bucket_name = args.bucket_name
     # bucket_name = "cursocloudaws-trail"
     if bucket_name:
         print("bucket_name {}".format(bucket_name))
-        upload_events_from_bucket(bucket_name, to, settings.table_name)
+        upload_events_from_bucket(bucket_name, to,from_, settings.table_name)
     else:
         print("path {}".format(path))
-        upload_events(path, settings.table_name, to)
+        upload_events(path, settings.table_name, to, from_)
     # print(settings.table_name)
 
 
