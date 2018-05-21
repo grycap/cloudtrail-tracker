@@ -155,8 +155,6 @@ def upload_events_from_bucket( bucket, to,from_, table_name, download_path="tmp/
     list_ = get_matching_s3_keys(bucket)
     list_ = order_by_event(list_)
 
-    print(list_[:10])
-    print(list_[:-10])
     os.makedirs(os.path.dirname(download_path), exist_ok=True)
     for (e_date, s3_object) in list_:
         if from_start > e_date:
@@ -167,7 +165,7 @@ def upload_events_from_bucket( bucket, to,from_, table_name, download_path="tmp/
         # print(name_obj)
         e = download_path + name_obj
         s3.download_file(bucket, s3_object, e)
-
+        print(e_date)
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
 
