@@ -49,10 +49,10 @@ Once done, deploy with serverless
 sls deploy
 ```
 
-Finally, we need to create a trigger event to link the S3 bucket with a ?ambda function.
+Finally, we need to create a trigger event to link the S3 bucket with a Lambda function.
 
 ```
-python3.6 lambda/eventuploads/trigger.py --bucket {your_bucket} --lambda {your_lambda_function}
+python3.6 lambda/eventuploads/trigger.py
 ```
 {your_bucket} and {your_lambda_function} must be the same at the serverless.yaml
 
