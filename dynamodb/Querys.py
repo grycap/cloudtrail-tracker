@@ -203,14 +203,24 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
 
     users_l = users_list()
     if event is None:
-        total = 0
-        if count:
-            for user in users_l:
-                total = total + used_services(user, time1, time2, count= count)
+        if request_parameter:
+            total = 0
+            if count:
+                for user in users_l:
+                    total = total + used_services_parameter(user, request_parameter, time1=None, time2=None, count=False)
+            else:
+                total = []
+                for user in users_l:
+                    total.extend(used_services_parameter(user, request_parameter, time1=None, time2=None, count=False))
         else:
-            total = []
-            for user in users_l:
-                total.extend(used_services(user, time1, time2, count= count))
+            total = 0
+            if count:
+                for user in users_l:
+                    total = total + used_services(user, time1, time2, count= count)
+            else:
+                total = []
+                for user in users_l:
+                    total.extend(used_services(user, time1, time2, count= count))
     else:
         total = 0
         if count:
@@ -346,6 +356,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
                 KeyConditionExpression=feAux,
                 Select='SPECIFIC_ATTRIBUTES',
                 FilterExpression=feEvent,
+                ProjectionExpression=pe
             )
             events.extend(response['Items'])
 
@@ -466,7 +477,7 @@ def main():
     # print("Time elapsed for services list  %f " % elapsed_time)
 
     # start_time = time.time()
-    # user_events = user_count_event('grycap-aws',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=request)
+    # user_events = user_count_event('alucloud178',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
     # elapsed_time = time.time() - start_time
     # print(user_events)
     # print("Time elapsed for user_count_event items %f " % elapsed_time)
@@ -498,7 +509,7 @@ def main():
 
 
     start_time = time.time()
-    user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
+    user_events = actions_between_time( '2018-05-13T12:00:51Z','2018-21-05T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
     elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
