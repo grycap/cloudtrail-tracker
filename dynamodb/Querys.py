@@ -207,11 +207,11 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
             total = 0
             if count:
                 for user in users_l:
-                    total = total + used_services_parameter(user, request_parameter, time1=None, time2=None, count=False)
+                    total = total + used_services_parameter(user, request_parameter, time1=time1, time2=time2, count=True)
             else:
                 total = []
                 for user in users_l:
-                    total.extend(used_services_parameter(user, request_parameter, time1=None, time2=None, count=False))
+                    total.extend(used_services_parameter(user, request_parameter, time1=time1, time2=time2, count=False))
         else:
             total = 0
             if count:
@@ -509,7 +509,7 @@ def main():
 
 
     start_time = time.time()
-    user_events = actions_between_time( '2018-05-13T12:00:51Z','2018-21-05T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
+    user_events = actions_between_time( '2018-05-21T12:00:51Z','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
     elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
