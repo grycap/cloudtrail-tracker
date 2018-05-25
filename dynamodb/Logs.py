@@ -69,7 +69,6 @@ def upload_events(path, table_name, to, from_):
     file_trace.close()
     print("Traced files: %d" % (len(traced_items)))
     events = get_structure(path)
-
     print("Number of files: %d" % len(events))
     events = list(set(events) - set(traced_items))
     print("Number of total files to upload: %d" % len(events))
@@ -89,6 +88,7 @@ def upload_events(path, table_name, to, from_):
         if to_finish < e_date:
             break
         event = Event(e)
+
         db = UseDynamoDB("Uploading", verbose=False)
 
         db.store_event(table_name, event)

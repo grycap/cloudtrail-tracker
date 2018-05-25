@@ -30,11 +30,16 @@ class UseDynamoDB:
             name_event = datos.get("eventName", None)
             if name_event is None or name_event.lower().startswith(tuple(settings.filterEventNames)):
                 # print("Evento no")
-                return
+                continue
 
             userName = datos.get(nameCamp, None)
             if userName is None:
                 datos[nameCamp] = 'no_user'
+            if userName == "alucloud109":
+                print(userName)
+                print(name_event)
+                print(event)
+                print()
 
             table.put_item(
                 Item=datos
