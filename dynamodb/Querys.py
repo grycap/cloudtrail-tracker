@@ -89,8 +89,9 @@ def item_count():
 
     return table.item_count
 
-"""Return a list of users"""
+
 def users_list():
+    """Return a list of users"""
     listName = 'listUsers'
     pe = Key('eventID').eq('1') #what we want to search
 
@@ -114,6 +115,58 @@ def users_list():
         # print(users)
 
     return users
+
+def services_list():
+    """Return a list of services"""
+    listName = 'services'
+    pe = Key('eventID').eq('1') #what we want to search
+
+    table = dynamodb_resource.Table(table_name)
+
+    response = table.query(
+        KeyConditionExpression=pe,
+    )
+    data = response['Items']
+    services = list(data[0][listName].keys())
+    #search_in_events(users,data,users_itemName)
+    # print(users)
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            ProjectionExpression=pe,
+        )
+        data= response['Items']
+        services.append(list(data[0][listName].keys()))
+        #search_in_events(users, data, users_itemName)
+        # print(users)
+
+    return services
+
+def parameters_list():
+    """Return a list of parameters to query"""
+    listName = 'cols'
+    pe = Key('eventID').eq('1') #what we want to search
+
+    table = dynamodb_resource.Table(table_name)
+
+    response = table.query(
+        KeyConditionExpression=pe,
+    )
+    data = response['Items']
+    parameters = list(data[0][listName].keys())
+    #search_in_events(users,data,users_itemName)
+    # print(users)
+    while 'LastEvaluatedKey' in response:
+        response = table.query(
+            ExclusiveStartKey=response['LastEvaluatedKey'],
+            ProjectionExpression=pe,
+        )
+        data= response['Items']
+        parameters.append(list(data[0][listName].keys()))
+        #search_in_events(users, data, users_itemName)
+        # print(users)
+
+    return parameters
 
 """Search atrib in list of events"""
 def search_in_events(result=dict(), events=list(), attrib=''):
@@ -140,7 +193,6 @@ def format_time(time):
 
     return time
 
-#TODO request_parameter
 def actions_between_time(time1, time2, event=None,  request_parameter = None, count= False):
     """all actions between time1 and time2
     time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
@@ -151,14 +203,24 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
 
     users_l = users_list()
     if event is None:
-        total = 0
-        if count:
-            for user in users_l:
-                total = total + used_services(user, time1, time2, count= count)
+        if request_parameter:
+            total = 0
+            if count:
+                for user in users_l:
+                    total = total + used_services_parameter(user, request_parameter, time1=time1, time2=time2, count=True)
+            else:
+                total = []
+                for user in users_l:
+                    total.extend(used_services_parameter(user, request_parameter, time1=time1, time2=time2, count=False))
         else:
-            total = []
-            for user in users_l:
-                total.extend(used_services(user, time1, time2, count= count))
+            total = 0
+            if count:
+                for user in users_l:
+                    total = total + used_services(user, time1, time2, count= count)
+            else:
+                total = []
+                for user in users_l:
+                    total.extend(used_services(user, time1, time2, count= count))
     else:
         total = 0
         if count:
@@ -182,6 +244,8 @@ def used_services(user, time1=None, time2=None,count=False):
     users_itemName = 'userIdentity_userName'
     eventTime = 'eventTime'
     eventsource = "eventSource"
+    eventName = "eventName"
+    eventID = "eventID"
 
     # filter expression
     feAux = Key(users_itemName).eq(user);
@@ -207,7 +271,7 @@ def used_services(user, time1=None, time2=None,count=False):
             )
             events = events + (response['Count'])
     else:
-        pe = "{0}, {1}, {2}".format(users_itemName, eventTime, eventsource)
+        pe = "{0}, {1}, {2}, {3}, {4}".format(users_itemName, eventTime, eventsource, eventName, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux,
@@ -238,6 +302,8 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
     users_itemName = 'userIdentity_userName'
     eventTime = 'eventTime'
     eventsource = "eventSource"
+    eventName = "eventName"
+    eventID = "eventID"
 
     # filter expression
     feAux = Key(users_itemName).eq(user);
@@ -272,7 +338,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
             events = events + (response['Count'])
 
     else:
-        pe = "{0}, {1}, {2}".format(users_itemName, eventTime, eventsource)
+        pe = "{0}, {1}, {2}, {3}, {4}".format(users_itemName, eventTime, eventsource, eventName, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux,
@@ -290,6 +356,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
                 KeyConditionExpression=feAux,
                 Select='SPECIFIC_ATTRIBUTES',
                 FilterExpression=feEvent,
+                ProjectionExpression=pe
             )
             events.extend(response['Items'])
 
@@ -308,13 +375,14 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     eventName = 'eventName'
     eventTime = 'eventTime'
     eventsource = "eventSource"
+    eventID = "eventID"
 
     feEvent = Key(eventName).eq(event);
 
     if request_parameter:
         requests = request_parameter[0]
         parameters = request_parameter[1]
-        for i in range(1,len(requests)):
+        for i in range(0,len(requests)):
             feEvent = feEvent & Key(requests[i]).eq(parameters[i])
 
     feAux = Key(users_itemName).eq(user);
@@ -337,7 +405,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
              )
             events = events + (response['Count'])
     else:
-        pe = "{0}, {1}, {2}".format(users_itemName, eventTime, eventsource)
+        pe = "{0}, {1}, {2}, {3}".format(users_itemName, eventTime, eventsource, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),
@@ -391,16 +459,34 @@ def main():
     # request = None
 
     # start_time = time.time()
-    # user_events = user_count_event('grycap-aws',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=request)
+    # list_users = users_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_users)
+    # print("Time elapsed for user lists %f " % elapsed_time)
+    #
+    # start_time = time.time()
+    # list_services = services_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_services)
+    # print("Time elapsed for services list  %f " % elapsed_time)
+    #
+    # start_time = time.time()
+    # list_parameters = parameters_list()
+    # elapsed_time = time.time() - start_time
+    # print(list_parameters)
+    # print("Time elapsed for services list  %f " % elapsed_time)
+
+    # start_time = time.time()
+    # user_events = user_count_event('alucloud178',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
     # elapsed_time = time.time() - start_time
     # print(user_events)
     # print("Time elapsed for user_count_event items %f " % elapsed_time)
     #
-    start_time = time.time()
-    user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for used_services items %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for used_services items %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = used_services_parameter('gmolto', request, '2014-06-01T12:00:51Z', '2018-06-01T19:00:51Z', count=False)
@@ -422,11 +508,11 @@ def main():
     # print("Time elapsed for top_users items %f " % elapsed_time)
 
 
-    # start_time = time.time()
-    # user_events = actions_between_time( '2014-06-01T12:00:51Z','2018-06-01T19:00:51Z')
-    # elapsed_time = time.time() - start_time
-    # print(user_events)
-    # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
+    start_time = time.time()
+    user_events = actions_between_time( '2018-05-21T12:00:51Z','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = actions_between_time('2017-06-01T12:00:51Z', '2017-07-01T19:00:51Z',event='RunInstances', request_parameter=request, count=False)

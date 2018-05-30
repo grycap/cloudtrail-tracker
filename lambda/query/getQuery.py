@@ -40,14 +40,17 @@ select = [
             "responseElements_credentials_sessionToken",
 ]
 
+
+
 def get_request_parameters(event):
-    request = event.get("params", None)
-    parameter = event.get("values", None)
+    request = event.get("param", None)
+    parameter = event.get("value", None)
     request_parameters = None
     if request and parameter:
         try:
             request =  ast.literal_eval(request)
             parameter =  ast.literal_eval(parameter)
+
         except ValueError:
             pass
         requests = []
@@ -78,9 +81,13 @@ def handler(event, context):
 
     if event.get("list_users", None):
         return action("users_list")
+    if event.get("services_list", None):
+        return action("services_list")
+    if event.get("parameters_list", None):
+        return action("parameters_list")
+    scan = event.get("scan", None)
 
     request_parameters = get_request_parameters(event)
-
 
     event_name = event.get("eventName",None)
     user_name = event.get("user",None)
@@ -97,13 +104,17 @@ def handler(event, context):
         service = None
     if not time1:
         time1 = time.strftime("%Y-%m-%d")
-    if not time2:
         date_1 = datetime.datetime.strptime(time1, "%Y-%m-%d")
-        time2 = date_1 + datetime.timedelta(days = 7)
-        time2 = time2.strftime("%Y-%m-%d")
+        time1 = date_1 - datetime.timedelta(days=7)
+        time1 = time1.strftime("%Y-%m-%d")
+    if not time2:
+        time2 = time.strftime("%Y-%m-%d")
+
 
     #Select action
-    if user_name and not service:
+    if scan:
+        method = "actions_between"
+    elif user_name and not service:
         #used_services or used_services_parameter or user_count_event
         if not event_name:
             if request_parameters:
@@ -112,6 +123,7 @@ def handler(event, context):
                 method = "used_services"
         else:
             method = "user_count_event"
+
     elif service and not user_name:
         #actions_between
         method = "actions_between"
@@ -125,13 +137,13 @@ def handler(event, context):
         # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
-        return json.dumps("Error. Needs an user name or a service.")
+        return ("Error. Needs an user name or a service.")
+
     return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
 
 def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
-
     if method == "actions_between":
-        return json.dumps(Querys.actions_between_time(
+        return (Querys.actions_between_time(
             time1,
             time2,
             event=event_name,
@@ -139,13 +151,14 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
             count=count
         ))
     elif method == "used_services":
-        return json.dumps(
+
+        return (
             Querys.used_services(user_name, time1, time2, count)
 
         )
 
     elif method == "used_services_parameter":
-        return json.dumps(
+        return (
             Querys.used_services_parameter(
                 user_name, request_parameters, time1, time2, count
             )
@@ -153,18 +166,22 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
         )
 
     elif method == "user_count_event":
-        return json.dumps((
+        return ((
             Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count)
 
         ))
 
     elif method == "top_users":
-        return json.dumps(
+        return (
             Querys.top_users(time1, time2, event_name, request_parameters)
         )
 
     elif method == "users_list":
-        return json.dumps(Querys.users_list())
+        return (Querys.users_list())
+    elif method == "services_list":
+        return (Querys.services_list())
+    elif method == "parameters_list":
+        return (Querys.parameters_list())
 
 
 
@@ -179,10 +196,10 @@ if __name__ == '__main__':
     "eventName":  "",
     "from":  "2016-06-01",
     "to":  "2017-09-01",
-    # "params":  "['instanceType']",
-    "params":  "instanceType,eventSource",
-    # "values":  "['m1.small']"
-    "values":  "m1.small,ec2.amazonaws.com"
+    "param":  "['instanceType']",
+    # "param":  "instanceType,eventSource",
+    "value":  "['m1.small']"
+    # "value":  "m1.small,ec2.amazonaws.com"
     }
     res = handler(event, None)
     print(res)

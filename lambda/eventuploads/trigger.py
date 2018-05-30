@@ -1,6 +1,9 @@
 import boto3
-import argparse
+import argparse, os, sys
 
+sys.path.insert(1, os.path.join(sys.path[0], '../..'))
+
+from settings import settings
 parser = argparse.ArgumentParser(description='Create a trigger when a file is uploaded to an specific S3 bucket.')
 parser.add_argument('--bucket', type=str,
                    help='Bucket name.')
@@ -61,8 +64,13 @@ def create_trigger(name, bucket_name):
 if (__name__ == '__main__'):
     print("Creating trigger S3 -> Lambda . . . ",end='', flush=True)
     args = parser.parse_args()
+
     bucket_name = args.bucket
     lambda_name = args.lambda_name
+    if not bucket_name:
+        bucket_name = settings.bucket_name
+    if not lambda_name:
+        lambda_name = settings.lambda_func_name_trigger
     if not bucket_name or not lambda_name:
         print("\nLambda name or bucket name are not provided.")
 

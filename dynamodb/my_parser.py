@@ -193,7 +193,7 @@ class Event:
 
 def main():
     print('Example')
-    path = "/home/jose/Documentos/TFG/muestras"
+    path = "/home/jose/Documentos/TFG/events2"
     # event = Event('/home/jose/Documentos/TFG/muestras/974349055189_CloudTrail_us-east-1_20170607T1510Z_kgD1yab9lfzZAzaQ.json.gz')
     for doc in os.listdir(path):
         event = Event("{}/{}".format(path, doc))
@@ -202,7 +202,8 @@ def main():
             # print('Event name: {0}'.format(e['event_name']))
             # print('Event request: {0}'.format(e['request']))
             #rds.amazonaws.com
-            if "rds" in e['eventSource']:
+            user_name = e.get("userIdentity_userName", "no_user")
+            if "alucloud109" in user_name:
                 print('Event request: {0}'.format(e))
     
     # parser = Parser('examples/')

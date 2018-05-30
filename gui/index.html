@@ -20,6 +20,14 @@
     <script src="js/graphics.js" defer></script>
     <script src="js/functions.js" defer></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="./dist/jsbn.js"></script>
+    <script src="./dist/jsbn2.js"></script>
+    <script src="./dist/sjcl.js"></script>
+    <script src="./dist/aws-cognito-sdk.min.js"></script>
+    <script src="./dist/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.5.0.min.js"></script>
+
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,7 +35,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
           integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
-<body class="container-fluid">
+<body class="container-fluid" onload="cognito()">
 <div class="row">
 
     <div class="col-12 col-md-auto" id="events">

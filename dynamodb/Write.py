@@ -30,7 +30,7 @@ class UseDynamoDB:
             name_event = datos.get("eventName", None)
             if name_event is None or name_event.lower().startswith(tuple(settings.filterEventNames)):
                 # print("Evento no")
-                return
+                continue
 
             userName = datos.get(nameCamp, None)
             if userName is None:
@@ -43,19 +43,28 @@ class UseDynamoDB:
             if self.verbose:
                 print("PutItem succeeded:")
 
+            ## Adding new user
             if userName is None or userName == ' ':
-                continue
+                userName = 'no_user'
 
-            self.new_user(name_table, userName)
-            if self.verbose:
-                print("User %s added to list" % userName)
+            ## Adding a new service
+            service_name = datos.get("eventSource", None)
+            if service_name:
+                service_name = service_name.split(".")[0]
 
+            ## Ading columns
+            columns = datos.keys()
 
-    def new_user(self, name_table,user):
-        """Get old user and add a new user. if not exist yet"""
+            ## Adding all
+            self.news(name_table, userName, service_name, columns)
+
+    def news(self, name_table, user, service, new_columns):
+        """Get an user and add it if not exist yet"""
         index = 'userIdentity_userName'
-        setValue = 'listUsers'
-        arr = ['userIdentity_userName','all']
+        setValue_cols = 'cols'
+        setValue_services  = 'services'
+        setValue_listUsers = 'listUsers'
+        arr = ['userIdentity_userName', 'all']
         # eventos = resource.Table(name_table)
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
@@ -63,27 +72,43 @@ class UseDynamoDB:
         # filter expression
         fe = Key(arr[0]).eq(arr[1]);
         response = table.query(
-            IndexName=self.index ,
+            IndexName=self.index,
             KeyConditionExpression=fe,
         )
-        users = response['Items'][0][setValue]
+        cols = response['Items'][0][setValue_cols]
+        services = response['Items'][0][setValue_services]
+        users = response['Items'][0][setValue_listUsers]
         # users = ast.literal_eval(users)
-        if users.get(user,None) is not None: return
-        users[user] = '1'
-        #update
+        aux = False
+        for column in new_columns:
+            if cols.get(column, None) is None:
+                aux = True
+                cols[column] = '1'
+
+        if users.get(user,None) is None:
+            aux = True
+            users[user] = '1'
+
+        if services.get(service, None) is None:
+            aux = True
+            services[service] = '1'
+
+        if not aux: return
+        # update
         table.update_item(
             Key={
                 'eventID': '1',
                 'userIdentity_userName': 'all',
             },
-            UpdateExpression=("SET {0} = :p").format(setValue),
+            UpdateExpression=("SET {0} = :p, {1} = :r, {2} = :q").format(setValue_cols, setValue_services, setValue_listUsers),
             ExpressionAttributeValues={
-                ':p': users,
+                ':p': cols,
+                ':r': services,
+                ':q': users,
             },
             ReturnValues="UPDATED_NEW"
         )
 
-        # print(users)
 
 if __name__ == '__main__':
     print(settings.filterEventNames)

@@ -1,4 +1,4 @@
-service: cloudtrail-tracker
+service: cloudtrailTracker
 
 provider: 
   name: aws
@@ -6,7 +6,7 @@ provider:
   region: us-east-1 
   memorySize: 256
   deploymentBucket:
-    name: alucloud230
+    name: cursocloudaws-trail
   role: arn:aws:iam::974349055189:role/lambda-s3-apigw-role
 
   plugins:
@@ -19,7 +19,7 @@ package: # Optional deployment packaging configuration
 functions: 
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrail-tracker-uploader
+    name: cloudtrailTrackerUploads
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -28,13 +28,35 @@ functions:
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrail-tracker-query
+    name: cloudtrailTrackerQueries
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
     timeout: 30
     reservedConcurrency: 5
     events:
+      - http:
+          path: scan/
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            parameters:
+              querystrings:
+                count: false
+                eventName: false
+                from: false
+                to: false
+                param: false
+                value: false
+            template:
+              application/json: '{ "scan" : "scan",
+                                   "count" : "$input.params(''count'')",
+                                   "eventName" : "$input.params(''eventName'')",
+                                   "from" : "$input.params(''from'')",
+                                   "to" : "$input.params(''to'')",
+                                   "param" : "$input.params(''param'')",
+                                   "value" : "$input.params(''value'')"}'
       - http:
           path: users
           method: get
@@ -43,6 +65,7 @@ functions:
           request:
             template:
               application/json: '{ "list_users" : "list_users" }'
+
       - http:
           path: users/{user}
           method: get
@@ -65,6 +88,22 @@ functions:
                                    "to" : "$input.params(''to'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
+      - http:
+          path: services
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "services_list" : "services_list" }'
+      - http:
+          path: parameters
+          method: get
+          cors: true
+          integration: lambda
+          request:
+            template:
+              application/json: '{ "parameters_list" : "parameters_list" }'
       - http:
           path: services/{service}
           method: get
