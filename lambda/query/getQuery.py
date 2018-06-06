@@ -76,6 +76,13 @@ def get_request_parameters(event):
         request_parameters = [requests, parameters]
     return request_parameters
 
+def add_time(t, days=1):
+    if type(t) == str:
+        t = datetime.datetime.strptime(t, "%Y-%m-%d")
+
+    time1 = t + datetime.timedelta(days=days)
+
+    return time1
 
 def handler(event, context):
 
@@ -201,5 +208,6 @@ if __name__ == '__main__':
     "value":  "['m1.small']"
     # "value":  "m1.small,ec2.amazonaws.com"
     }
-    res = handler(event, None)
-    print(res)
+    # res = handler(event, None)
+    # print(res)
+    print(add_time("2016-06-01", days=1))
