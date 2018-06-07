@@ -458,6 +458,27 @@ def top_users(time1, time2, event=None, request_parameter=None):
     resList = sorted(resList, key=itemgetter(1))
     return list(reversed(resList))
 
+def remove_one(id, user):
+    table = dynamodb_resource.Table(table_name)
+    response = table.delete_item(
+        Key={'eventID':id,
+             'userIdentity_userName': user},
+
+    )
+
+def delete_events(frm, to , event, step=100):
+    print("Querying event. . .")
+    events = actions_between_time(frm, to, event=event)
+    print("Deleting event. {} events to delete".format(len(events)))
+    num = 0
+    for e in events:
+        id = e.get("eventID")
+        user = e.get("userIdentity_userName")
+        remove_one(id, user)
+        num = num + 1
+        if num % step == 0:
+            print("{} events deleted.".format(num))
+
 
 def main():
     eventName = "RunInstances"
@@ -514,17 +535,23 @@ def main():
     # print("Time elapsed for top_users items %f " % elapsed_time)
 
 
-    start_time = time.time()
-    user_events = actions_between_time( '2018-03-01Z16:15:15','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
-    elapsed_time = time.time() - start_time
-    print(user_events)
-    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
+    # start_time = time.time()
+    # user_events = actions_between_time( '2018-03-01Z16:15:15','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
+    # elapsed_time = time.time() - start_time
+    # print(user_events)
+    # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
     # start_time = time.time()
     # user_events = actions_between_time('2017-06-01T12:00:51Z', '2017-07-01T19:00:51Z',event='RunInstances', request_parameter=request, count=False)
     # elapsed_time = time.time() - start_time
     # print(user_events)
     # print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
+
+    start_time = time.time()
+    delete_events( '2014-05-01Z16:15:15','2018-07-06T19:00:51Z', "AssumeRole")
+    elapsed_time = time.time() - start_time
+
+    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
 
 if (__name__ == '__main__'):
