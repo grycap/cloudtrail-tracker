@@ -184,12 +184,18 @@ def search_in_events(result=dict(), events=list(), attrib=''):
 
 """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
 def format_time(time):
-    if(time is None): return None
-    if len(time) == 10:
-        time = time + "T00:00:00Z"
+    if(not time): return None
+    if type(time) == str:
+        if len(time) == 10:
+            time = time + "T00:00:00Z"
 
-    if len(time) != 20:
-        raise Exception("Error on time format!")
+        elif len(time) == 19:
+            time = time + "Z"
+
+        if len(time) != 20:
+            raise Exception("Error on time format!")
+    else:
+        time = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return time
 
@@ -509,7 +515,7 @@ def main():
 
 
     start_time = time.time()
-    user_events = actions_between_time( '2018-05-21T12:00:51Z','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
+    user_events = actions_between_time( '2018-03-01Z16:15:15','2018-05-22T19:00:51Z', event=None, request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
     elapsed_time = time.time() - start_time
     print(user_events)
     print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)

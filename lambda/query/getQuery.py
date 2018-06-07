@@ -9,11 +9,17 @@ from dynamodb import Querys
 """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
 def format_time(time):
     if(not time): return None
-    if len(time) == 10:
-        time = time + "T00:00:00Z"
+    if type(time) == str:
+        if len(time) == 10:
+            time = time + "T00:00:00Z"
 
-    if len(time) != 20:
-        raise Exception("Error on time format!")
+        elif len(time) == 19:
+            time = time + "Z"
+
+        if len(time) != 20:
+            raise Exception("Error on time format!")
+    else:
+        time = time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     return time
 
@@ -76,11 +82,19 @@ def get_request_parameters(event):
         request_parameters = [requests, parameters]
     return request_parameters
 
-def add_time(t, days=1):
+def add_time(t, seconds=1):
+    """
+    Add days
+    :param t:
+    :param days:
+    :return:
+    """
+    print(t)
+    print(type(t))
     if type(t) == str:
-        t = datetime.datetime.strptime(t, "%Y-%m-%d")
+        t = datetime.datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ")
 
-    time1 = t + datetime.timedelta(days=days)
+    time1 = t + datetime.timedelta(seconds=seconds)
 
     return time1
 
@@ -100,8 +114,8 @@ def handler(event, context):
     user_name = event.get("user",None)
     service = event.get("service",None)
     count = event.get("count",False)
-    time1 = format_time(event.get("from",None))
-    time2 = format_time(event.get("to",None))
+    time1 = event.get("from",None)
+    time2 = event.get("to",None)
 
     if not count or count == "false" or count == "False":
         count = False
@@ -118,6 +132,9 @@ def handler(event, context):
         time2 = time.strftime("%Y-%m-%d")
 
 
+    time1 = format_time(time1)
+    time2 = format_time(time2)
+    time2 = add_time(time2)
     #Select action
     if scan:
         method = "actions_between"
@@ -201,13 +218,12 @@ if __name__ == '__main__':
     "service": "",
     "count":  "",
     "eventName":  "",
-    "from":  "2016-06-01",
+    "from":  "2016-06-01Z16:15:15",
     "to":  "2017-09-01",
     "param":  "['instanceType']",
     # "param":  "instanceType,eventSource",
     "value":  "['m1.small']"
     # "value":  "m1.small,ec2.amazonaws.com"
     }
-    # res = handler(event, None)
-    # print(res)
-    print(add_time("2016-06-01", days=1))
+    res = handler(event, None)
+    print(res)

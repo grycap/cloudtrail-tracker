@@ -6,7 +6,7 @@ provider:
   region: us-east-1 
   memorySize: 256
   deploymentBucket:
-    name: cursocloudaws-trail
+    name: alucloud230
   role: arn:aws:iam::974349055189:role/lambda-s3-apigw-role
 
   plugins:
@@ -19,7 +19,7 @@ package: # Optional deployment packaging configuration
 functions: 
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrailTrackerUploads
+    name: cloudtrailTrackerUpload
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128

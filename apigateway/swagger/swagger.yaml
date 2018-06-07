@@ -40,12 +40,12 @@ paths:
           type: boolean
         - name: from
           in: query
-          description: Date to start. YYYY-MM-DD
+          description: Date to start. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: to
           in: query
-          description: Date to end. YYYY-MM-DD
+          description: Date to end. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: params
@@ -128,12 +128,12 @@ paths:
           type: boolean
         - name: from
           in: query
-          description: Date to start. YYYY-MM-DD
+          description: Date to start. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: to
           in: query
-          description: Date to end. YYYY-MM-DD
+          description: Date to end. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: params
@@ -198,12 +198,12 @@ paths:
           type: boolean
         - name: from
           in: query
-          description: Date to start. YYYY-MM-DD
+          description: Date to start. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: to
           in: query
-          description: Date to end. YYYY-MM-DD
+          description: Date to end. YYYY-MM-DD or YYYY-MM-DDTHH-MM (%Y-%m-%dT%H:%M:%S)
           required: false
           type: string
         - name: params
