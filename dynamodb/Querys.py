@@ -411,7 +411,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
              )
             events = events + (response['Count'])
     else:
-        pe = "{0}, {1}, {2}, {3}".format(users_itemName, eventTime, eventsource, eventID)
+        pe = "{0}, {1}, {2}, {3}, {4}".format(users_itemName, eventTime, eventsource, eventName, eventID)
         response = table.query(
             IndexName=index,
             KeyConditionExpression=feAux & Key(eventTime).between(time1, time2),

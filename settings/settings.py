@@ -11,7 +11,7 @@ table_name = "cloudtrailtrackerdb"
 bucket_name = "cursocloudaws-trail"
 #API name
 API_name = "cloudtrailTrackerAPI"
-#eventName 's that we DONT want to store - Filter
+#eventNames that we DON'T want to store - Filter
 filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole"]
 ### Account IDs and permisions
 aws_acct_id = "974349055189"
