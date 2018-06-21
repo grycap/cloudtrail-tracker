@@ -13,10 +13,5 @@ bucket_name = "cursocloudaws-trail"
 API_name = "cloudtrailTrackerAPI"
 #eventNames that we DON'T want to store - Filter
 filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole"]
-### Account IDs and permisions
-aws_acct_id = "974349055189"
-### Roles
-#Needed a rol with s3 / apig / lamba permissions
-arn_rol = 'arn:aws:iam::974349055189:role/lambda-s3-apigw-role'
 #Index name for DynamoDB Table - Dont modify if is not necessary
 index = 'userIdentity_userName-eventTime-index'
