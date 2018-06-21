@@ -1,7 +1,7 @@
 AWS_REGION = 'us-east-1'
 #Lambda function name for querying
 lambda_func_name = "cloudtrailTrackerQueries"
-#Lambda function name for automatic event upload
+#Lambda function name for automatic event uploads
 lambda_func_name_trigger = "cloudtrailTrackerUploads"
 #Stage name for API Gateway
 stage_name = "cloudtrailtrackerStage"
@@ -11,12 +11,12 @@ table_name = "cloudtrailtrackerdb"
 bucket_name = "cursocloudaws-trail"
 #API name
 API_name = "cloudtrailTrackerAPI"
-#eventName 's that we DONT want to store - Filter
+#eventNames that we DO NOT want to store - Filter
 filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head"]
-### Account IDs and permisions
-aws_acct_id = "974349055189"
+### Account IDs and permisiions
+#aws_acct_id = "111111111111"
 ### Roles
-#Needed a rol with s3 / apig / lamba permissions
-arn_rol = 'arn:aws:iam::974349055189:role/lambda-s3-apigw-role'
-#Index name for DynamoDB Table - Dont modify if is not necessary
+#A role is needed with access to S3 / apig / lamba permissions
+# arn_role = 'arn:aws:iam::111111111111:role/your-iam-role'
+#Index name for DynamoDB Table - Do not modify if is not necessary
 index = 'userIdentity_userName-eventTime-index'

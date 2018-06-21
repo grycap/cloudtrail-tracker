@@ -7,7 +7,7 @@ provider:
   memorySize: 256
   deploymentBucket:
     name: cursocloudaws-trail
-  role: arn:aws:iam::974349055189:role/lambda-s3-apigw-role
+  role: arn:aws:iam::111111111111:role/your-iam-role
 
   plugins:
    - serverless-python-requirements
@@ -19,7 +19,7 @@ package: # Optional deployment packaging configuration
 functions: 
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrailTrackerUploads
+    name: ctt-upload-test
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -28,7 +28,7 @@ functions:
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrailTrackerQueries
+    name: ctt-query-test
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
