@@ -11,7 +11,7 @@ table_name = "cloudtrailtrackerdb"
 bucket_name = "cursocloudaws-trail"
 #API name
 API_name = "cloudtrailTrackerAPI"
-#eventNames that we DON'T want to store - Filter
+#eventNames that we DO NOT want to store - Filter
 filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole"]
 #Index name for DynamoDB Table - Dont modify if is not necessary
 index = 'userIdentity_userName-eventTime-index'

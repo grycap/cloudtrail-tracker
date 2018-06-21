@@ -9,6 +9,7 @@ provider:
     name: alucloud230
   role: arn:aws:iam::974349055189:role/lambda-s3-apigw-role
 
+
   plugins:
    - serverless-python-requirements
 
@@ -20,6 +21,7 @@ functions:
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
     name: cloudtrailTrackerUpload
+
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -28,7 +30,7 @@ functions:
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrailTrackerQueries
+    name: ctt-query-test
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
