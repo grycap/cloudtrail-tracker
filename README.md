@@ -9,7 +9,7 @@ CloudTrail-Tracker is a tool that provides fast cost-effective insights on the m
 
 * A REST-based service provided by [Amazon API Gateway](https://aws.amazon.com/api-gateway/) (optionally integrated with [Cognito](https://aws.amazon.com/cognito) to manage authentication) to query the events stored in DynamoDB through an AWS Lambda function.
 
-* A Vue.js-based web portal (eventually available in the [cloudtrail-tracker-ui](https://github.com/grycap/cloudtrail-tracker-ui) repository) that queries the REST-based service to visually depict high-level aggregated information concerning the use of resources in AWS by the different users based on the events information. A live site for demo purposes is provided at: [https://cloudtrailtracker.cursocloudaws.net](https://cloudtrailtracker.cursocloudaws.net) accesible with user/password `demo` / `demoDem0!`.
+* A Vue.js-based web portal (eventually available in the [cloudtrail-tracker-ui](https://github.com/grycap/cloudtrail-tracker-ui) repository) that queries the REST-based service to visually depict high-level aggregated information concerning the use of resources in AWS by the different users based on the events information. A live site for demo purposes is provided at: [http://cloudtrailtracker.cursocloudaws.net](http://cloudtrailtracker.cursocloudaws.net) accesible with user/password `demo` / `demoDem0!`.
 
 ## Serverless Approach
 
