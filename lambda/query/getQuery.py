@@ -6,7 +6,7 @@ import uuid, json, time, datetime
 try:
     from dynamodb import Querys
 except Exception as e:
-    sys.path.insert(1, os.path.join(sys.path[0], '../..'))
+    sys.path.insert(1, os.path.join(sys.path[0], '../..')) # just to run on local
     from dynamodb import Querys
 # import requests
 
