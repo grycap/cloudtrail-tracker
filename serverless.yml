@@ -1,4 +1,4 @@
-service: CTT
+service: cloudtrailTrackerv
 
 provider: 
   name: aws
@@ -20,8 +20,7 @@ package: # Optional deployment packaging configuration
 functions: 
   cloudtrail_EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrail-Upload_
-
+    name: cloudtrailTracker-Upload_
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -30,7 +29,7 @@ functions:
 
   cloudtrail_Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrail-query-test_
+    name: cloudtrailTracker-query_
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512

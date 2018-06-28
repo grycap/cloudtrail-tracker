@@ -1,10 +1,10 @@
 AWS_REGION = 'us-east-1'
 #Lambda function name for querying
-lambda_func_name = "ctt-query-test_"
+lambda_func_name = "cloudtrailTracker-query_"
 #Lambda function name for automatic event upload
-lambda_func_name_trigger = "ctt-Upload_"
+lambda_func_name_trigger = "cloudtrailTracker-Upload_"
 #Stage name for API Gateway
-stage_name = "cloudtrailtrackerStage"
+stage_name = "dev"
 #DynamoDB Table name
 table_name = "cloudtrailtrackerdb"
 #Preconfigured S3 bucket by CloudTrail
