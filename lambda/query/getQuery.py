@@ -135,6 +135,8 @@ def handler(event, context):
 
     if not count or count == "false" or count == "False":
         count = False
+    if not begin_with or begin_with == "false" or begin_with == "False":
+        begin_with = False
     if not event_name: #necessary if eventName is "" or False
         event_name = None
     if not service:

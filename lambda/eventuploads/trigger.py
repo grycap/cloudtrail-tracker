@@ -1,5 +1,6 @@
 import boto3
 import argparse, os, sys
+from random import randint
 
 sys.path.insert(1, os.path.join(sys.path[0], '../..'))
 
@@ -24,7 +25,7 @@ def create_trigger(name, bucket_name):
     response = client.add_permission(
         Action='lambda:InvokeFunction',
         FunctionName=name,
-        StatementId='ID-0',
+        StatementId='ID-{}'.format(randint(0, 1000000)),
         Principal='s3.amazonaws.com',
         # SourceAccount='123456789012',
         # SourceArn='arn:aws:s3:::examplebucket/*'

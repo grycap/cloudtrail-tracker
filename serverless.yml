@@ -1,4 +1,4 @@
-service: cloudtrailTracker
+service: CTT
 
 provider: 
   name: aws
@@ -18,9 +18,9 @@ package: # Optional deployment packaging configuration
       - dynamodb/Logs.py
 
 functions: 
-  EventUploads:
+  cloudtrail_EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrailTrackerUpload
+    name: cloudtrail-Upload_
 
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
@@ -28,9 +28,9 @@ functions:
     timeout: 30
     reservedConcurrency: 5
 
-  Query:
+  cloudtrail_Query:
     handler: lambda/query/getQuery.handler
-    name: ctt-query-test
+    name: cloudtrail-query-test_
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
@@ -51,12 +51,14 @@ functions:
                 to: false
                 param: false
                 value: false
+                begin_with: false
             template:
               application/json: '{ "scan" : "scan",
                                    "count" : "$input.params(''count'')",
                                    "eventName" : "$input.params(''eventName'')",
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
+                                   "begin_with" : "$input.params(''begin_with'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
       - http:
@@ -82,12 +84,14 @@ functions:
                 to: false
                 param: false
                 value: false
+                begin_with: false
             template:
               application/json: '{ "user" : "$input.params(''user'')",
                                    "count" : "$input.params(''count'')",
                                    "eventName" : "$input.params(''eventName'')",
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
+                                   "begin_with" : "$input.params(''begin_with'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
       - http:
@@ -120,11 +124,13 @@ functions:
                 to: false
                 param: false
                 value: false
+                begin_with: false
             template:
               application/json: '{ "service" : "$input.params(''service'')",
                                    "count" : "$input.params(''count'')",
                                    "eventName" : "$input.params(''eventName'')",
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
+                                   "begin_with" : "$input.params(''begin_with'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
