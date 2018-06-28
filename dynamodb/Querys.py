@@ -199,7 +199,7 @@ def format_time(time):
 
     return time
 
-def actions_between_time(time1, time2, event=None,  request_parameter = None, count= False):
+def actions_between_time(time1, time2, event=None,  request_parameter = None, count= False,  begin_with=False):
     """all actions between time1 and time2
     time = YYYY-MM-DD or YYYY-MM-DDTHH-MM-SSZ
     returns a number (int)"""
@@ -231,12 +231,12 @@ def actions_between_time(time1, time2, event=None,  request_parameter = None, co
         total = 0
         if count:
             for user in users_l:
-                total = total + user_count_event(user, event, time1, time2, request_parameter=request_parameter, count=count)
+                total = total + user_count_event(user, event, time1, time2, request_parameter=request_parameter, count=count,  begin_with=begin_with)
 
         else:
             total = []
             for user in users_l:
-                total.extend(user_count_event(user, event, time1, time2,request_parameter=request_parameter, count=count))
+                total.extend(user_count_event(user, event, time1, time2,request_parameter=request_parameter, count=count, begin_with=begin_with))
 
     return total
 
@@ -438,7 +438,7 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     return events
 
 """Top users, return an ordered list of tuples with [('user',numOfActions)]"""
-def top_users(time1, time2, event=None, request_parameter=None):
+def top_users(time1, time2, event=None, request_parameter=None,  begin_with=False):
     time1 = format_time(time1)
     time2 = format_time(time2)
     resList = []
@@ -455,7 +455,7 @@ def top_users(time1, time2, event=None, request_parameter=None):
                 resList.append((user,events))
     else:
         for user in users_l:
-            events = user_count_event(user, event, time1, time2, request_parameter=request_parameter)
+            events = user_count_event(user, event, time1, time2, request_parameter=request_parameter, begin_with=begin_with)
             resList.append((user,events))
 
     resList = sorted(resList, key=itemgetter(1))

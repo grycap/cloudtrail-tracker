@@ -202,7 +202,8 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
             time2,
             event=event_name,
             request_parameter=request_parameters,
-            count=count
+            count=count,
+            begin_with=begin_with
         ))
     elif method == "used_services":
 
@@ -227,7 +228,7 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
     elif method == "top_users":
         return (
-            Querys.top_users(time1, time2, event_name, request_parameters)
+            Querys.top_users(time1, time2, event_name, request_parameters,  begin_with=begin_with)
         )
 
     elif method == "users_list":
@@ -244,8 +245,9 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
 if __name__ == '__main__':
     event = {
-    "user":  "alucloud178",
+    # "user":  "alucloud178",
     "service": "",
+    "scan": "True",
     "count":  "",
     "eventName":  "CreateDBInstance",
     "from":  "2014-06-01T12:00:51Z",
