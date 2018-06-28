@@ -15,3 +15,4 @@ API_name = "cloudtrailTrackerAPI"
 filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole"]
 #Index name for DynamoDB Table - Dont modify if is not necessary
 index = 'userIdentity_userName-eventTime-index'
+

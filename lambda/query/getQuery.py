@@ -3,11 +3,15 @@ import boto3
 import os
 import sys, ast
 import uuid, json, time, datetime
-from dynamodb import Querys
+try:
+    from dynamodb import Querys
+except Exception as e:
+    sys.path.insert(1, os.path.join(sys.path[0], '../..'))
+    from dynamodb import Querys
 # import requests
 
-"""YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
 def format_time(time):
+    """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
     if(not time): return None
     if type(time) == str:
         if len(time) == 10:
@@ -49,6 +53,11 @@ select = [
 
 
 def get_request_parameters(event):
+    """
+    Makes a list with param and value preparing to query
+    :param event:
+    :return: list: [[requests], [parameters]]. requqest and parameters are list of String. len(requests) == len(parameters)
+    """
     request = event.get("param", None)
     parameter = event.get("value", None)
     request_parameters = None
@@ -99,6 +108,12 @@ def add_time(t, seconds=1):
     return time1
 
 def handler(event, context):
+    """
+    Handler for Lambda function
+    :param event: dict from Lambda
+    :param context:
+    :return: result. Depends on API Gateway
+    """
 
     if event.get("list_users", None):
         return action("users_list")
@@ -116,10 +131,11 @@ def handler(event, context):
     count = event.get("count",False)
     time1 = event.get("from",None)
     time2 = event.get("to",None)
+    begin_with = event.get("begin_with",None)
 
     if not count or count == "false" or count == "False":
         count = False
-    if not event_name:
+    if not event_name: #necessary if eventName is "" or False
         event_name = None
     if not service:
         service = None
@@ -161,11 +177,23 @@ def handler(event, context):
         # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
-        return ("Error. Needs an user name or a service.")
+        return ("Error. Needed an user name or a service.")
 
-    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count)
+    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with)
 
-def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False):
+def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
+    """
+    Call to Query and return the result from DynamoDB
+    :param method: String. Name of the function of Query.py
+    :param user_name: String
+    :param time1: String. Y-%m-%dT%H:%M:%SZ or Y-%m-%dT
+    :param time2: String. Y-%m-%dT%H:%M:%SZ or Y-%m-%dT
+    :param event_name: String
+    :param request_parameters: list. see method get_request_parameters
+    :param count: boolean
+    :param begin_with: boolean
+    :return: list of dict or number, on depends of count.
+    """
     if method == "actions_between":
         return (Querys.actions_between_time(
             time1,
@@ -191,7 +219,7 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
     elif method == "user_count_event":
         return ((
-            Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count)
+            Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count, begin_with=begin_with)
 
         ))
 
@@ -214,15 +242,17 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
 
 if __name__ == '__main__':
     event = {
-    "user":  "gmolto",
+    "user":  "alucloud178",
     "service": "",
     "count":  "",
-    "eventName":  "",
-    "from":  "2016-06-01Z16:15:15",
+    "eventName":  "CreateDBInstance",
+    "from":  "2014-06-01T12:00:51Z",
     "to":  "2017-09-01",
-    "param":  "['instanceType']",
+    "count": True,
+    "begin_with": True,
+    # "param":  "['instanceType']",
     # "param":  "instanceType,eventSource",
-    "value":  "['m1.small']"
+    # "value":  "['m1.small']"
     # "value":  "m1.small,ec2.amazonaws.com"
     }
     res = handler(event, None)

@@ -369,7 +369,7 @@ def used_services_parameter(user, request_parameter, time1=None, time2=None, cou
     return events
 
 
-def user_count_event(user, event, time1, time2, request_parameter = None, count=False):
+def user_count_event(user, event, time1, time2, request_parameter = None, count=False, begin_with=False):
     """Events from an user
     Return_events"""
     time1 = format_time(time1)
@@ -383,7 +383,10 @@ def user_count_event(user, event, time1, time2, request_parameter = None, count=
     eventsource = "eventSource"
     eventID = "eventID"
 
-    feEvent = Key(eventName).eq(event);
+    if not begin_with:
+        feEvent = Key(eventName).eq(event);
+    else:
+        feEvent = Key(eventName).begins_with(event);
 
     if request_parameter:
         requests = request_parameter[0]
@@ -481,7 +484,7 @@ def delete_events(frm, to , event, step=100):
 
 
 def main():
-    eventName = "RunInstances"
+    eventName = "CreateDBInstance"
     request = (["requestParameters_instanceType"], ["t1.micro"])
     # request = None
 
@@ -503,11 +506,16 @@ def main():
     # print(list_parameters)
     # print("Time elapsed for services list  %f " % elapsed_time)
 
-    # start_time = time.time()
-    # user_events = user_count_event('alucloud178',eventName,'2014-06-01T12:00:51Z','2017-06-01T19:00:51Z', request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]])
-    # elapsed_time = time.time() - start_time
-    # print(user_events)
-    # print("Time elapsed for user_count_event items %f " % elapsed_time)
+    start_time = time.time()
+    user_events = user_count_event('alucloud178',eventName,
+                                   '2014-06-01T12:00:51Z','2017-06-01T19:00:51Z',
+                                   # request_parameter=[["eventSource"],["ec2"+".amazonaws.com"]],
+                                   # count=True,
+                                   begin_with=True
+                                   )
+    elapsed_time = time.time() - start_time
+    print(user_events)
+    print("Time elapsed for user_count_event items %f " % elapsed_time)
     #
     # start_time = time.time()
     # user_events = used_services('alucloud171','2014-06-01T12:00:51Z', '2017-06-01T19:00:51Z', count=False)
@@ -547,11 +555,11 @@ def main():
     # print(user_events)
     # print("Time elapsed for  actions_between_time (one event) %f " % elapsed_time)
 
-    start_time = time.time()
-    delete_events( '2014-05-01Z16:15:15','2018-07-06T19:00:51Z', "AssumeRole")
-    elapsed_time = time.time() - start_time
-
-    print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
+    # start_time = time.time()
+    # delete_events( '2014-05-01Z16:15:15','2018-07-06T19:00:51Z', "AssumeRole")
+    # elapsed_time = time.time() - start_time
+    #
+    # print("Time elapsed for  actions_between_time (all events) %f " % elapsed_time)
 
 
 if (__name__ == '__main__'):
