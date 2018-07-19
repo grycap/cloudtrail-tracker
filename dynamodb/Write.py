@@ -52,6 +52,7 @@ class UseDynamoDB:
                     datos[nameCamp] = ' '
                 else:
                     userName = datos.get('userIdentity_principalId', ' ')
+                    userName = userName.split(":")[-1]
                     datos[nameCamp] = userName
 
 

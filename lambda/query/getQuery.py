@@ -132,11 +132,11 @@ def handler(event, context):
     """
 
     if event.get("list_users", None):
-        return action("users_list")
+        return action("users_list", None)
     if event.get("services_list", None):
-        return action("services_list")
+        return action("services_list", None)
     if event.get("parameters_list", None):
-        return action("parameters_list")
+        return action("parameters_list", None)
     scan = event.get("scan", None)
 
     request_parameters = get_request_parameters(event)
