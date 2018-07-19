@@ -35,6 +35,7 @@ class UseDynamoDB:
         table = dynamodb.Table(name_table)
         nameCamp = 'userIdentity_userName'
 
+
         for datos in event.events():
             """Every event file has one or more events"""
             if self.verbose:
@@ -46,8 +47,9 @@ class UseDynamoDB:
                 continue
 
             userName = datos.get(nameCamp, None)
-            if userName is None:
-                datos[nameCamp] = 'no_user'
+            if userName is None and name_event == "AssumeRole":
+                datos[nameCamp] = ' '
+
 
             table.put_item(
                 Item=datos
@@ -57,8 +59,8 @@ class UseDynamoDB:
                 print("PutItem succeeded:")
 
             ## Adding new user
-            if userName is None or userName == ' ':
-                userName = 'no_user'
+            if userName is None or not userName:
+                userName = ' '
 
             ## Adding a new service
             service_name = datos.get("eventSource", None)

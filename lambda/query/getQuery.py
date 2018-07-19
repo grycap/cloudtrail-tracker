@@ -24,6 +24,8 @@ except Exception as e:
     from dynamodb import Querys
 # import requests
 
+MAX_NUM_ITEMS = 300
+
 def format_time(time):
     """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
     if(not time): return None
@@ -147,6 +149,10 @@ def handler(event, context):
     time2 = event.get("to",None)
     begin_with = event.get("begin_with",None)
 
+    #Pagination
+    offset = event.get("offset",0)
+    limit = event.get("limit",MAX_NUM_ITEMS)
+
     if not count or count == "false" or count == "False":
         count = False
     if not begin_with or begin_with == "false" or begin_with == "False":
@@ -210,6 +216,11 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
     :param begin_with: boolean
     :return: list of dict or number, on depends of count.
     """
+    results = {
+        "data": None, #events
+        "links": {}, # dict with links to next, last and self
+        "pagination": {} # dict with offset, limit and total
+    }
     if method == "actions_between":
         return (Querys.actions_between_time(
             time1,
@@ -221,10 +232,11 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
         ))
     elif method == "used_services":
 
-        return (
-            Querys.used_services(user_name, time1, time2, count)
+        events = Querys.used_services(user_name, time1, time2, count)
+        return events
 
-        )
+
+
 
     elif method == "used_services_parameter":
         return (

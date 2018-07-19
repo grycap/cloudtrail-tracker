@@ -9,10 +9,8 @@ stage_name = "dev"
 table_name = "cloudtrailtrackerdb"
 #Preconfigured S3 bucket by CloudTrail
 bucket_name = "cursocloudaws-trail"
-#API name
-API_name = "cloudtrailTrackerAPI"
 #eventNames that we DO NOT want to store - Filter
-filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole"]
+filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head", "assumerole", "consolelogin"]
 #Index name for DynamoDB Table - Dont modify if is not necessary
 index = 'userIdentity_userName-eventTime-index'
 

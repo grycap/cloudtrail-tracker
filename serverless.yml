@@ -1,9 +1,9 @@
-service: cloudtrailTrackerv
+service: cloudtrailTrackerv2
 
-provider: 
+provider:
   name: aws
   stage: dev
-  region: us-east-1 
+  region: us-east-1
   memorySize: 256
   deploymentBucket:
     name: alucloud230
@@ -17,10 +17,10 @@ package: # Optional deployment packaging configuration
     include: # Specify the directories and files which should be included in the deployment package
       - dynamodb/Logs.py
 
-functions: 
+functions:
   cloudtrail_EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: cloudtrailTracker-Upload_
+    name: cloudtrailTracker-Upload_v2
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
@@ -29,7 +29,7 @@ functions:
 
   cloudtrail_Query:
     handler: lambda/query/getQuery.handler
-    name: cloudtrailTracker-query_
+    name: cloudtrailTracker-query_v2
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
@@ -51,6 +51,8 @@ functions:
                 param: false
                 value: false
                 begin_with: false
+                limit: false
+                offset: false
             template:
               application/json: '{ "scan" : "scan",
                                    "count" : "$input.params(''count'')",
@@ -58,6 +60,8 @@ functions:
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
                                    "begin_with" : "$input.params(''begin_with'')",
+                                   "limit" : "$input.params(''limit'')",
+                                   "offset" : "$input.params(''offset'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
       - http:
@@ -84,6 +88,8 @@ functions:
                 param: false
                 value: false
                 begin_with: false
+                limit: false
+                offset: false
             template:
               application/json: '{ "user" : "$input.params(''user'')",
                                    "count" : "$input.params(''count'')",
@@ -91,6 +97,8 @@ functions:
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
                                    "begin_with" : "$input.params(''begin_with'')",
+                                   "limit" : "$input.params(''limit'')",
+                                   "offset" : "$input.params(''offset'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
       - http:
@@ -124,6 +132,8 @@ functions:
                 param: false
                 value: false
                 begin_with: false
+                limit: false
+                offset: false
             template:
               application/json: '{ "service" : "$input.params(''service'')",
                                    "count" : "$input.params(''count'')",
@@ -131,5 +141,7 @@ functions:
                                    "from" : "$input.params(''from'')",
                                    "to" : "$input.params(''to'')",
                                    "begin_with" : "$input.params(''begin_with'')",
+                                   "limit" : "$input.params(''limit'')",
+                                   "offset" : "$input.params(''offset'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'

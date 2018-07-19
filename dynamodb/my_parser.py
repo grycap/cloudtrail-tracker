@@ -206,16 +206,40 @@ def main():
     print('Example')
     path = "/home/jose/Documentos/TFG/events2"
     # event = Event('/home/jose/Documentos/TFG/muestras/974349055189_CloudTrail_us-east-1_20170607T1510Z_kgD1yab9lfzZAzaQ.json.gz')
+    eventSource = 0
+    eventUserAgent_count = 0
+    eventSource_sts = 0
+    eventName_count = 0
+    total = 0
     for doc in os.listdir(path):
         event = Event("{}/{}".format(path, doc))
         # print("Num events %d " % event.count_events())
+
         for e in event.events():
+            total += 1
             # print('Event name: {0}'.format(e['event_name']))
             # print('Event request: {0}'.format(e['request']))
             #rds.amazonaws.com
-            user_name = e.get("userIdentity_userName", "no_user")
-            if "alucloud109" in user_name:
-                print('Event request: {0}'.format(e))
+            user_name = e.get("userIdentity_userName", None)
+            source = e.get("userIdentity_principalId", None)
+            userAgent = e.get("userAgent", None)
+            eventName = e.get("eventName", None)
+            if user_name is None and source is None:
+
+                # print('Event request: {0}'.format(e))
+                # a = input(" ")
+                eventSource +=1
+                if e.get("eventSource") == "sts.amazonaws.com":
+                    eventSource_sts += 1
+                if eventName == "AssumeRole":
+                    eventName_count += 1
+            if userAgent is not None:
+                eventUserAgent_count += 1
+    print("Total: {}".format(total))
+    print("eventName_count: {}".format(eventName_count))
+    print("eventUserAgent_count: {}".format(eventUserAgent_count))
+    print("events without: {} events without from sts: {}".format(eventSource, eventSource_sts))
+
     
     # parser = Parser('examples/')
     # for event in parser.events():
