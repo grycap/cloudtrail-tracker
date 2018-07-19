@@ -47,8 +47,12 @@ class UseDynamoDB:
                 continue
 
             userName = datos.get(nameCamp, None)
-            if userName is None and name_event == "AssumeRole":
-                datos[nameCamp] = ' '
+            if userName is None:
+                if name_event == "AssumeRole":
+                    datos[nameCamp] = ' '
+                else:
+                    userName = datos.get('userIdentity_principalId', ' ')
+                    datos[nameCamp] = userName
 
 
             table.put_item(
