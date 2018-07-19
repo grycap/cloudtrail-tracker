@@ -148,7 +148,6 @@ def handler(event, context):
     time1 = event.get("from",None)
     time2 = event.get("to",None)
     begin_with = event.get("begin_with",None)
-
     # ---- Pagination
     offset = event.get("offset",0)
     limit = event.get("limit",MAX_NUM_ITEMS)
@@ -218,11 +217,47 @@ def handler(event, context):
     else:
         return ("Error. Needed an user name or a service.")
 
-    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with,
+    return action(method, event, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with,
                   offset=offset, limit=limit #pagination
                   )
 
-def action(method, offset=0, limit = MAX_NUM_ITEMS, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
+def create_link(event):
+    """
+    Create a next, self and last link
+    :param event: event from lambda
+    :return: next, self, last
+    """
+    scan = event.get("scan", None)
+    user_name = event.get("user", None)
+    service = event.get("service", None)
+
+
+    request = event.get("param", None)
+    parameter = event.get("value", None)
+    event_name = event.get("eventName", None)
+    count = event.get("count", False)
+    time1 = event.get("from", None)
+    time2 = event.get("to", None)
+    begin_with = event.get("begin_with", None)
+
+    # ---- Pagination
+    offset = event.get("offset", 0)
+    limit = event.get("limit", MAX_NUM_ITEMS)
+    aux = "?eventName={}&from={}&to={}&begin_with={}&param={}&value={}&count={}&limit={}&offset=__OFFSET__"
+    if scan and scan != 'None':
+        res = "/{}"+aux
+        res = res.format(scan, event_name, time1, time2, begin_with, parameter, request, count, limit)
+
+    elif user_name and user_name != 'None':
+        res = "/users/{}"+aux
+        res = res.format(user_name, event_name, time1, time2, begin_with, parameter, request, count, limit)
+    else:
+        res = "/services/{}" + aux
+        res = res.format(service, event_name, time1, time2, begin_with, parameter, request, count, limit)
+
+    return res
+
+def action(method, event, offset=0, limit = MAX_NUM_ITEMS, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
     """
     Call to Query and return the result from DynamoDB
     :param method: String. Name of the function of Query.py
@@ -288,9 +323,15 @@ def action(method, offset=0, limit = MAX_NUM_ITEMS, user_name=None, time1=None, 
     offset = min(offset, total)
     data = events[offset: offset + limit]
 
+    link = create_link(event)
+
     results = {
         "data": data,  # events
-        "links": {},  # dict with links to next, last and self
+        "links": {
+            "next":link.replace("__OFFSET__", str(min(offset+limit+1, total))),
+            "self": link.replace("__OFFSET__", str(offset)),
+            "last": link.replace("__OFFSET__", str(max(0,total-limit)))
+        },  # dict with links to next, last and self
         "pagination": {
             "offset": offset,
             "limit": limit,
