@@ -68,11 +68,23 @@ paths:
           required: false
           default: false
           type: boolean
+        - name: limit
+          in: query
+          description: Allows to set a limit number on the number of events to return
+          required: false
+          default: 10000
+          type: integer
+        - name: offset
+          in: query
+          description: Allows to along the dataset of events, as a paginator element
+          required: false
+          default: 0
+          type: integer
         responses:
           '200':
             description: successful operation
             schema:
-              $ref: '#/definitions/item_object'
+              $ref: '#/definitions/result'
   /parameters:
     get:
 
@@ -162,11 +174,23 @@ paths:
           type: array
           items:
             type: string
+        - name: limit
+          in: query
+          description: Allows to set a limit number on the number of events to return
+          required: false
+          default: 10000
+          type: integer
+        - name: offset
+          in: query
+          description: Allows to along the dataset of events, as a paginator element
+          required: false
+          default: 0
+          type: integer
       responses:
         '200':
           description: successful operation
           schema:
-            $ref: '#/definitions/item_object'
+            $ref: '#/definitions/result'
   /users:
     get:
       tags:
@@ -238,15 +262,25 @@ paths:
           type: array
           items:
             type: string
+        - name: limit
+          in: query
+          description: Allows to set a limit number on the number of events to return
+          required: false
+          default: 10000
+          type: integer
+        - name: offset
+          in: query
+          description: Allows to along the dataset of events, as a paginator element
+          required: false
+          default: 0
+          type: integer
       responses:
         '200':
           description: successful operation
           schema:
-            $ref: '#/definitions/item_object'
+            $ref: '#/definitions/result'
 definitions:
   item_object:
-    type: array
-    items:
       type: object
       properties:
         eventTime:
@@ -259,4 +293,30 @@ definitions:
           type: string
         eventName:
           type: string
+  result:
+    type: object
+    properties:
+      links:
+        type: object
+        properties:
+          next:
+            type: string
+          self:
+            type: string
+          last:
+            type: string
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/item_object'
 
+      pagination:
+        type: object
+        properties:
+          offset:
+            type: integer
+          limit:
+            type: integer
+          total:
+            type: integer
+    

@@ -1,8 +1,8 @@
 AWS_REGION = 'us-east-1'
 #Lambda function name for querying
-lambda_func_name = "cloudtrailTracker-query_"
+lambda_func_name = "cloudtrailTracker-query_v2"
 #Lambda function name for automatic event upload
-lambda_func_name_trigger = "cloudtrailTracker-Upload_"
+lambda_func_name_trigger = "cloudtrailTracker-Upload_v2"
 #Stage name for API Gateway
 stage_name = "dev"
 #DynamoDB Table name

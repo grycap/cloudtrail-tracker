@@ -24,7 +24,7 @@ except Exception as e:
     from dynamodb import Querys
 # import requests
 
-MAX_NUM_ITEMS = 300
+MAX_NUM_ITEMS = 10000
 
 def format_time(time):
     """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
@@ -149,9 +149,26 @@ def handler(event, context):
     time2 = event.get("to",None)
     begin_with = event.get("begin_with",None)
 
-    #Pagination
+    # ---- Pagination
     offset = event.get("offset",0)
     limit = event.get("limit",MAX_NUM_ITEMS)
+
+    if not offset or offset == '':
+        offset = 0
+    else:
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+
+    if not limit or limit == '':
+        limit = MAX_NUM_ITEMS
+    else:
+        try:
+            limit = int(limit)
+        except:
+            limit = MAX_NUM_ITEMS
+    #### -- pagination --
 
     if not count or count == "false" or count == "False":
         count = False
@@ -201,9 +218,11 @@ def handler(event, context):
     else:
         return ("Error. Needed an user name or a service.")
 
-    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with)
+    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with,
+                  offset=offset, limit=limit #pagination
+                  )
 
-def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
+def action(method, offset=0, limit = MAX_NUM_ITEMS, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
     """
     Call to Query and return the result from DynamoDB
     :param method: String. Name of the function of Query.py
@@ -214,48 +233,49 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
     :param request_parameters: list. see method get_request_parameters
     :param count: boolean
     :param begin_with: boolean
-    :return: list of dict or number, on depends of count.
-    """
-    results = {
+    :return: results = {
         "data": None, #events
         "links": {}, # dict with links to next, last and self
         "pagination": {} # dict with offset, limit and total
     }
+    """
+
+    limit = min(limit, MAX_NUM_ITEMS)
+    offset = max(0, offset)
+    total = 0
+    data= []
     if method == "actions_between":
-        return (Querys.actions_between_time(
+        events = Querys.actions_between_time(
             time1,
             time2,
             event=event_name,
             request_parameter=request_parameters,
             count=count,
             begin_with=begin_with
-        ))
+        )
     elif method == "used_services":
 
         events = Querys.used_services(user_name, time1, time2, count)
-        return events
+
+
 
 
 
 
     elif method == "used_services_parameter":
-        return (
-            Querys.used_services_parameter(
+        events = Querys.used_services_parameter(
                 user_name, request_parameters, time1, time2, count
-            )
+
 
         )
 
     elif method == "user_count_event":
-        return ((
-            Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count, begin_with=begin_with)
+        events = Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count, begin_with=begin_with)
 
-        ))
+
 
     elif method == "top_users":
-        return (
-            Querys.top_users(time1, time2, event_name, request_parameters,  begin_with=begin_with)
-        )
+        events = Querys.top_users(time1, time2, event_name, request_parameters,  begin_with=begin_with)
 
     elif method == "users_list":
         return (Querys.users_list())
@@ -264,9 +284,20 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
     elif method == "parameters_list":
         return (Querys.parameters_list())
 
+    total = len(events)
+    offset = min(offset, total)
+    data = events[offset: offset + limit]
 
-
-    return "Error: {}".format(event.keys())
+    results = {
+        "data": data,  # events
+        "links": {},  # dict with links to next, last and self
+        "pagination": {
+            "offset": offset,
+            "limit": limit,
+            "total": total
+        }  # dict with offset, limit and total
+    }
+    return results
 
 
 if __name__ == '__main__':
