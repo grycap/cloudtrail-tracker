@@ -47,13 +47,19 @@ class UseDynamoDB:
                 continue
 
             userName = datos.get(nameCamp, None)
+            """
+            If you don not want to save 'no_user' want to save the service that do the action, uncomment the nexts lines
+            In case of AssumeRole, we dont have a real username, so whitespace is added as a username
+                # if userName is None:
+                #     if name_event == "AssumeRole":
+                #         datos[nameCamp] = ' '
+                #     else:
+                #         userName = datos.get('userIdentity_principalId', ' ')
+                #         userName = userName.split(":")[-1]
+                #         datos[nameCamp] = userName
+            """
             if userName is None:
-                if name_event == "AssumeRole":
-                    datos[nameCamp] = ' '
-                else:
-                    userName = datos.get('userIdentity_principalId', ' ')
-                    userName = userName.split(":")[-1]
-                    datos[nameCamp] = userName
+                datos[nameCamp] = 'no_user'
 
 
             table.put_item(
@@ -65,7 +71,7 @@ class UseDynamoDB:
 
             ## Adding new user
             if userName is None or not userName:
-                userName = ' '
+                userName = 'no_user'
 
             ## Adding a new service
             service_name = datos.get("eventSource", None)

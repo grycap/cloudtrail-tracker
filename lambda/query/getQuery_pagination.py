@@ -17,18 +17,18 @@ import boto3
 import os
 import sys, ast
 import uuid, json, time, datetime
-
 try:
     from dynamodb import Querys
 except Exception as e:
-    sys.path.insert(1, os.path.join(sys.path[0], '../..'))  # just to run on local
+    sys.path.insert(1, os.path.join(sys.path[0], '../..')) # just to run on local
     from dynamodb import Querys
 # import requests
 
+MAX_NUM_ITEMS = 10000
 
 def format_time(time):
     """YYYY-MM-DD to YYYY-MM-DDTHH-MM-SSZ only when its necessary """
-    if (not time): return None
+    if(not time): return None
     if type(time) == str:
         if len(time) == 10:
             time = time + "T00:00:00Z"
@@ -43,29 +43,29 @@ def format_time(time):
 
     return time
 
-
 select = [
-    "eventID",
-    "userIdentity_userName",
-    "awsRegion",
-    "eventName",
-    "eventSource",
-    "eventTime",
-    "eventType",
-    "userAgent",
-    "userIdentity_principalId",
-    "requestParameters_bucketName",
-    "requestParameters_dBInstanceIdentifier",
-    "requestParameters_dBSecurityGroupName",
-    "requestParameters_includeAllInstances",
-    "requestParameters_includeDeleted",
-    "requestParameters_instanceType",
-    "requestParameters_roleSessionName",
-    "requestParameters_volumeSet_items_0_volumeId",
-    "responseElements_credentials_accessKeyId",
-    "responseElements_credentials_expiration",
-    "responseElements_credentials_sessionToken",
+            "eventID",
+            "userIdentity_userName",
+            "awsRegion",
+            "eventName",
+            "eventSource",
+            "eventTime",
+            "eventType",
+            "userAgent",
+            "userIdentity_principalId",
+            "requestParameters_bucketName",
+            "requestParameters_dBInstanceIdentifier",
+            "requestParameters_dBSecurityGroupName",
+            "requestParameters_includeAllInstances",
+            "requestParameters_includeDeleted",
+            "requestParameters_instanceType",
+            "requestParameters_roleSessionName",
+            "requestParameters_volumeSet_items_0_volumeId",
+            "responseElements_credentials_accessKeyId",
+            "responseElements_credentials_expiration",
+            "responseElements_credentials_sessionToken",
 ]
+
 
 
 def get_request_parameters(event):
@@ -79,15 +79,15 @@ def get_request_parameters(event):
     request_parameters = None
     if request and parameter:
         try:
-            request = ast.literal_eval(request)
-            parameter = ast.literal_eval(parameter)
+            request =  ast.literal_eval(request)
+            parameter =  ast.literal_eval(parameter)
 
         except ValueError:
             pass
         requests = []
         parameters = []
         if type(request) == list:
-            # something
+            #something
             pass
         elif type(request) == str:
             request = request.split(",")
@@ -107,7 +107,6 @@ def get_request_parameters(event):
         request_parameters = [requests, parameters]
     return request_parameters
 
-
 def add_time(t, seconds=1):
     """
     Add days
@@ -124,7 +123,6 @@ def add_time(t, seconds=1):
 
     return time1
 
-
 def handler(event, context):
     """
     Handler for Lambda function
@@ -134,28 +132,48 @@ def handler(event, context):
     """
 
     if event.get("list_users", None):
-        return action("users_list")
+        return action("users_list", None)
     if event.get("services_list", None):
-        return action("services_list")
+        return action("services_list", None)
     if event.get("parameters_list", None):
-        return action("parameters_list")
+        return action("parameters_list", None)
     scan = event.get("scan", None)
 
     request_parameters = get_request_parameters(event)
 
-    event_name = event.get("eventName", None)
-    user_name = event.get("user", None)
-    service = event.get("service", None)
-    count = event.get("count", False)
-    time1 = event.get("from", None)
-    time2 = event.get("to", None)
-    begin_with = event.get("begin_with", None)
+    event_name = event.get("eventName",None)
+    user_name = event.get("user",None)
+    service = event.get("service",None)
+    count = event.get("count",False)
+    time1 = event.get("from",None)
+    time2 = event.get("to",None)
+    begin_with = event.get("begin_with",None)
+    # ---- Pagination
+    offset = event.get("offset",0)
+    limit = event.get("limit",MAX_NUM_ITEMS)
+
+    if not offset or offset == '':
+        offset = 0
+    else:
+        try:
+            offset = int(offset)
+        except:
+            offset = 0
+
+    if not limit or limit == '':
+        limit = MAX_NUM_ITEMS
+    else:
+        try:
+            limit = int(limit)
+        except:
+            limit = MAX_NUM_ITEMS
+    #### -- pagination --
 
     if not count or count == "false" or count == "False":
         count = False
     if not begin_with or begin_with == "false" or begin_with == "False":
         begin_with = False
-    if not event_name:  # necessary if eventName is "" or False
+    if not event_name: #necessary if eventName is "" or False
         event_name = None
     if not service:
         service = None
@@ -167,14 +185,15 @@ def handler(event, context):
     if not time2:
         time2 = time.strftime("%Y-%m-%d")
 
+
     time1 = format_time(time1)
     time2 = format_time(time2)
     time2 = add_time(time2)
-    # Select action
+    #Select action
     if scan:
         method = "actions_between"
     elif user_name and not service:
-        # used_services or used_services_parameter or user_count_event
+        #used_services or used_services_parameter or user_count_event
         if not event_name:
             if request_parameters:
                 method = "used_services_parameter"
@@ -184,26 +203,61 @@ def handler(event, context):
             method = "user_count_event"
 
     elif service and not user_name:
-        # actions_between
+        #actions_between
         method = "actions_between"
         if request_parameters:
             requests, parameters = request_parameters
             requests.append("eventSource")
-            parameters.append(service + ".amazonaws.com")
+            parameters.append(service+".amazonaws.com")
             request_parameters = [requests, parameters]
         else:
-            request_parameters = [["eventSource"], [service + ".amazonaws.com"]]
+            request_parameters = [["eventSource"],[service+".amazonaws.com"]]
         # return "{} {} {} {} {} {} {} {}".format(method, user_name, time1, time2, event_name, request_parameters[0], request_parameters[1], count)
 
     else:
         return ("Error. Needed an user name or a service.")
 
-    return action(method, user_name=user_name, time1=time1, time2=time2, event_name=event_name,
-                  request_parameters=request_parameters, count=count, begin_with=begin_with)
+    return action(method, event, user_name=user_name, time1=time1, time2=time2, event_name=event_name, request_parameters=request_parameters, count=count, begin_with=begin_with,
+                  offset=offset, limit=limit #pagination
+                  )
+
+def create_link(event):
+    """
+    Create a next, self and last link
+    :param event: event from lambda
+    :return: next, self, last
+    """
+    scan = event.get("scan", None)
+    user_name = event.get("user", None)
+    service = event.get("service", None)
 
 
-def action(method, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False,
-           begin_with=False):
+    request = event.get("param", None)
+    parameter = event.get("value", None)
+    event_name = event.get("eventName", None)
+    count = event.get("count", False)
+    time1 = event.get("from", None)
+    time2 = event.get("to", None)
+    begin_with = event.get("begin_with", None)
+
+    # ---- Pagination
+    offset = event.get("offset", 0)
+    limit = event.get("limit", MAX_NUM_ITEMS)
+    aux = "?eventName={}&from={}&to={}&begin_with={}&param={}&value={}&count={}&limit={}&offset=__OFFSET__"
+    if scan and scan != 'None':
+        res = "/{}"+aux
+        res = res.format(scan, event_name, time1, time2, begin_with, parameter, request, count, limit)
+
+    elif user_name and user_name != 'None':
+        res = "/users/{}"+aux
+        res = res.format(user_name, event_name, time1, time2, begin_with, parameter, request, count, limit)
+    else:
+        res = "/services/{}" + aux
+        res = res.format(service, event_name, time1, time2, begin_with, parameter, request, count, limit)
+
+    return res
+
+def action(method, event, offset=0, limit = MAX_NUM_ITEMS, user_name=None, time1=None, time2=None, event_name=None, request_parameters=None, count=False, begin_with=False):
     """
     Call to Query and return the result from DynamoDB
     :param method: String. Name of the function of Query.py
@@ -214,44 +268,49 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
     :param request_parameters: list. see method get_request_parameters
     :param count: boolean
     :param begin_with: boolean
-    :return: list of dict or number, on depends of count.
+    :return: results = {
+        "data": None, #events
+        "links": {}, # dict with links to next, last and self
+        "pagination": {} # dict with offset, limit and total
+    }
     """
+
+    limit = min(limit, MAX_NUM_ITEMS)
+    offset = max(0, offset)
+    total = 0
+    data= []
     if method == "actions_between":
-        return (Querys.actions_between_time(
+        events = Querys.actions_between_time(
             time1,
             time2,
             event=event_name,
             request_parameter=request_parameters,
             count=count,
             begin_with=begin_with
-        ))
+        )
     elif method == "used_services":
 
         events = Querys.used_services(user_name, time1, time2, count)
-        return events
+
+
 
 
 
 
     elif method == "used_services_parameter":
-        return (
-            Querys.used_services_parameter(
+        events = Querys.used_services_parameter(
                 user_name, request_parameters, time1, time2, count
-            )
+
 
         )
 
     elif method == "user_count_event":
-        return ((
-            Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count,
-                                    begin_with=begin_with)
+        events = Querys.user_count_event(user_name, event_name, time1, time2, request_parameters, count, begin_with=begin_with)
 
-        ))
+
 
     elif method == "top_users":
-        return (
-            Querys.top_users(time1, time2, event_name, request_parameters, begin_with=begin_with)
-        )
+        events = Querys.top_users(time1, time2, event_name, request_parameters,  begin_with=begin_with)
 
     elif method == "users_list":
         return (Querys.users_list())
@@ -260,24 +319,43 @@ def action(method, user_name=None, time1=None, time2=None, event_name=None, requ
     elif method == "parameters_list":
         return (Querys.parameters_list())
 
-    return "Error: {}".format(event.keys())
+    total = len(events)
+    offset = min(offset, total)
+    data = events[offset: offset + limit]
+
+    link = create_link(event)
+
+    results = {
+        "data": data,  # events
+        "links": {
+            "next":link.replace("__OFFSET__", str(min(offset+limit+1, total))),
+            "self": link.replace("__OFFSET__", str(offset)),
+            "last": link.replace("__OFFSET__", str(max(0,total-limit)))
+        },  # dict with links to next, last and self
+        "pagination": {
+            "offset": offset,
+            "limit": limit,
+            "total": total
+        }  # dict with offset, limit and total
+    }
+    return results
 
 
 if __name__ == '__main__':
     event = {
-        # "user":  "alucloud178",
-        "service": "",
-        "scan": "True",
-        "count": "",
-        "eventName": "CreateDBInstance",
-        "from": "2014-06-01T12:00:51Z",
-        "to": "2017-09-01",
-        "count": True,
-        "begin_with": True,
-        # "param":  "['instanceType']",
-        # "param":  "instanceType,eventSource",
-        # "value":  "['m1.small']"
-        # "value":  "m1.small,ec2.amazonaws.com"
+    # "user":  "alucloud178",
+    "service": "",
+    "scan": "True",
+    "count":  "",
+    "eventName":  "CreateDBInstance",
+    "from":  "2014-06-01T12:00:51Z",
+    "to":  "2017-09-01",
+    "count": True,
+    "begin_with": True,
+    # "param":  "['instanceType']",
+    # "param":  "instanceType,eventSource",
+    # "value":  "['m1.small']"
+    # "value":  "m1.small,ec2.amazonaws.com"
     }
     res = handler(event, None)
     print(res)
