@@ -19,6 +19,11 @@
 cmake-build-debug/
 cmake-build-release/
 
+#Serverless framework
+.serverless
+tracing_items
+
+
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
 

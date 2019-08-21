@@ -1,18 +1,18 @@
 AWS_REGION = 'us-east-1'
 #Lambda function name for querying
-lambda_func_name = "cloudtrailTrackerQueries"
+lambda_func_name = "lambda-ctt-00-query"
 #Lambda function name for automatic event uploads
-lambda_func_name_trigger = "cloudtrailTrackerUploads"
+lambda_func_name_trigger = "lambda-ctt-00-upload"
 #Stage name for API Gateway
-stage_name = "cloudtrailtrackerStage"
+stage_name = "stage-ctt-00"
 #DynamoDB Table name
-table_name = "cloudtrailtrackerdb"
+table_name = "db-alucloud00-ctt"
 #Preconfigured S3 bucket by CloudTrail
-bucket_name = "cursocloudaws-trail"
+bucket_name = "alucloud00"
 #API name
-API_name = "cloudtrailTrackerAPI"
+API_name = "CloudtrailTrackerAPI00"
 #eventNames that we DO NOT want to store - Filter
-filterEventNames = ["get", "describe", "list", "info", "decrypt", "checkmfa", "head"]
+filterEventNames = ["assume","get", "describe", "list", "info", "decrypt", "checkmfa", "head"]
 ### Account IDs and permisiions
 #aws_acct_id = "111111111111"
 ### Roles
