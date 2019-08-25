@@ -1,0 +1,21 @@
+{
+    "eventID": {
+        "S": "1"
+    },
+    "eventTime": {
+        "S": "1"
+    },
+    "userIdentity_userName": {
+        "S": "all"
+    },
+    "listUsers": {
+        "L": []
+    },
+    "services": {
+        "L": []
+    },
+    "cols": {
+        "L": []
+    }
+}
+

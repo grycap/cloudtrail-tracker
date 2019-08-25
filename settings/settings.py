@@ -1,16 +1,16 @@
 AWS_REGION = 'us-east-1'
 #Lambda function name for querying
-lambda_func_name = "lambda-ctt-00-query"
+lambda_func_name = "alucloud00-ctt-lambda-query"
 #Lambda function name for automatic event uploads
-lambda_func_name_trigger = "lambda-ctt-00-upload"
+lambda_func_name_trigger = "alucloud00-ctt-lambda-upload"
 #Stage name for API Gateway
-stage_name = "stage-ctt-00"
+stage_name = "alucloud00-ctt-stage"
 #DynamoDB Table name
-table_name = "db-alucloud00-ctt"
+table_name = "alucloud00-ctt-db"
 #Preconfigured S3 bucket by CloudTrail
-bucket_name = "alucloud00"
+bucket_name = "alucloud00-ctt-bucket"
 #API name
-API_name = "CloudtrailTrackerAPI00"
+API_name = "alucloud00-ctt-api"
 #eventNames that we DO NOT want to store - Filter
 filterEventNames = ["assume","get", "describe", "list", "info", "decrypt", "checkmfa", "head"]
 ### Account IDs and permisiions

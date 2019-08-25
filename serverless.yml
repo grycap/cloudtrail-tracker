@@ -1,14 +1,14 @@
-service: ctt-00
+service: alucloud00-ctt
 
 provider: 
   name: aws
+  role: IAM-ROLE-ARN
   stage: dev
   region: us-east-1 
   memorySize: 256
   deploymentBucket:
     name: alucloud00
-  role: arn:aws:iam::111111111111:role/your-iam-role
-
+  
   plugins:
    - serverless-python-requirements
 
@@ -16,19 +16,62 @@ package: # Optional deployment packaging configuration
     include: # Specify the directories and files which should be included in the deployment package
       - dynamodb/Logs.py
 
+resources:
+  Resources: 
+    eventsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'alucloud00-ctt-db'
+        AttributeDefinitions:
+          - AttributeName: eventID
+            AttributeType: S
+          - AttributeName: userIdentity_userName
+            AttributeType: S
+          - AttributeName: eventTime
+            AttributeType: S      
+        KeySchema:
+          - AttributeName: eventID 
+            KeyType: 'HASH'
+          - AttributeName: userIdentity_userName
+            KeyType: 'RANGE'
+        ProvisionedThroughput:
+              ReadCapacityUnits: '1'
+              WriteCapacityUnits: '1'
+        GlobalSecondaryIndexes:
+          - IndexName: userIdentity_userName-eventTime-index
+            KeySchema:
+            - AttributeName: userIdentity_userName
+              KeyType: HASH
+            - AttributeName: eventTime
+              KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: '1'
+              WriteCapacityUnits: '1'
+                
+
 functions: 
   EventUploads:
     handler: lambda/eventuploads/Upload.handler
-    name: lambda-ctt-00-upload
+    name: alucloud00-ctt-lambda-upload
     description: CloudTrail-Tracker (Event Uploads)
     runtime: python3.6
     memorySize: 128
     timeout: 30
     reservedConcurrency: 5
+    events:
+      - s3: 
+          bucket: alucloud00-ctt-bucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: AWSLogs/
+            - suffix: .gz          
+
 
   Query:
     handler: lambda/query/getQuery.handler
-    name: lambda-ctt-00-query
+    name: alucloud00-ctt-lambda-query
     description: cloudTrail-Tracker results
     runtime: python3.6
     memorySize: 512
@@ -126,3 +169,5 @@ functions:
                                    "to" : "$input.params(''to'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
+plugins:
+  - serverless-dynamodb-local

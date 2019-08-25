@@ -91,7 +91,7 @@ def add_users_row(name_table):
                 "userIdentity_userName": "all",
                 "listUsers": {},
                 "services": {},
-                "cols": {}
+                "cols": {} 
 
             }
             res = table.put_item(
