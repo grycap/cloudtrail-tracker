@@ -5,7 +5,6 @@ provider:
   role: IAM-ROLE-ARN
   stage: dev
   region: us-east-1 
-  memorySize: 256
   deploymentBucket:
     name: alucloud00
   
@@ -59,7 +58,6 @@ functions:
     runtime: python3.6
     memorySize: 128
     timeout: 30
-    reservedConcurrency: 5
     events:
       - s3: 
           bucket: alucloud00-ctt-bucket
@@ -76,10 +74,9 @@ functions:
     runtime: python3.6
     memorySize: 512
     timeout: 30
-    reservedConcurrency: 5
     events:
       - http:
-          path: scan/
+          path: scan
           method: get
           cors: true
           integration: lambda
@@ -169,5 +166,3 @@ functions:
                                    "to" : "$input.params(''to'')",
                                    "param" : "$input.params(''param'')",
                                    "value" : "$input.params(''value'')"}'
-plugins:
-  - serverless-dynamodb-local
