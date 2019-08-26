@@ -6,7 +6,7 @@ provider:
   stage: dev
   region: us-east-1 
   deploymentBucket:
-    name: alucloud00
+    name: alucloud
   
   plugins:
    - serverless-python-requirements
