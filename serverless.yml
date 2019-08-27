@@ -60,7 +60,7 @@ functions:
     timeout: 30
     events:
       - s3: 
-          bucket: alucloud00-ctt-bucket
+          bucket: alucloud00-ctt
           event: s3:ObjectCreated:*
           rules:
             - prefix: AWSLogs/
