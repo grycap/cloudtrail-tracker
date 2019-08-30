@@ -17,7 +17,7 @@ class UseDynamoDB:
 
     
     def store_event(self, name_table, event):
-
+        
         dynamodb = boto3.resource('dynamodb')
         table = dynamodb.Table(name_table)
         nameCamp = 'userIdentity_userName'
@@ -29,7 +29,7 @@ class UseDynamoDB:
 
             name_event = datos.get("eventName", None)
             if name_event is None or name_event.lower().startswith(tuple(settings.filterEventNames)):
-                # print("Evento no")
+                #print("Evento no")
                 continue
 
             userName = datos.get(nameCamp, None)

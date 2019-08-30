@@ -8,7 +8,7 @@ stage_name = "alucloud00-ctt-stage"
 #DynamoDB Table name
 table_name = "alucloud00-ctt-db"
 #Preconfigured S3 bucket by CloudTrail
-bucket_name = "alucloud00-ctt-bucket"
+bucket_name = "alucloud00-ctt"
 #API name
 API_name = "alucloud00-ctt-api"
 #eventNames that we DO NOT want to store - Filter

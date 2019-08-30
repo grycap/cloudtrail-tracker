@@ -168,7 +168,6 @@ def upload_events_from_bucket( bucket, to,from_, table_name, download_path="tmp/
         print(e_date)
         event = Event(e)
         db = UseDynamoDB("Uploading", verbose=False)
-
         db.store_event(table_name, event)
 
     #delet content dir
