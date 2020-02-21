@@ -13,7 +13,11 @@ CloudTrail-Tracker is a tool that provides fast cost-effective insights on the m
 
 ## Serverless Approach
 
-CloudTrail-Tracker is designed as a serverless application that entirely runs on the aforementioned serverless services in order to minimize the operating costs while maintaining appropriate levels of scalability to efficiently achieve the aggregated metrics. The web portal can also be deployed as a static website on an Amazon S3 bucket. Depending on the usage, the entire platform can run within the Free Tier on your AWS account at zero cost and your usage data of the AWS services never leaves your own AWS account.
+CloudTrail-Tracker is designed as a serverless application that entirely runs on the aforementioned serverless services in order to minimize the operating costs while maintaining appropriate levels of scalability to efficiently achieve the aggregated metrics. The web portal can also be deployed as a static website on an Amazon S3 bucket. Depending on the usage, the entire platform can run within the Free Tier on your AWS account at zero cost and your usage data of the AWS services never leaves your own AWS account. The following figure describes the architecture:
+
+![CloudTrail-Tracker Architecture](doc/img/ctt-arch2.png)
+
+
 
 # Requirements
 
