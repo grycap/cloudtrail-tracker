@@ -2,7 +2,8 @@ service: alucloud00-ctt
 
 provider: 
   name: aws
-  role: IAM-ROLE-ARN
+  iam:
+    role: IAM-ROLE-ARN
   stage: dev
   region: us-east-1 
   stackTags:
@@ -10,11 +11,9 @@ provider:
   deploymentBucket:
     name: alucloud
   
-  plugins:
-   - serverless-python-requirements 
 
 package: # Optional deployment packaging configuration
-    include: # Specify the directories and files which should be included in the deployment package
+    patterns: # Specify the directories and files which should be included in the deployment package
       - dynamodb/Logs.py
 
 resources:
@@ -57,7 +56,7 @@ functions:
     handler: lambda/eventuploads/Upload.handler
     name: alucloud00-ctt-lambda-upload
     description: CloudTrail-Tracker (Upload)
-    runtime: python3.6
+    runtime: python3.9
     memorySize: 128
     timeout: 30
     events:
@@ -73,7 +72,7 @@ functions:
     handler: lambda/query/getQuery.handler
     name: alucloud00-ctt-lambda-query
     description: CloudTrail-Tracker (Query)
-    runtime: python3.6
+    runtime: python3.9
     memorySize: 512
     timeout: 30
     events:
